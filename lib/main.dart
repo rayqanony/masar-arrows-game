@@ -89,27 +89,41 @@ class Point<T extends num> {
   int get hashCode => Object.hash(x, y);
 }
 
-/// نموذج السهم الواحد: يتكون من سلسلة نقاط متتالية على الشبكة من الذيل إلى الرأس
+/// نموذج السهم الواحد:
+/// يستنتج اتجاه الرأس والخروج تلقائياً 100% من اتجاه آخر قطعة في السهم (من النقطة قبل الأخيرة إلى الأخيرة)
+/// مما يمنع نهائياً أن ينحني السهم للداخل ويخرج للخارج!
 class ArrowItem {
   final String id;
   final List<Point<int>> cells; // من الذيل [0] إلى الرأس [last]
-  final ArrowDir headDir;
   bool isCleared;
+  bool isQueuedRed; // عندما يصطدم السهم يتحول للأحمر وينتظر فتح الطريق ليخرج لوحده
 
   ArrowItem({
     required this.id,
     required this.cells,
-    required this.headDir,
     this.isCleared = false,
-  });
+    this.isQueuedRed = false,
+  }) : assert(cells.length >= 2, 'Arrow must have at least 2 cells');
 
   Point<int> get head => cells.last;
+
+  /// اتجاه الرأس مطابق دائماً لاتجاه آخر مفصل في السهم
+  ArrowDir get headDir {
+    final prev = cells[cells.length - 2];
+    final last = cells.last;
+    final dx = last.x - prev.x;
+    final dy = last.y - prev.y;
+    if (dx > 0) return ArrowDir.right;
+    if (dx < 0) return ArrowDir.left;
+    if (dy > 0) return ArrowDir.down;
+    return ArrowDir.up;
+  }
 
   ArrowItem copy() => ArrowItem(
         id: id,
         cells: List<Point<int>>.from(cells),
-        headDir: headDir,
         isCleared: isCleared,
+        isQueuedRed: isQueuedRed,
       );
 }
 
@@ -130,11 +144,11 @@ class LevelConfig {
   });
 }
 
-/// مستودع أول 10 مستويات مصممة بعناية ومتدرجة الصعوبة وقابلة للحل 100%
+/// مستودع أول 10 مستويات مصممة ومفحوصة هندسياً بحيث يتطابق اتجاه الرأس مع آخر قطعة 100%
 class LevelsRepository {
   static List<LevelConfig> getAllLevels() {
     return [
-      // المستوى 1: سهل جداً (تعليمي - 4 أسهم ملتفة حول المركز)
+      // المستوى 1: سهل (تعليمي - 4 أسهم ملتفة حول المركز)
       LevelConfig(
         levelNumber: 1,
         difficultyLabel: 'سهل',
@@ -143,28 +157,24 @@ class LevelsRepository {
         arrows: [
           ArrowItem(
             id: 'a1',
-            cells: const [Point(1, 2), Point(1, 1), Point(2, 1), Point(3, 1)],
-            headDir: ArrowDir.right,
+            cells: const [Point(1, 2), Point(1, 1), Point(2, 1), Point(3, 1)], // يتجه يميناً
           ),
           ArrowItem(
             id: 'a2',
-            cells: const [Point(3, 3), Point(3, 2), Point(2, 2)],
-            headDir: ArrowDir.left,
+            cells: const [Point(3, 3), Point(3, 2), Point(2, 2)], // يتجه يساراً
           ),
           ArrowItem(
             id: 'a3',
-            cells: const [Point(2, 3), Point(1, 3)],
-            headDir: ArrowDir.left,
+            cells: const [Point(2, 3), Point(1, 3)], // يتجه يساراً
           ),
           ArrowItem(
             id: 'a4',
-            cells: const [Point(2, 4), Point(3, 4), Point(4, 4), Point(4, 3), Point(4, 2)],
-            headDir: ArrowDir.up,
+            cells: const [Point(2, 4), Point(3, 4), Point(4, 4), Point(4, 3), Point(4, 2)], // يتجه لأعلى
           ),
         ],
       ),
 
-      // المستوى 2: عادي (مطابق تماماً للصورة الثانية المرفقة - الحلزون المتداخل)
+      // المستوى 2: عادي (الحلزون المتداخل من الصورة المرفقة)
       LevelConfig(
         levelNumber: 2,
         difficultyLabel: 'عادي',
@@ -173,38 +183,32 @@ class LevelsRepository {
         arrows: [
           ArrowItem(
             id: 'l2_1',
-            cells: const [Point(1, 0), Point(0, 0), Point(0, 1), Point(0, 2), Point(0, 3), Point(0, 4), Point(0, 5)],
-            headDir: ArrowDir.down,
+            cells: const [Point(1, 0), Point(0, 0), Point(0, 1), Point(0, 2), Point(0, 3), Point(0, 4), Point(0, 5)], // يتجه لأسفل
           ),
           ArrowItem(
             id: 'l2_2',
-            cells: const [Point(2, 5), Point(3, 5), Point(4, 5), Point(5, 5), Point(5, 4), Point(5, 3), Point(5, 2), Point(5, 1), Point(5, 0), Point(4, 0), Point(3, 0), Point(2, 0)],
-            headDir: ArrowDir.left,
+            cells: const [Point(2, 5), Point(3, 5), Point(4, 5), Point(5, 5), Point(5, 4), Point(5, 3), Point(5, 2), Point(5, 1), Point(5, 0), Point(4, 0), Point(3, 0), Point(2, 0)], // يتجه يساراً
           ),
           ArrowItem(
             id: 'l2_3',
-            cells: const [Point(3, 4), Point(4, 4), Point(4, 3), Point(4, 2)],
-            headDir: ArrowDir.up,
+            cells: const [Point(3, 4), Point(4, 4), Point(4, 3), Point(4, 2)], // يتجه لأعلى
           ),
           ArrowItem(
             id: 'l2_4',
-            cells: const [Point(1, 3), Point(1, 2), Point(1, 1), Point(2, 1), Point(3, 1), Point(4, 1)],
-            headDir: ArrowDir.right,
+            cells: const [Point(1, 3), Point(1, 2), Point(1, 1), Point(2, 1), Point(3, 1), Point(4, 1)], // يتجه يميناً
           ),
           ArrowItem(
             id: 'l2_5',
-            cells: const [Point(2, 4), Point(1, 4)],
-            headDir: ArrowDir.left,
+            cells: const [Point(2, 4), Point(1, 4)], // يتجه يساراً
           ),
           ArrowItem(
             id: 'l2_6',
-            cells: const [Point(3, 3), Point(3, 2), Point(2, 2), Point(2, 3)],
-            headDir: ArrowDir.down,
+            cells: const [Point(3, 3), Point(3, 2), Point(2, 2), Point(2, 3)], // يتجه لأسفل
           ),
         ],
       ),
 
-      // المستوى 3: عادي (مطابق للصورة الأولى المرفقة - شبكة متشابكة)
+      // المستوى 3: عادي (شبكة متشابكة من الصورة الأولى)
       LevelConfig(
         levelNumber: 3,
         difficultyLabel: 'عادي',
@@ -213,43 +217,35 @@ class LevelsRepository {
         arrows: [
           ArrowItem(
             id: 'l3_1',
-            cells: const [Point(0, 0), Point(1, 0), Point(2, 0), Point(2, 1), Point(1, 1), Point(0, 1)],
-            headDir: ArrowDir.left,
+            cells: const [Point(0, 0), Point(1, 0), Point(2, 0), Point(2, 1), Point(1, 1), Point(0, 1)], // يتجه يساراً
           ),
           ArrowItem(
             id: 'l3_2',
-            cells: const [Point(3, 0), Point(4, 0), Point(5, 0), Point(5, 1), Point(5, 2)],
-            headDir: ArrowDir.down,
+            cells: const [Point(3, 0), Point(4, 0), Point(5, 0), Point(5, 1), Point(5, 2)], // يتجه لأسفل
           ),
           ArrowItem(
             id: 'l3_3',
-            cells: const [Point(5, 3), Point(5, 4), Point(5, 5), Point(4, 5), Point(3, 5)],
-            headDir: ArrowDir.left,
+            cells: const [Point(5, 3), Point(5, 4), Point(5, 5), Point(4, 5), Point(3, 5)], // يتجه يساراً
           ),
           ArrowItem(
             id: 'l3_4',
-            cells: const [Point(2, 5), Point(1, 5), Point(0, 5), Point(0, 4), Point(0, 3), Point(0, 2)],
-            headDir: ArrowDir.up,
+            cells: const [Point(2, 5), Point(1, 5), Point(0, 5), Point(0, 4), Point(0, 3), Point(0, 2)], // يتجه لأعلى
           ),
           ArrowItem(
             id: 'l3_5',
-            cells: const [Point(3, 4), Point(4, 4), Point(4, 3), Point(4, 2), Point(4, 1)],
-            headDir: ArrowDir.up,
+            cells: const [Point(3, 4), Point(4, 4), Point(4, 3), Point(4, 2), Point(4, 1)], // يتجه لأعلى
           ),
           ArrowItem(
             id: 'l3_6',
-            cells: const [Point(2, 2), Point(3, 2), Point(3, 3)],
-            headDir: ArrowDir.down,
+            cells: const [Point(2, 2), Point(3, 2), Point(3, 3)], // يتجه لأسفل
           ),
           ArrowItem(
             id: 'l3_7',
-            cells: const [Point(2, 3), Point(1, 3), Point(1, 2)],
-            headDir: ArrowDir.up,
+            cells: const [Point(2, 3), Point(1, 3), Point(1, 2)], // يتجه لأعلى
           ),
           ArrowItem(
             id: 'l3_8',
-            cells: const [Point(1, 4), Point(2, 4)],
-            headDir: ArrowDir.right,
+            cells: const [Point(1, 4), Point(2, 4)], // يتجه يميناً
           ),
         ],
       ),
@@ -263,38 +259,31 @@ class LevelsRepository {
         arrows: [
           ArrowItem(
             id: 'l4_1',
-            cells: const [Point(0, 2), Point(0, 1), Point(0, 0), Point(1, 0), Point(2, 0)],
-            headDir: ArrowDir.up,
+            cells: const [Point(2, 0), Point(1, 0), Point(0, 0)], // يتجه يساراً (مفتوح)
           ),
           ArrowItem(
             id: 'l4_2',
-            cells: const [Point(5, 2), Point(5, 1), Point(5, 0), Point(4, 0), Point(3, 0)],
-            headDir: ArrowDir.left,
+            cells: const [Point(5, 2), Point(5, 1), Point(5, 0), Point(4, 0), Point(3, 0)], // يتجه يساراً (يفتح بعد خروج l4_1)
           ),
           ArrowItem(
             id: 'l4_3',
-            cells: const [Point(3, 5), Point(4, 5), Point(5, 5), Point(5, 4), Point(5, 3)],
-            headDir: ArrowDir.up,
+            cells: const [Point(3, 5), Point(4, 5), Point(5, 5), Point(5, 4), Point(5, 3)], // يتجه لأعلى (يفتح بعد خروج l4_2)
           ),
           ArrowItem(
             id: 'l4_4',
-            cells: const [Point(0, 3), Point(0, 4), Point(0, 5), Point(1, 5), Point(2, 5)],
-            headDir: ArrowDir.right,
+            cells: const [Point(0, 1), Point(0, 2), Point(0, 3), Point(0, 4), Point(0, 5), Point(1, 5), Point(2, 5)], // يتجه يميناً (يفتح بعد خروج l4_3)
           ),
           ArrowItem(
             id: 'l4_5',
-            cells: const [Point(1, 2), Point(1, 1), Point(2, 1), Point(3, 1), Point(4, 1)],
-            headDir: ArrowDir.right,
+            cells: const [Point(1, 2), Point(1, 1), Point(2, 1), Point(3, 1), Point(4, 1)], // يتجه يميناً
           ),
           ArrowItem(
             id: 'l4_6',
-            cells: const [Point(4, 2), Point(4, 3), Point(4, 4), Point(3, 4), Point(2, 4), Point(1, 4), Point(1, 3)],
-            headDir: ArrowDir.up,
+            cells: const [Point(4, 2), Point(4, 3), Point(4, 4), Point(3, 4), Point(2, 4), Point(1, 4), Point(1, 3)], // يتجه لأعلى
           ),
           ArrowItem(
             id: 'l4_7',
-            cells: const [Point(2, 2), Point(3, 2), Point(3, 3), Point(2, 3)],
-            headDir: ArrowDir.left,
+            cells: const [Point(2, 2), Point(3, 2), Point(3, 3), Point(2, 3)], // يتجه يساراً
           ),
         ],
       ),
@@ -308,43 +297,35 @@ class LevelsRepository {
         arrows: [
           ArrowItem(
             id: 'l5_1',
-            cells: const [Point(1, 0), Point(2, 0), Point(3, 0), Point(4, 0)],
-            headDir: ArrowDir.right,
+            cells: const [Point(1, 0), Point(2, 0), Point(3, 0), Point(4, 0)], // يتجه يميناً
           ),
           ArrowItem(
             id: 'l5_2',
-            cells: const [Point(5, 4), Point(5, 3), Point(5, 2), Point(5, 1), Point(5, 0)],
-            headDir: ArrowDir.up,
+            cells: const [Point(5, 4), Point(5, 3), Point(5, 2), Point(5, 1), Point(5, 0)], // يتجه لأعلى
           ),
           ArrowItem(
             id: 'l5_3',
-            cells: const [Point(1, 5), Point(2, 5), Point(3, 5), Point(4, 5), Point(5, 5)],
-            headDir: ArrowDir.right,
+            cells: const [Point(1, 5), Point(2, 5), Point(3, 5), Point(4, 5), Point(5, 5)], // يتجه يميناً
           ),
           ArrowItem(
             id: 'l5_4',
-            cells: const [Point(0, 0), Point(0, 1), Point(0, 2), Point(0, 3), Point(0, 4), Point(0, 5)],
-            headDir: ArrowDir.down,
+            cells: const [Point(0, 0), Point(0, 1), Point(0, 2), Point(0, 3), Point(0, 4), Point(0, 5)], // يتجه لأسفل
           ),
           ArrowItem(
             id: 'l5_5',
-            cells: const [Point(2, 1), Point(1, 1), Point(1, 2), Point(1, 3), Point(1, 4)],
-            headDir: ArrowDir.down,
+            cells: const [Point(2, 1), Point(1, 1), Point(1, 2), Point(1, 3), Point(1, 4)], // يتجه لأسفل
           ),
           ArrowItem(
             id: 'l5_6',
-            cells: const [Point(3, 1), Point(4, 1), Point(4, 2), Point(4, 3), Point(4, 4)],
-            headDir: ArrowDir.down,
+            cells: const [Point(3, 1), Point(4, 1), Point(4, 2), Point(4, 3), Point(4, 4)], // يتجه لأسفل
           ),
           ArrowItem(
             id: 'l5_7',
-            cells: const [Point(2, 4), Point(2, 3), Point(2, 2)],
-            headDir: ArrowDir.up,
+            cells: const [Point(2, 4), Point(2, 3), Point(2, 2)], // يتجه لأعلى
           ),
           ArrowItem(
             id: 'l5_8',
-            cells: const [Point(3, 2), Point(3, 3), Point(3, 4)],
-            headDir: ArrowDir.down,
+            cells: const [Point(3, 2), Point(3, 3), Point(3, 4)], // يتجه لأسفل
           ),
         ],
       ),
@@ -358,48 +339,39 @@ class LevelsRepository {
         arrows: [
           ArrowItem(
             id: 'l6_1',
-            cells: const [Point(2, 0), Point(1, 0), Point(0, 0)],
-            headDir: ArrowDir.left,
+            cells: const [Point(2, 0), Point(1, 0), Point(0, 0)], // يتجه يساراً
           ),
           ArrowItem(
             id: 'l6_2',
-            cells: const [Point(3, 2), Point(3, 1), Point(3, 0), Point(4, 0), Point(5, 0), Point(6, 0)],
-            headDir: ArrowDir.right,
+            cells: const [Point(3, 2), Point(3, 1), Point(3, 0), Point(4, 0), Point(5, 0), Point(6, 0)], // يتجه يميناً
           ),
           ArrowItem(
             id: 'l6_3',
-            cells: const [Point(6, 4), Point(6, 3), Point(6, 2), Point(6, 1)],
-            headDir: ArrowDir.up,
+            cells: const [Point(6, 4), Point(6, 3), Point(6, 2), Point(6, 1)], // يتجه لأعلى
           ),
           ArrowItem(
             id: 'l6_4',
-            cells: const [Point(4, 6), Point(5, 6), Point(6, 6), Point(6, 5)],
-            headDir: ArrowDir.up,
+            cells: const [Point(4, 6), Point(5, 6), Point(6, 6), Point(6, 5)], // يتجه لأعلى
           ),
           ArrowItem(
             id: 'l6_5',
-            cells: const [Point(3, 4), Point(3, 5), Point(3, 6), Point(2, 6), Point(1, 6), Point(0, 6)],
-            headDir: ArrowDir.left,
+            cells: const [Point(3, 4), Point(3, 5), Point(3, 6), Point(2, 6), Point(1, 6), Point(0, 6)], // يتجه يساراً
           ),
           ArrowItem(
             id: 'l6_6',
-            cells: const [Point(0, 1), Point(0, 2), Point(0, 3), Point(0, 4), Point(0, 5)],
-            headDir: ArrowDir.down,
+            cells: const [Point(0, 1), Point(0, 2), Point(0, 3), Point(0, 4), Point(0, 5)], // يتجه لأسفل
           ),
           ArrowItem(
             id: 'l6_7',
-            cells: const [Point(2, 2), Point(2, 1), Point(1, 1), Point(1, 2), Point(1, 3), Point(1, 4), Point(1, 5)],
-            headDir: ArrowDir.down,
+            cells: const [Point(2, 2), Point(2, 1), Point(1, 1), Point(1, 2), Point(1, 3), Point(1, 4), Point(1, 5)], // يتجه لأسفل
           ),
           ArrowItem(
             id: 'l6_8',
-            cells: const [Point(4, 2), Point(4, 1), Point(5, 1), Point(5, 2), Point(5, 3), Point(5, 4), Point(5, 5)],
-            headDir: ArrowDir.down,
+            cells: const [Point(4, 2), Point(4, 1), Point(5, 1), Point(5, 2), Point(5, 3), Point(5, 4), Point(5, 5)], // يتجه لأسفل
           ),
           ArrowItem(
             id: 'l6_9',
-            cells: const [Point(2, 5), Point(2, 4), Point(2, 3), Point(3, 3), Point(4, 3), Point(4, 4), Point(4, 5)],
-            headDir: ArrowDir.down,
+            cells: const [Point(2, 5), Point(2, 4), Point(2, 3), Point(3, 3), Point(4, 3), Point(4, 4), Point(4, 5)], // يتجه لأسفل
           ),
         ],
       ),
@@ -413,48 +385,40 @@ class LevelsRepository {
         arrows: [
           ArrowItem(
             id: 'l7_1',
-            cells: const [Point(0, 2), Point(0, 1), Point(0, 0), Point(1, 0), Point(2, 0), Point(3, 0)],
-            headDir: ArrowDir.up,
+            cells: const [Point(0, 3), Point(0, 2), Point(0, 1), Point(0, 0)], // يتجه لأعلى (مفتوح)
           ),
           ArrowItem(
             id: 'l7_2',
-            cells: const [Point(4, 0), Point(5, 0), Point(6, 0), Point(6, 1), Point(6, 2), Point(6, 3)],
-            headDir: ArrowDir.down,
+            cells: const [Point(6, 3), Point(6, 2), Point(6, 1), Point(6, 0), Point(5, 0), Point(4, 0), Point(3, 0), Point(2, 0), Point(1, 0)], // يتجه يساراً (يفتح بعد خروج l7_1)
           ),
           ArrowItem(
             id: 'l7_3',
-            cells: const [Point(6, 4), Point(6, 5), Point(6, 6), Point(5, 6), Point(4, 6), Point(3, 6)],
-            headDir: ArrowDir.left,
+            cells: const [Point(6, 4), Point(6, 5), Point(6, 6), Point(5, 6), Point(4, 6), Point(3, 6)], // يتجه يساراً
           ),
           ArrowItem(
             id: 'l7_4',
-            cells: const [Point(2, 6), Point(1, 6), Point(0, 6), Point(0, 5), Point(0, 4), Point(0, 3)],
-            headDir: ArrowDir.up,
+            cells: const [Point(2, 6), Point(1, 6), Point(0, 6), Point(0, 5), Point(0, 4)], // يتجه لأعلى
           ),
           ArrowItem(
             id: 'l7_5',
-            cells: const [Point(1, 3), Point(1, 2), Point(1, 1), Point(2, 1), Point(3, 1), Point(4, 1), Point(5, 1)],
-            headDir: ArrowDir.right,
+            cells: const [Point(1, 3), Point(1, 2), Point(1, 1), Point(2, 1), Point(3, 1), Point(4, 1), Point(5, 1)], // يتجه يميناً
           ),
           ArrowItem(
             id: 'l7_6',
-            cells: const [Point(5, 2), Point(5, 3), Point(5, 4), Point(5, 5), Point(4, 5), Point(3, 5), Point(2, 5), Point(1, 5), Point(1, 4)],
-            headDir: ArrowDir.up,
+            cells: const [Point(5, 2), Point(5, 3), Point(5, 4), Point(5, 5), Point(4, 5), Point(3, 5), Point(2, 5), Point(1, 5), Point(1, 4)], // يتجه لأعلى
           ),
           ArrowItem(
             id: 'l7_7',
-            cells: const [Point(4, 2), Point(3, 2), Point(2, 2), Point(2, 3), Point(2, 4)],
-            headDir: ArrowDir.down,
+            cells: const [Point(4, 2), Point(3, 2), Point(2, 2), Point(2, 3), Point(2, 4)], // يتجه لأسفل
           ),
           ArrowItem(
             id: 'l7_8',
-            cells: const [Point(3, 4), Point(4, 4), Point(4, 3), Point(3, 3)],
-            headDir: ArrowDir.left,
+            cells: const [Point(3, 4), Point(4, 4), Point(4, 3), Point(3, 3)], // يتجه يساراً
           ),
         ],
       ),
 
-      // المستوى 8: صعب (الدرع المزدوج)
+      // المستوى 8: صعب (الدرع المزدوج - تم إصلاح السهمين الداخليين ليتطابق اتجاه الرأس مع الانحناء 100%)
       LevelConfig(
         levelNumber: 8,
         difficultyLabel: 'صعب',
@@ -463,43 +427,37 @@ class LevelsRepository {
         arrows: [
           ArrowItem(
             id: 'l8_1',
-            cells: const [Point(2, 0), Point(1, 0), Point(0, 0), Point(0, 1), Point(0, 2), Point(0, 3)],
-            headDir: ArrowDir.down,
+            cells: const [Point(2, 0), Point(1, 0), Point(0, 0), Point(0, 1), Point(0, 2), Point(0, 3), Point(0, 4), Point(0, 5)], // يتجه لأسفل (يفتح بعد خروج l8_3)
           ),
           ArrowItem(
             id: 'l8_2',
-            cells: const [Point(4, 0), Point(5, 0), Point(6, 0), Point(6, 1), Point(6, 2), Point(6, 3)],
-            headDir: ArrowDir.down,
+            cells: const [Point(4, 0), Point(5, 0), Point(6, 0), Point(6, 1), Point(6, 2), Point(6, 3), Point(6, 4), Point(6, 5)], // يتجه لأسفل (يفتح بعد خروج l8_4)
           ),
           ArrowItem(
             id: 'l8_3',
-            cells: const [Point(0, 4), Point(0, 5), Point(0, 6), Point(1, 6), Point(2, 6)],
-            headDir: ArrowDir.down,
+            cells: const [Point(2, 6), Point(1, 6), Point(0, 6)], // يتجه يساراً (مفتوح)
           ),
           ArrowItem(
             id: 'l8_4',
-            cells: const [Point(6, 4), Point(6, 5), Point(6, 6), Point(5, 6), Point(4, 6)],
-            headDir: ArrowDir.down,
+            cells: const [Point(4, 6), Point(5, 6), Point(6, 6)], // يتجه يميناً (مفتوح)
           ),
           ArrowItem(
             id: 'l8_5',
-            cells: const [Point(3, 2), Point(3, 1), Point(3, 0)],
-            headDir: ArrowDir.up,
+            cells: const [Point(3, 2), Point(3, 1), Point(3, 0)], // يتجه لأعلى
           ),
           ArrowItem(
             id: 'l8_6',
-            cells: const [Point(3, 4), Point(3, 5), Point(3, 6)],
-            headDir: ArrowDir.down,
+            cells: const [Point(3, 4), Point(3, 5), Point(3, 6)], // يتجه لأسفل
           ),
+          // السهم الأيسر الداخلي: ينحني للأسفل ويخرج للأسفل في خط مستقيم أنيق
           ArrowItem(
             id: 'l8_7',
-            cells: const [Point(2, 3), Point(2, 2), Point(2, 1), Point(1, 1), Point(1, 2), Point(1, 3), Point(1, 4), Point(1, 5), Point(2, 5)],
-            headDir: ArrowDir.down,
+            cells: const [Point(2, 4), Point(2, 3), Point(2, 2), Point(2, 1), Point(1, 1), Point(1, 2), Point(1, 3), Point(1, 4), Point(1, 5)], // يتجه لأسفل
           ),
+          // السهم الأيمن الداخلي: ينحني للأسفل ويخرج للأسفل في خط مستقيم أنيق
           ArrowItem(
             id: 'l8_8',
-            cells: const [Point(4, 3), Point(4, 2), Point(4, 1), Point(5, 1), Point(5, 2), Point(5, 3), Point(5, 4), Point(5, 5), Point(4, 5)],
-            headDir: ArrowDir.down,
+            cells: const [Point(4, 4), Point(4, 3), Point(4, 2), Point(4, 1), Point(5, 1), Point(5, 2), Point(5, 3), Point(5, 4), Point(5, 5)], // يتجه لأسفل
           ),
         ],
       ),
@@ -513,58 +471,47 @@ class LevelsRepository {
         arrows: [
           ArrowItem(
             id: 'l9_1',
-            cells: const [Point(3, 0), Point(2, 0), Point(1, 0), Point(0, 0)],
-            headDir: ArrowDir.left,
+            cells: const [Point(3, 0), Point(2, 0), Point(1, 0), Point(0, 0)], // يتجه يساراً
           ),
           ArrowItem(
             id: 'l9_2',
-            cells: const [Point(4, 0), Point(5, 0), Point(6, 0), Point(7, 0)],
-            headDir: ArrowDir.right,
+            cells: const [Point(4, 0), Point(5, 0), Point(6, 0), Point(7, 0)], // يتجه يميناً
           ),
           ArrowItem(
             id: 'l9_3',
-            cells: const [Point(0, 4), Point(0, 3), Point(0, 2), Point(0, 1)],
-            headDir: ArrowDir.up,
+            cells: const [Point(0, 4), Point(0, 3), Point(0, 2), Point(0, 1)], // يتجه لأعلى
           ),
           ArrowItem(
             id: 'l9_4',
-            cells: const [Point(7, 4), Point(7, 3), Point(7, 2), Point(7, 1)],
-            headDir: ArrowDir.up,
+            cells: const [Point(7, 4), Point(7, 3), Point(7, 2), Point(7, 1)], // يتجه لأعلى
           ),
           ArrowItem(
             id: 'l9_5',
-            cells: const [Point(0, 5), Point(0, 6), Point(0, 7), Point(1, 7), Point(2, 7), Point(3, 7)],
-            headDir: ArrowDir.down,
+            cells: const [Point(3, 7), Point(2, 7), Point(1, 7), Point(0, 7), Point(0, 6), Point(0, 5)], // يتجه لأعلى
           ),
           ArrowItem(
             id: 'l9_6',
-            cells: const [Point(7, 5), Point(7, 6), Point(7, 7), Point(6, 7), Point(5, 7), Point(4, 7)],
-            headDir: ArrowDir.left,
+            cells: const [Point(7, 5), Point(7, 6), Point(7, 7), Point(6, 7), Point(5, 7), Point(4, 7)], // يتجه يساراً
           ),
           ArrowItem(
             id: 'l9_7',
-            cells: const [Point(3, 1), Point(2, 1), Point(1, 1), Point(1, 2), Point(1, 3), Point(1, 4), Point(1, 5), Point(1, 6)],
-            headDir: ArrowDir.down,
+            cells: const [Point(3, 1), Point(2, 1), Point(1, 1), Point(1, 2), Point(1, 3), Point(1, 4), Point(1, 5), Point(1, 6)], // يتجه لأسفل
           ),
           ArrowItem(
             id: 'l9_8',
-            cells: const [Point(4, 1), Point(5, 1), Point(6, 1), Point(6, 2), Point(6, 3), Point(6, 4), Point(6, 5), Point(6, 6)],
-            headDir: ArrowDir.down,
+            cells: const [Point(4, 1), Point(5, 1), Point(6, 1), Point(6, 2), Point(6, 3), Point(6, 4), Point(6, 5), Point(6, 6)], // يتجه لأسفل
           ),
           ArrowItem(
             id: 'l9_9',
-            cells: const [Point(2, 6), Point(3, 6), Point(4, 6), Point(5, 6)],
-            headDir: ArrowDir.right,
+            cells: const [Point(2, 6), Point(3, 6), Point(4, 6), Point(5, 6)], // يتجه يميناً
           ),
           ArrowItem(
             id: 'l9_10',
-            cells: const [Point(5, 2), Point(4, 2), Point(3, 2), Point(2, 2), Point(2, 3), Point(2, 4), Point(2, 5)],
-            headDir: ArrowDir.down,
+            cells: const [Point(5, 2), Point(4, 2), Point(3, 2), Point(2, 2), Point(2, 3), Point(2, 4), Point(2, 5)], // يتجه لأسفل
           ),
           ArrowItem(
             id: 'l9_11',
-            cells: const [Point(3, 5), Point(4, 5), Point(5, 5), Point(5, 4), Point(5, 3), Point(4, 3), Point(3, 3), Point(3, 4)],
-            headDir: ArrowDir.left,
+            cells: const [Point(3, 4), Point(3, 5), Point(4, 5), Point(5, 5), Point(5, 4), Point(5, 3), Point(4, 3), Point(3, 3)], // يتجه يساراً
           ),
         ],
       ),
@@ -578,38 +525,31 @@ class LevelsRepository {
         arrows: [
           ArrowItem(
             id: 'l10_1',
-            cells: const [Point(7, 0), Point(6, 0), Point(5, 0), Point(4, 0), Point(3, 0), Point(2, 0), Point(1, 0), Point(0, 0), Point(0, 1), Point(0, 2), Point(0, 3), Point(0, 4), Point(0, 5), Point(0, 6), Point(0, 7)],
-            headDir: ArrowDir.down,
+            cells: const [Point(7, 0), Point(6, 0), Point(5, 0), Point(4, 0), Point(3, 0), Point(2, 0), Point(1, 0), Point(0, 0), Point(0, 1), Point(0, 2), Point(0, 3), Point(0, 4), Point(0, 5), Point(0, 6), Point(0, 7)], // يتجه لأسفل
           ),
           ArrowItem(
             id: 'l10_2',
-            cells: const [Point(1, 7), Point(2, 7), Point(3, 7), Point(4, 7), Point(5, 7), Point(6, 7), Point(7, 7), Point(7, 6), Point(7, 5), Point(7, 4), Point(7, 3), Point(7, 2), Point(7, 1)],
-            headDir: ArrowDir.up,
+            cells: const [Point(1, 7), Point(2, 7), Point(3, 7), Point(4, 7), Point(5, 7), Point(6, 7), Point(7, 7), Point(7, 6), Point(7, 5), Point(7, 4), Point(7, 3), Point(7, 2), Point(7, 1)], // يتجه لأعلى
           ),
           ArrowItem(
             id: 'l10_3',
-            cells: const [Point(6, 1), Point(5, 1), Point(4, 1), Point(3, 1), Point(2, 1), Point(1, 1), Point(1, 2), Point(1, 3), Point(1, 4), Point(1, 5), Point(1, 6)],
-            headDir: ArrowDir.down,
+            cells: const [Point(6, 1), Point(5, 1), Point(4, 1), Point(3, 1), Point(2, 1), Point(1, 1), Point(1, 2), Point(1, 3), Point(1, 4), Point(1, 5), Point(1, 6)], // يتجه لأسفل
           ),
           ArrowItem(
             id: 'l10_4',
-            cells: const [Point(2, 6), Point(3, 6), Point(4, 6), Point(5, 6), Point(6, 6), Point(6, 5), Point(6, 4), Point(6, 3), Point(6, 2)],
-            headDir: ArrowDir.up,
+            cells: const [Point(2, 6), Point(3, 6), Point(4, 6), Point(5, 6), Point(6, 6), Point(6, 5), Point(6, 4), Point(6, 3), Point(6, 2)], // يتجه لأعلى
           ),
           ArrowItem(
             id: 'l10_5',
-            cells: const [Point(5, 2), Point(4, 2), Point(3, 2), Point(2, 2), Point(2, 3), Point(2, 4), Point(2, 5)],
-            headDir: ArrowDir.down,
+            cells: const [Point(5, 2), Point(4, 2), Point(3, 2), Point(2, 2), Point(2, 3), Point(2, 4), Point(2, 5)], // يتجه لأسفل
           ),
           ArrowItem(
             id: 'l10_6',
-            cells: const [Point(3, 5), Point(4, 5), Point(5, 5), Point(5, 4), Point(5, 3)],
-            headDir: ArrowDir.up,
+            cells: const [Point(3, 5), Point(4, 5), Point(5, 5), Point(5, 4), Point(5, 3)], // يتجه لأعلى
           ),
           ArrowItem(
             id: 'l10_7',
-            cells: const [Point(4, 3), Point(3, 3), Point(3, 4), Point(4, 4)],
-            headDir: ArrowDir.right,
+            cells: const [Point(4, 3), Point(3, 3), Point(3, 4), Point(4, 4)], // يتجه يميناً
           ),
         ],
       ),
@@ -634,12 +574,13 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
   bool _rulerEnabled = false;
   String? _hintedArrowId;
 
-  // تحريك السهم عند الخروج (حركة ثعبانية على نفس مساره) أو الاصطدام
+  // تحريك السهم عند الخروج أو الاصطدام
   String? _animatingArrowId;
   bool _isBlockedAnimation = false;
-  double _BlockedMaxSteps = 0.25;
+  double _blockedMaxSteps = 0.25;
   late AnimationController _moveController;
   late AnimationController _sunburstController;
+  late AnimationController _ambientGlowController; // نبض إضاءة المصباح والقلوب
 
   bool _isLevelCompleted = false;
   bool _soundEnabled = true;
@@ -662,6 +603,11 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
       duration: const Duration(seconds: 16),
     )..repeat();
 
+    _ambientGlowController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1900),
+    )..repeat(reverse: true);
+
     _loadLevel(_currentLevelIndex);
   }
 
@@ -669,6 +615,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
   void dispose() {
     _moveController.dispose();
     _sunburstController.dispose();
+    _ambientGlowController.dispose();
     super.dispose();
   }
 
@@ -725,6 +672,52 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
 
   bool _isArrowFree(ArrowItem arrow) => _freeCellsAhead(arrow) == -1;
 
+  /// تشغيل خروج سهم طريقه مفتوح (يتحول لونه إلى الأزرق وينطلق خارجاً، ثم يفحص الأسهم الحمراء المنتظرة!)
+  void _launchFreeArrow(ArrowItem arrow) {
+    setState(() {
+      arrow.isQueuedRed = false;
+      _animatingArrowId = arrow.id;
+      _isBlockedAnimation = false;
+      if (_hintedArrowId == arrow.id) {
+        _hintedArrowId = null;
+      }
+    });
+
+    if (_vibrationEnabled) HapticFeedback.lightImpact();
+    final totalCells = arrow.cells.length + _currentConfig.gridCols + 3;
+    final durationMs = (totalCells * 34).clamp(360, 680);
+    _moveController.duration = Duration(milliseconds: durationMs);
+    _moveController.forward(from: 0).then((_) {
+      if (!mounted) return;
+      setState(() {
+        arrow.isCleared = true;
+        _animatingArrowId = null;
+      });
+
+      // فحص هل هناك سهم أحمر في وضع الانتظار (Queued) انفتح طريقه الآن ليخرج لوحده!
+      _checkAndTriggerQueuedRedArrows();
+    });
+  }
+
+  /// فحص الأسهم الحمراء المنتظرة: إذا انفتح طريق أي منها يخرج تلقائياً باللون الأزرق!
+  void _checkAndTriggerQueuedRedArrows() {
+    for (final candidate in _activeArrows) {
+      if (!candidate.isCleared &&
+          candidate.isQueuedRed &&
+          _isArrowFree(candidate)) {
+        _launchFreeArrow(candidate);
+        return;
+      }
+    }
+
+    // إذا لم يتبقَ أي سهم في الشبكة، اكتمل المستوى!
+    if (_activeArrows.every((a) => a.isCleared)) {
+      setState(() {
+        _isLevelCompleted = true;
+      });
+    }
+  }
+
   void _onArrowTapped(ArrowItem arrow) {
     if (_animatingArrowId != null || arrow.isCleared || _isLevelCompleted) {
       return;
@@ -733,33 +726,20 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
     final freeSteps = _freeCellsAhead(arrow);
     final free = freeSteps == -1;
 
-    setState(() {
-      _animatingArrowId = arrow.id;
-      _isBlockedAnimation = !free;
-      // إذا كان هناك مسافة صغيرة قبل العائق، يتحرك السهم عبر مساره المتني حتى يلمس العائق ثم يرجع!
-      _BlockedMaxSteps = free ? 0.0 : (freeSteps + 0.38);
-      if (_hintedArrowId == arrow.id) {
-        _hintedArrowId = null;
-      }
-    });
-
     if (free) {
-      if (_vibrationEnabled) HapticFeedback.lightImpact();
-      // سرعة انسيابية متناسبة مع طول السهم لكي نرى الجزء المتني وهو ينفرد ويمشي في مسار الرأس
-      final totalCells = arrow.cells.length + _currentConfig.gridCols + 3;
-      final durationMs = (totalCells * 36).clamp(380, 720);
-      _moveController.duration = Duration(milliseconds: durationMs);
-      _moveController.forward(from: 0).then((_) {
-        if (!mounted) return;
-        setState(() {
-          arrow.isCleared = true;
-          _animatingArrowId = null;
-          if (_activeArrows.every((a) => a.isCleared)) {
-            _isLevelCompleted = true;
-          }
-        });
-      });
+      _launchFreeArrow(arrow);
     } else {
+      // السهم مسدود: يتحول للون الأحمر ويدخل في وضع الانتظار (isQueuedRed = true)
+      setState(() {
+        arrow.isQueuedRed = true;
+        _animatingArrowId = arrow.id;
+        _isBlockedAnimation = true;
+        _blockedMaxSteps = freeSteps + 0.38;
+        if (_hintedArrowId == arrow.id) {
+          _hintedArrowId = null;
+        }
+      });
+
       if (_vibrationEnabled) HapticFeedback.heavyImpact();
       _moveController.duration = const Duration(milliseconds: 340);
       _moveController.forward(from: 0).then((_) {
@@ -781,14 +761,15 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
           content: const Text(
-            'انتهت التلميحات! أعد المستوى أو شاهد إعلاناً للحصول على تلميحات إضافية.',
+            'انتهت التلميحات! شاهد إعلاناً للحصول على تلميحات إضافية.',
             textAlign: TextAlign.center,
           ),
           action: SnackBarAction(
             label: '+2 مجاناً',
-            textColor: const Color(0xFFFFCA28),
+            textColor: const Color(0xFFFFAB3D),
             onPressed: () {
               setState(() => _hintsCount += 2);
             },
@@ -800,6 +781,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
 
     for (final arrow in _activeArrows) {
       if (!arrow.isCleared && _isArrowFree(arrow)) {
+        if (_vibrationEnabled) HapticFeedback.selectionClick();
         setState(() {
           _hintedArrowId = arrow.id;
           _hintsCount--;
@@ -819,7 +801,8 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
         title: const Column(
           children: [
-            Icon(Icons.heart_broken_rounded, color: Color(0xFFE53935), size: 54),
+            Icon(Icons.heart_broken_rounded,
+                color: Color(0xFFE53935), size: 54),
             SizedBox(height: 10),
             Text(
               'نفدت القلوب!',
@@ -970,7 +953,6 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
       return _buildVictoryScreen();
     }
 
-    // فرض تخطيط الهيدر والأدوات بنفس توزيع اللعبة الأصلية تماماً
     return Directionality(
       textDirection: TextDirection.ltr,
       child: Scaffold(
@@ -978,8 +960,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
         body: SafeArea(
           child: Column(
             children: [
-              // 1. الهيدر العلوي المطابق للصورة الثانية تماماً:
-              // ترس الإعدادات على اليسار | المستوى والصعوبة في الوسط | سهم المستويات على اليمين
+              // 1. الهيدر العلوي: ترس الإعدادات يسار | المستوى والصعوبة وسط | سهم المستويات يمين
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 10, 16, 4),
                 child: Row(
@@ -1034,27 +1015,36 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                 ),
               ),
 
-              // 2. صف القلوب الثلاثة بتأثير ثلاثي الأبعاد ناعم مطابق للصورة
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: List.generate(3, (index) {
-                    final active = index < _hearts;
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 6),
-                      child: AnimatedScale(
-                        scale: active ? 1.0 : 0.82,
-                        duration: const Duration(milliseconds: 260),
-                        curve: Curves.easeOutBack,
-                        child: CustomPaint(
-                          size: const Size(34, 32),
-                          painter: GlossyHeartPainter(isActive: active),
-                        ),
-                      ),
-                    );
-                  }),
-                ),
+              // 2. صف القلوب الثلاثة المحسّن بتوهج Rose/Ruby متعدد الطبقات مستوحى من ملف Neon Lamp
+              AnimatedBuilder(
+                animation: _ambientGlowController,
+                builder: (context, _) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List.generate(3, (index) {
+                        final active = index < _hearts;
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 6),
+                          child: AnimatedScale(
+                            scale: active
+                                ? 1.0 + (_ambientGlowController.value * 0.035)
+                                : 0.82,
+                            duration: const Duration(milliseconds: 240),
+                            child: CustomPaint(
+                              size: const Size(36, 34),
+                              painter: GlossyHeartPainter(
+                                isActive: active,
+                                glowPulse: _ambientGlowController.value,
+                              ),
+                            ),
+                          ),
+                        );
+                      }),
+                    ),
+                  );
+                },
               ),
 
               const SizedBox(height: 6),
@@ -1069,13 +1059,13 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                     minHeight: 5,
                     backgroundColor: const Color(0xFFE9EDF2),
                     valueColor: const AlwaysStoppedAnimation<Color>(
-                      Color(0xFF1E88E5),
+                      Color(0xFF2196F3),
                     ),
                   ),
                 ),
               ),
 
-              // 4. مساحة شبكة اللعب في المنتصف مع تقاطعات نقطية خفيفة وحركة السهم المتني الحقيقية
+              // 4. مساحة شبكة اللعب مع نقاط الشبكة الهادئة وحركة الأسهم (أزرق عند الخروج، أحمر في الانتظار)
               Expanded(
                 child: Center(
                   child: AspectRatio(
@@ -1101,9 +1091,10 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                                 hintedArrowId: _hintedArrowId,
                                 animatingArrowId: _animatingArrowId,
                                 isBlockedAnimation: _isBlockedAnimation,
-                                blockedMaxSteps: _BlockedMaxSteps,
+                                blockedMaxSteps: _blockedMaxSteps,
                                 animationValue: Curves.easeInOutCubic
                                     .transform(_moveController.value),
+                                glowPulse: _ambientGlowController.value,
                               ),
                             ),
                           );
@@ -1114,72 +1105,83 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                 ),
               ),
 
-              // 5. أزرار الأدوات المساعدة السفلية (المسطرة المائلة البنفسجية على اليسار + المصباح المائل الذهبي مع شارة العدد أعلى اليسار)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 24, top: 8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // زر المسطرة
-                    _buildNeumorphicPowerButton(
-                      isActive: _rulerEnabled,
-                      badgeText: null,
-                      onTap: () {
-                        if (_vibrationEnabled) HapticFeedback.selectionClick();
-                        setState(() => _rulerEnabled = !_rulerEnabled);
-                      },
-                      customChild: Transform.rotate(
-                        angle: -0.55,
-                        child: Container(
-                          width: 44,
-                          height: 20,
-                          decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              colors: [Color(0xFF7986CB), Color(0xFF5C6BC0)],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
-                            borderRadius: BorderRadius.circular(5),
-                            border: Border.all(color: Colors.white, width: 1.5),
-                            boxShadow: [
-                              BoxShadow(
-                                color: const Color(0xFF5C6BC0).withOpacity(0.35),
-                                blurRadius: 6,
-                                offset: const Offset(0, 3),
+              // 5. أزرار الأدوات المساعدة السفلية (المسطرة البنفسجية + اللمبة النيون المضيئة Amber Neon Lamp)
+              AnimatedBuilder(
+                animation: _ambientGlowController,
+                builder: (context, _) {
+                  final hasHintActive = _hintedArrowId != null;
+                  final lampGlow = _ambientGlowController.value;
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 24, top: 8),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // زر المسطرة
+                        _buildNeumorphicPowerButton(
+                          isActive: _rulerEnabled,
+                          badgeText: null,
+                          ambientGlowColor: const Color(0xFF5C6BC0),
+                          glowIntensity: _rulerEnabled ? 0.8 : 0.15,
+                          onTap: () {
+                            if (_vibrationEnabled) {
+                              HapticFeedback.selectionClick();
+                            }
+                            setState(() => _rulerEnabled = !_rulerEnabled);
+                          },
+                          customChild: Transform.rotate(
+                            angle: -0.55,
+                            child: Container(
+                              width: 44,
+                              height: 20,
+                              decoration: BoxDecoration(
+                                gradient: const LinearGradient(
+                                  colors: [
+                                    Color(0xFF7986CB),
+                                    Color(0xFF5C6BC0)
+                                  ],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                ),
+                                borderRadius: BorderRadius.circular(5),
+                                border:
+                                    Border.all(color: Colors.white, width: 1.5),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: const Color(0xFF5C6BC0)
+                                        .withOpacity(0.35),
+                                    blurRadius: 6,
+                                    offset: const Offset(0, 3),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                          child: CustomPaint(painter: RulerMarksPainter()),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 36),
-                    // زر المصباح
-                    _buildNeumorphicPowerButton(
-                      isActive: _hintedArrowId != null,
-                      badgeText: '$_hintsCount',
-                      onTap: _useHint,
-                      customChild: Transform.rotate(
-                        angle: -0.35,
-                        child: const Icon(
-                          Icons.lightbulb_rounded,
-                          size: 42,
-                          color: Color(0xFFFFB300),
-                          shadows: [
-                            Shadow(
-                              color: Color(0x55FFA000),
-                              blurRadius: 10,
-                              offset: Offset(0, 4),
+                              child: CustomPaint(painter: RulerMarksPainter()),
                             ),
-                          ],
+                          ),
                         ),
-                      ),
+                        const SizedBox(width: 38),
+                        // زر اللمبة المضيئة المستوحاة من 10-Neon Lamp Login Form (Amber Warm Spectrum)
+                        _buildNeumorphicPowerButton(
+                          isActive: hasHintActive,
+                          badgeText: '$_hintsCount',
+                          ambientGlowColor: const Color(0xFFFFAB3D),
+                          glowIntensity:
+                              hasHintActive ? 1.0 : (0.45 + lampGlow * 0.45),
+                          onTap: _useHint,
+                          customChild: CustomPaint(
+                            size: const Size(54, 54),
+                            painter: NeonLampBulbPainter(
+                              glowPulse: lampGlow,
+                              isBoosted: hasHintActive,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  );
+                },
               ),
 
-              // 6. الشريط السفلي الرمادي الفاتح (منطقة الإعلان السفلية كما في الصورة الثانية)
+              // 6. الشريط السفلي الرمادي الفاتح
               if (!_adsRemoved)
                 Container(
                   width: double.infinity,
@@ -1207,13 +1209,13 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
     );
   }
 
-  /// التفاعل الذكي باللمس: يلتقط أقرب سهم لمكان إصبع اللاعب حتى لو لمس بجانب الخط قليلاً
+  /// التفاعل الذكي باللمس
   void _handleBoardTap(Offset localPos, double boardSize) {
     final cellW = boardSize / _currentConfig.gridCols;
     final cellH = boardSize / _currentConfig.gridRows;
 
     ArrowItem? bestArrow;
-    double minDistance = cellW * 0.68; // نطاق لمس مريح جداً
+    double minDistance = cellW * 0.68;
 
     for (final arrow in _activeArrows) {
       if (arrow.isCleared) continue;
@@ -1236,6 +1238,8 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
   Widget _buildNeumorphicPowerButton({
     required bool isActive,
     required String? badgeText,
+    required Color ambientGlowColor,
+    required double glowIntensity,
     required VoidCallback onTap,
     required Widget customChild,
   }) {
@@ -1244,31 +1248,36 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            width: 82,
-            height: 82,
+          Container(
+            width: 84,
+            height: 84,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: isActive
-                    ? [const Color(0xFFE3F2FD), const Color(0xFFBBDEFB)]
-                    : [const Color(0xFFFFFFFF), const Color(0xFFF3F6FA)],
+                    ? [const Color(0xFFFFF8E7), const Color(0xFFFFECB3)]
+                    : [const Color(0xFFFFFFFF), const Color(0xFFF4F7FB)],
               ),
               border: Border.all(
                 color: isActive
-                    ? const Color(0xFF1E88E5)
+                    ? ambientGlowColor.withOpacity(0.8)
                     : const Color(0xFFEBF0F5),
                 width: 2.5,
               ),
               boxShadow: [
+                // إضاءة محيطية ناعمة (Ambient Radial Glow) مستوحاة من ملف Neon Lamp
                 BoxShadow(
-                  color: const Color(0xFF90A4AE).withOpacity(0.22),
-                  blurRadius: 18,
-                  spreadRadius: 1,
-                  offset: const Offset(0, 8),
+                  color: ambientGlowColor.withOpacity(0.24 * glowIntensity),
+                  blurRadius: 22 + (8 * glowIntensity),
+                  spreadRadius: 2 * glowIntensity,
+                  offset: const Offset(0, 4),
+                ),
+                BoxShadow(
+                  color: const Color(0xFF90A4AE).withOpacity(0.20),
+                  blurRadius: 16,
+                  offset: const Offset(0, 7),
                 ),
                 const BoxShadow(
                   color: Colors.white,
@@ -1283,7 +1292,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
           if (badgeText != null)
             Positioned(
               top: -2,
-              left: -2, // في أعلى اليسار تماماً مثل الصورة الثانية
+              left: -2,
               child: Container(
                 width: 30,
                 height: 30,
@@ -1315,7 +1324,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
     );
   }
 
-  /// شاشة "اكتمل المستوى!" المطابقة للصورة الأولى المرفقة
+  /// شاشة "اكتمل المستوى!"
   Widget _buildVictoryScreen() {
     final nextLevelIndex = (_currentLevelIndex + 1) % _allLevels.length;
     final nextLevelNumber = _allLevels[nextLevelIndex].levelNumber;
@@ -1325,7 +1334,6 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
       child: Scaffold(
         body: Stack(
           children: [
-            // خلفية الأشعة الزرقاء المتحركة
             AnimatedBuilder(
               animation: _sunburstController,
               builder: (context, _) {
@@ -1351,7 +1359,6 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                       letterSpacing: 0.3,
                     ),
                   ),
-                  // البطاقة البيضاء في المنتصف التي تعرض رسمة المستوى المكتمل
                   Container(
                     width: 225,
                     height: 225,
@@ -1378,11 +1385,11 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                         isBlockedAnimation: false,
                         blockedMaxSteps: 0,
                         animationValue: 0,
+                        glowPulse: 0,
                         ignoreClearedState: true,
                       ),
                     ),
                   ),
-                  // أزرار الانتقال للمستوى التالي أو الرئيسية
                   Padding(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 34,
@@ -1454,7 +1461,134 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
   }
 }
 
-/// رسام علامات المسطرة الصغيرة داخل أيقونة المسطرة
+/// رسام اللمبة المضيئة المستوحاة من ملف (10-Neon Lamp Login Form):
+/// يستخدم نفس طيف الألوان الكهرماني الدافئ (--lamp-accent: #ffab3d, --lamp-glow: #ffe194)
+/// مع قاعدة نحاسية ثلاثية الأبعاد (#ffe299 -> #c99738 -> #805915) وهالة ضوئية ناعمة نابضة
+class NeonLampBulbPainter extends CustomPainter {
+  final double glowPulse;
+  final bool isBoosted;
+
+  NeonLampBulbPainter({
+    required this.glowPulse,
+    required this.isBoosted,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    canvas.save();
+    canvas.translate(center.dx, center.dy);
+    canvas.rotate(-0.35); // الزاوية المائلة المميزة للمبة في اللعبة
+
+    // 1. الهالة الضوئية المحيطية الخفيفة (Volumetric Radial Beam & Bulb Glow Filter)
+    final glowRadius = 22.0 + (glowPulse * 5.0) + (isBoosted ? 6.0 : 0.0);
+    final ambientPaint = Paint()
+      ..shader = RadialGradient(
+        colors: [
+          const Color(0xFFFFE194).withOpacity(isBoosted ? 0.70 : 0.45),
+          const Color(0xFFFFAB3D).withOpacity(isBoosted ? 0.35 : 0.20),
+          const Color(0xFFFFAB3D).withOpacity(0.0),
+        ],
+        stops: const [0.0, 0.55, 1.0],
+      ).createShader(
+        Rect.fromCircle(center: const Offset(0, -4), radius: glowRadius),
+      );
+    canvas.drawCircle(const Offset(0, -4), glowRadius, ambientPaint);
+
+    // 2. القاعدة النحاسية الحلزونية للمبة (Brass Joint Gradient من ملف الـ SVG)
+    final baseRect = RRect.fromRectAndRadius(
+      const Rect.fromLTWH(-6.5, 9.0, 13.0, 8.5),
+      const Radius.circular(3.0),
+    );
+    final brassPaint = Paint()
+      ..shader = const LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [
+          Color(0xFFFFE299),
+          Color(0xFFC99738),
+          Color(0xFF805915),
+        ],
+      ).createShader(baseRect.outerRect);
+    canvas.drawRRect(baseRect, brassPaint);
+
+    // طرف التوصيل السفلي المعدني الداكن
+    final tipRect = RRect.fromRectAndRadius(
+      const Rect.fromLTWH(-4.0, 16.5, 8.0, 3.2),
+      const Radius.circular(2.0),
+    );
+    canvas.drawRRect(tipRect, Paint()..color = const Color(0xFF3E434A));
+
+    // حلقات القاعدة النحاسية
+    final threadPaint = Paint()
+      ..color = const Color(0xFF805915).withOpacity(0.55)
+      ..strokeWidth = 1.1;
+    canvas.drawLine(const Offset(-5.5, 12.0), const Offset(5.5, 12.0), threadPaint);
+    canvas.drawLine(const Offset(-5.5, 14.5), const Offset(5.5, 14.5), threadPaint);
+
+    // 3. الزجاج الكروي المضيء للمبة (ReflectorOn Radial Gradient من ملف الـ SVG)
+    final bulbPath = Path()
+      ..moveTo(-6.5, 9.5)
+      ..cubicTo(-6.5, 5.0, -13.5, 1.5, -13.5, -6.0)
+      ..arcToPoint(
+        const Offset(13.5, -6.0),
+        radius: const Radius.circular(13.5),
+        clockwise: true,
+      )
+      ..cubicTo(13.5, 1.5, 6.5, 5.0, 6.5, 9.5)
+      ..close();
+
+    final bulbRect = const Rect.fromLTWH(-14, -20, 28, 30);
+    final bulbPaint = Paint()
+      ..shader = const RadialGradient(
+        center: Alignment(-0.25, -0.35),
+        radius: 0.85,
+        colors: [
+          Color(0xFFFFFFFF), // قلب أبيض ساطع
+          Color(0xFFFFE194), // توهج ذهبي فاتح (--lamp-glow)
+          Color(0xFFFFAB3D), // كهرماني دافئ (--lamp-accent)
+          Color(0xFFD48B28), // حدود دافئة (--lamp-secondary)
+        ],
+        stops: [0.0, 0.32, 0.72, 1.0],
+      ).createShader(bulbRect);
+
+    canvas.drawPath(bulbPath, bulbPaint);
+
+    // 4. فتيل النيون الداخلي المتوهج (Glowing Filament)
+    final filamentPaint = Paint()
+      ..color = Colors.white.withOpacity(0.75 + glowPulse * 0.25)
+      ..strokeWidth = 1.6
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
+    final filamentPath = Path()
+      ..moveTo(-3.2, 8.0)
+      ..lineTo(-3.2, -2.0)
+      ..arcToPoint(
+        const Offset(3.2, -2.0),
+        radius: const Radius.circular(3.5),
+        clockwise: true,
+      )
+      ..lineTo(3.2, 8.0);
+    canvas.drawPath(filamentPath, filamentPaint);
+
+    // 5. لمعة زجاجية خارجية ناعمة
+    final highlightPaint = Paint()
+      ..color = Colors.white.withOpacity(0.55)
+      ..style = PaintingStyle.fill;
+    canvas.drawOval(
+      const Rect.fromLTWH(-9.5, -14.5, 5.5, 8.5),
+      highlightPaint,
+    );
+
+    canvas.restore();
+  }
+
+  @override
+  bool shouldRepaint(covariant NeonLampBulbPainter oldDelegate) =>
+      oldDelegate.glowPulse != glowPulse || oldDelegate.isBoosted != isBoosted;
+}
+
+/// رسام علامات المسطرة الصغيرة
 class RulerMarksPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
@@ -1474,10 +1608,15 @@ class RulerMarksPainter extends CustomPainter {
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
-/// رسام القلب اللامع ثلاثي الأبعاد المطابق للصورة الثانية
+/// رسام القلب اللامع ثلاثي الأبعاد مع إضاءة نيون وردية/ياقوتية ناعمة
 class GlossyHeartPainter extends CustomPainter {
   final bool isActive;
-  GlossyHeartPainter({required this.isActive});
+  final double glowPulse;
+
+  GlossyHeartPainter({
+    required this.isActive,
+    required this.glowPulse,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -1500,40 +1639,46 @@ class GlossyHeartPainter extends CustomPainter {
       return;
     }
 
-    // ظل سفلي خفيف للقلب
-    canvas.drawShadow(path, const Color(0xFFB71C1C).withOpacity(0.35), 4, true);
+    // هالة ضوئية ناعمة حول القلب مستوحاة من طيف Rose Light في ملف النيون
+    final glowPaint = Paint()
+      ..color = const Color(0xFFFF3366).withOpacity(0.18 + glowPulse * 0.12)
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 6);
+    canvas.drawPath(path.shift(const Offset(0, 2)), glowPaint);
 
     final rect = Offset.zero & size;
     final fillPaint = Paint()
-      ..shader = const LinearGradient(
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
+      ..shader = const RadialGradient(
+        center: Alignment(-0.3, -0.4),
+        radius: 1.1,
         colors: [
-          Color(0xFFFF6B5B),
-          Color(0xFFE53935),
-          Color(0xFFC62828),
+          Color(0xFFFF8A80), // مركز مضيء
+          Color(0xFFFF5252), // أحمر ياقوتي حيوي
+          Color(0xFFD32F2F), // أطراف عميقة
         ],
+        stops: [0.0, 0.45, 1.0],
       ).createShader(rect);
 
     canvas.drawPath(path, fillPaint);
 
-    // لمعة علوية بيضاء ناعمة لإعطاء مظهر 3D
+    // لمعة زجاجية مزدوجة أعلى يسار القلب
     final highlightPaint = Paint()
-      ..color = Colors.white.withOpacity(0.28)
+      ..color = Colors.white.withOpacity(0.38)
       ..style = PaintingStyle.fill;
     canvas.drawOval(
-      Rect.fromLTWH(w * 0.18, h * 0.13, w * 0.16, h * 0.10),
+      Rect.fromLTWH(w * 0.17, h * 0.13, w * 0.17, h * 0.11),
       highlightPaint,
     );
   }
 
   @override
   bool shouldRepaint(covariant GlossyHeartPainter oldDelegate) =>
-      oldDelegate.isActive != isActive;
+      oldDelegate.isActive != isActive || oldDelegate.glowPulse != glowPulse;
 }
 
-/// محرك رسم شبكة الأسهم مع الحركة الثعبانية الحقيقية (Snake Path-Following)
-/// بحيث يتبع الجزء المتني من السهم مسار السهم الأصلي وينفرد تدريجياً في اتجاه الرأس!
+/// محرك رسم شبكة الأسهم:
+/// 1. يرسم نقاط الشبكة الخفيفة (Grid Dots) دائماً كما في الصورة المرفقة.
+/// 2. يحول لون السهم إلى الأزرق السماوي (#2196F3) عند خروجه الصح.
+/// 3. يحول لون السهم إلى الأحمر (#E53935) عند الاصطدام ويبقيه أحمر في وضع الانتظار حتى يُفتح طريقه فيخرج لوحده!
 class ArrowBoardPainter extends CustomPainter {
   final int gridCols;
   final int gridRows;
@@ -1544,6 +1689,7 @@ class ArrowBoardPainter extends CustomPainter {
   final bool isBlockedAnimation;
   final double blockedMaxSteps;
   final double animationValue;
+  final double glowPulse;
   final bool ignoreClearedState;
 
   ArrowBoardPainter({
@@ -1556,6 +1702,7 @@ class ArrowBoardPainter extends CustomPainter {
     required this.isBlockedAnimation,
     required this.blockedMaxSteps,
     required this.animationValue,
+    required this.glowPulse,
     this.ignoreClearedState = false,
   });
 
@@ -1569,18 +1716,25 @@ class ArrowBoardPainter extends CustomPainter {
       return Offset((col + 0.5) * cellW, (row + 0.5) * cellH);
     }
 
-    // 1. رسم نقاط خفيفة جداً لمواضع الشبكة عند تفعيل المسطرة لزيادة الدقة البصرية
-    if (rulerEnabled && !ignoreClearedState) {
+    // 1. رسم نقاط الشبكة الرمادية الهادئة (Grid Dots) في خلفية اللوحة كما في لقطة الشاشة الأصلية
+    if (!ignoreClearedState) {
       final dotPaint = Paint()
-        ..color = const Color(0xFFCBD5E1)
+        ..color = const Color(0xFFD0D7E2)
         ..style = PaintingStyle.fill;
+      final dotRadius = math.min(cellW, cellH) * 0.048;
       for (int r = 0; r < gridRows; r++) {
         for (int c = 0; c < gridCols; c++) {
-          canvas.drawCircle(centerOf(c.toDouble(), r.toDouble()), 2.2, dotPaint);
+          canvas.drawCircle(
+            centerOf(c.toDouble(), r.toDouble()),
+            dotRadius,
+            dotPaint,
+          );
         }
       }
+    }
 
-      // رسم خطوط المسطرة الإرشادية المتقطعة
+    // 2. رسم خطوط المسطرة الإرشادية عند تفعيل أداة المسطرة
+    if (rulerEnabled && !ignoreClearedState) {
       final guidePaint = Paint()
         ..color = const Color(0xFF64B5F6).withOpacity(0.65)
         ..strokeWidth = 2.0
@@ -1601,28 +1755,32 @@ class ArrowBoardPainter extends CustomPainter {
       }
     }
 
-    // 2. رسم كل سهم مع حساب مسار انزلاق الجزء المتني (Snake Uncoiling)
+    // 3. رسم الأسهم
     for (final arrow in arrows) {
       if (!ignoreClearedState && arrow.isCleared) continue;
 
       final isHinted = arrow.id == hintedArrowId;
       final isAnimating = arrow.id == animatingArrowId;
 
-      Color arrowColor = const Color(0xFF071A3E); // الكحلي الداكن الأصلي
-      if (isHinted) {
-        arrowColor = const Color(0xFFFF9800); // ذهبي للتلميح
-      } else if (isAnimating && isBlockedAnimation) {
-        arrowColor = const Color(0xFFE53935); // أحمر عند الاصطدام
+      // تحديد لون السهم بدقة حسب حالته:
+      // - إذا كان يخرج بشكل صحيح: أزرق سماوي (#2196F3) مطابق للصورة
+      // - إذا كان مسدوداً أو في وضع الانتظار بعد خطأ: أحمر (#E53935)
+      // - إذا كان مُلمّحاً بالمصباح: كهرماني مضيء (#FFAB3D)
+      // - الوضع العادي: كحلي داكن (#071A3E)
+      Color arrowColor = const Color(0xFF071A3E);
+      if (isAnimating && !isBlockedAnimation) {
+        arrowColor = const Color(0xFF2196F3); // أزرق عند الخروج الصحيح!
+      } else if ((isAnimating && isBlockedAnimation) || arrow.isQueuedRed) {
+        arrowColor = const Color(0xFFE53935); // أحمر عند الغلط وفي الانتظار!
+      } else if (isHinted) {
+        arrowColor = const Color(0xFFFF9800);
       }
 
-      // مقدار التقدم بالخلايا (Steps) على امتداد مسار السهم نفسه
       double shiftCells = 0.0;
       if (isAnimating) {
         if (isBlockedAnimation) {
-          // يتحرك السهم للأمام على مساره حتى يلمس العائق ثم يرتد لمكانه!
           shiftCells = math.sin(animationValue * math.pi) * blockedMaxSteps;
         } else {
-          // يتحرك السهم بالكامل على مساره المتني ثم يخرج في اتجاه الرأس خارج الشاشة
           final totalEscapeSteps =
               arrow.cells.length + math.max(gridCols, gridRows) + 3.0;
           shiftCells = animationValue * totalEscapeSteps;
@@ -1638,11 +1796,14 @@ class ArrowBoardPainter extends CustomPainter {
 
       if (polylinePoints.length < 2) continue;
 
-      // تأثير توهج ناعم إذا كان السهم مُلمّحاً بالمصباح
-      if (isHinted) {
+      // هالة ضوئية حول السهم المُلمّح أو السهم الأزرق المنطلق
+      if (isHinted || (isAnimating && !isBlockedAnimation)) {
+        final glowColor = (isAnimating && !isBlockedAnimation)
+            ? const Color(0xFF2196F3).withOpacity(0.22)
+            : const Color(0xFFFFAB3D).withOpacity(0.32 + glowPulse * 0.15);
         final glowPaint = Paint()
-          ..color = const Color(0xFFFFB300).withOpacity(0.35)
-          ..strokeWidth = strokeW * 2.4
+          ..color = glowColor
+          ..strokeWidth = strokeW * 2.3
           ..style = PaintingStyle.stroke
           ..strokeCap = StrokeCap.round
           ..strokeJoin = StrokeJoin.round;
@@ -1657,11 +1818,9 @@ class ArrowBoardPainter extends CustomPainter {
         ..strokeCap = StrokeCap.round
         ..strokeJoin = StrokeJoin.round;
 
-      // رسم جسم السهم مع زوايا منحنية ناعمة ومستديرة قليلاً كما في اللعبة الأصلية
       final arrowPath = _buildRoundedCornerPath(polylinePoints, cellW * 0.15);
       canvas.drawPath(arrowPath, linePaint);
 
-      // رسم رأس السهم المثلث عند مقدمة المسار المتحرك
       _drawArrowHead(
         canvas,
         polylinePoints.last,
@@ -1672,8 +1831,7 @@ class ArrowBoardPainter extends CustomPainter {
     }
   }
 
-  /// الدالة الأساسية التي تجعل الحتة المتنية (الذيل والمفاصل) تمشي داخل مسار السهم الأصلي
-  /// وتلتف عند الزوايا ثم تنفرد في اتجاه الرأس تماماً مثل الثعبان أو القطار على القضبان!
+  /// تحريك السهم المتني في نفس مساره الأصلي (Snake Path-Following)
   List<Offset> _computeSnakePolyline({
     required ArrowItem arrow,
     required double shiftCells,
@@ -1688,7 +1846,6 @@ class ArrowBoardPainter extends CustomPainter {
     final dirUnit = arrow.headDir.unitOffset;
     final stepVec = Offset(dirUnit.dx * cellW, dirUnit.dy * cellH);
 
-    // دالة تعطي موقع أي نقطة افتراضية على سكة السهم (سواء داخل الخلايا أو بعد خروجها من الرأس)
     Offset pointAtRail(double s) {
       if (s <= N - 1) {
         final idx = s.floor().clamp(0, N - 2);
@@ -1708,11 +1865,8 @@ class ArrowBoardPainter extends CustomPainter {
     final endS = (N - 1) + shiftCells;
 
     final result = <Offset>[];
-    // 1. موقع الذيل الجديد بعد تحركه على السكة
     result.add(pointAtRail(startS));
 
-    // 2. إضافة جميع مفاصل وزوايا السهم الأصلية التي لم يتجاوزها الذيل بعد!
-    // هذا يضمن أن الجزء المتني يظل ماشياً في مساره الأصلي وينفرد زاوية بزاوية عند الرأس
     final firstCorner = startS.floor() + 1;
     for (int k = firstCorner; k <= N - 1; k++) {
       if (k > startS + 0.001 && k < endS - 0.001) {
@@ -1720,12 +1874,10 @@ class ArrowBoardPainter extends CustomPainter {
       }
     }
 
-    // 3. موقع الرأس الجديد المنطلق في اتجاه السهم
     result.add(pointAtRail(endS));
     return result;
   }
 
-  /// تحويل نقاط المفاصل إلى مسار ذي زوايا ناعمة غير حادة
   Path _buildRoundedCornerPath(List<Offset> pts, double cornerRadius) {
     final path = Path();
     if (pts.isEmpty) return path;
@@ -1750,7 +1902,6 @@ class ArrowBoardPainter extends CustomPainter {
         continue;
       }
 
-      // إذا كانت النقاط على استقامة واحدة لا نحتاج لمنحنى
       final u1 = v1 / len1;
       final u2 = v2 / len2;
       if ((u1 - u2).distance < 0.01) {
@@ -1880,7 +2031,7 @@ class SunburstPainter extends CustomPainter {
       oldDelegate.rotation != rotation;
 }
 
-/// شاشة الإعدادات المطابقة للصورة الثالثة تماماً (الأيقونة الملونة يمين، النص يمين، السهم يسار، زر "تم" أزرق يسار، وعنوان "الإعدادات" سليم 100%)
+/// شاشة الإعدادات العربية السليمة
 class SettingsScreen extends StatefulWidget {
   final bool soundEnabled;
   final bool vibrationEnabled;
@@ -1934,7 +2085,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
               fontSize: 23,
             ),
           ),
-          // في وضع RTL: actions تظهر في أقصى اليسار تماماً مثل كلمة "تم" في الصورة الثالثة
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
@@ -1953,7 +2103,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
         body: ListView(
           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 24),
           children: [
-            // البطاقة الأولى: الإعدادات
             _buildCardGroup([
               _buildMenuRow(
                 title: 'الإعدادات',
@@ -1963,8 +2112,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
             ]),
             const SizedBox(height: 22),
-
-            // البطاقة الثانية: المساعدة، حول اللعبة، حقوق الخصوصية، تفضيلات الخصوصية
             _buildCardGroup([
               _buildMenuRow(
                 title: 'المساعدة',
@@ -1974,12 +2121,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   context,
                   'المساعدة',
                   'اضغط على الأسهم التي يكون طريقها مفتوحاً لإخراجها من الشبكة.\n\n'
-                      '• عند خروج السهم، ينفرد الجزء المتني ويمشي في نفس مسار السهم الأصلي.\n'
-                      '• إذا كان أمام السهم سهم آخر، سيرتد السهم وتفقد قلباً واحداً.\n'
-                      '• استخدم المسطرة لإظهار المسارات والمصباح للتلميح الذكي.',
+                      '• عند الضغط على سهم صحيح يتحول للأزرق وينطلق خارجاً.\n'
+                      '• عند الضغط على سهم مسدود يتحول للأحمر ويدخل في وضع الانتظار، وبمجرد فتح طريقه ينطلق تلقائياً لوحده!',
                 ),
               ),
-              const Divider(height: 1, indent: 18, endIndent: 18, color: Color(0xFFF1F5F9)),
+              const Divider(
+                  height: 1,
+                  indent: 18,
+                  endIndent: 18,
+                  color: Color(0xFFF1F5F9)),
               _buildMenuRow(
                 title: 'حول اللعبة',
                 icon: Icons.info_rounded,
@@ -1987,10 +2137,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 onTap: () => _showInfoDialog(
                   context,
                   'حول اللعبة',
-                  'لعبة مسار الأسهم (الإصدار 1.1.0)\nتم تطويرها بواجهة عربية احترافية وحركة أسهم انسيابية.',
+                  'لعبة مسار الأسهم (الإصدار 1.2.0)\nمزودة بإضاءة نيون تفاعلية ونظام الانتظار الذكي للأسهم.',
                 ),
               ),
-              const Divider(height: 1, indent: 18, endIndent: 18, color: Color(0xFFF1F5F9)),
+              const Divider(
+                  height: 1,
+                  indent: 18,
+                  endIndent: 18,
+                  color: Color(0xFFF1F5F9)),
               _buildMenuRow(
                 title: 'حقوق الخصوصية',
                 icon: Icons.assignment_turned_in_rounded,
@@ -2001,7 +2155,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   'تحترم اللعبة خصوصية المستخدمين ولا تقوم بجمع أي بيانات شخصية. يتم حفظ تقدمك محلياً على جهازك.',
                 ),
               ),
-              const Divider(height: 1, indent: 18, endIndent: 18, color: Color(0xFFF1F5F9)),
+              const Divider(
+                  height: 1,
+                  indent: 18,
+                  endIndent: 18,
+                  color: Color(0xFFF1F5F9)),
               _buildMenuRow(
                 title: 'تفضيلات الخصوصية',
                 icon: Icons.manage_accounts_rounded,
@@ -2014,8 +2172,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
             ]),
             const SizedBox(height: 22),
-
-            // البطاقة الثالثة: إزالة الإعلانات
             _buildCardGroup([
               _buildMenuRow(
                 title: widget.adsRemoved
@@ -2064,7 +2220,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
         child: Row(
           children: [
-            // في وضع RTL: أول عنصر يظهر على اليمين (الأيقونة الملونة)
             Container(
               width: 44,
               height: 44,
@@ -2075,7 +2230,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
               child: Icon(icon, color: Colors.white, size: 26),
             ),
             const SizedBox(width: 16),
-            // النص بجانب الأيقونة من اليمين
             Expanded(
               child: Text(
                 title,
@@ -2086,10 +2240,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
             ),
-            // سهم الانتقال الصغير في أقصى اليسار يشير لليسار (<) تماماً مثل الصورة الثالثة
             if (showChevron)
               const Icon(
-                Icons.chevron_right_rounded, // في RTL ينعكس تلقائياً ليشير لليسار <
+                Icons.chevron_right_rounded,
                 color: Color(0xFFB0B8C4),
                 size: 28,
               ),
@@ -2118,7 +2271,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   children: [
                     const Text(
                       'إعدادات الصوت والاهتزاز',
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 16),
                     SwitchListTile(
@@ -2157,13 +2311,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
         child: AlertDialog(
           backgroundColor: Colors.white,
           surfaceTintColor: Colors.white,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-          content: Text(message, style: const TextStyle(height: 1.5, fontSize: 16)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          title:
+              Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+          content:
+              Text(message, style: const TextStyle(height: 1.5, fontSize: 16)),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: const Text('حسناً', style: TextStyle(fontWeight: FontWeight.bold)),
+              child: const Text('حسناً',
+                  style: TextStyle(fontWeight: FontWeight.bold)),
             ),
           ],
         ),
