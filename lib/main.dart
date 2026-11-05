@@ -6,6 +6,12 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.dark,
+    ),
+  );
   runApp(const MasarArrowsApp());
 }
 
@@ -27,10 +33,10 @@ class MasarArrowsApp extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: true,
         fontFamily: 'Roboto',
-        scaffoldBackgroundColor: const Color(0xFFF7F8FA),
+        scaffoldBackgroundColor: Colors.white,
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF1E88E5),
-          primary: const Color(0xFF1E88E5),
+          seedColor: const Color(0xFF1976D2),
+          primary: const Color(0xFF1976D2),
         ),
       ),
       home: const GameScreen(),
@@ -52,6 +58,19 @@ extension ArrowDirOffset on ArrowDir {
         return const Point(-1, 0);
       case ArrowDir.right:
         return const Point(1, 0);
+    }
+  }
+
+  Offset get unitOffset {
+    switch (this) {
+      case ArrowDir.up:
+        return const Offset(0, -1);
+      case ArrowDir.down:
+        return const Offset(0, 1);
+      case ArrowDir.left:
+        return const Offset(-1, 0);
+      case ArrowDir.right:
+        return const Offset(1, 0);
     }
   }
 }
@@ -145,44 +164,38 @@ class LevelsRepository {
         ],
       ),
 
-      // المستوى 2: عادي (مستوحى مباشرة من الصورة الثانية المرفقة - حلزون متداخل)
+      // المستوى 2: عادي (مطابق تماماً للصورة الثانية المرفقة - الحلزون المتداخل)
       LevelConfig(
         levelNumber: 2,
         difficultyLabel: 'عادي',
         gridCols: 6,
         gridRows: 6,
         arrows: [
-          // السهم الخارجي الأيسر المتجه للأسفل (مفتوح مباشرة)
           ArrowItem(
             id: 'l2_1',
             cells: const [Point(1, 0), Point(0, 0), Point(0, 1), Point(0, 2), Point(0, 3), Point(0, 4), Point(0, 5)],
             headDir: ArrowDir.down,
           ),
-          // السهم الخارجي الأيمن والأعلى المتجه لليسار (يفتح بعد خروج l2_1)
           ArrowItem(
             id: 'l2_2',
             cells: const [Point(2, 5), Point(3, 5), Point(4, 5), Point(5, 5), Point(5, 4), Point(5, 3), Point(5, 2), Point(5, 1), Point(5, 0), Point(4, 0), Point(3, 0), Point(2, 0)],
             headDir: ArrowDir.left,
           ),
-          // السهم الداخلي الأيمن المتجه للأعلى (يفتح بعد خروج l2_2)
           ArrowItem(
             id: 'l2_3',
             cells: const [Point(3, 4), Point(4, 4), Point(4, 3), Point(4, 2)],
             headDir: ArrowDir.up,
           ),
-          // السهم الداخلي الأعلى المتجه لليمين (يفتح بعد خروج l2_2 و l2_3)
           ArrowItem(
             id: 'l2_4',
             cells: const [Point(1, 3), Point(1, 2), Point(1, 1), Point(2, 1), Point(3, 1), Point(4, 1)],
             headDir: ArrowDir.right,
           ),
-          // السهم السفلي القصير المتجه لليسار (يفتح بعد خروج l2_1)
           ArrowItem(
             id: 'l2_5',
             cells: const [Point(2, 4), Point(1, 4)],
             headDir: ArrowDir.left,
           ),
-          // السهم القلبي الأوسط المتجه للأسفل (يفتح بعد خروج l2_5 و l2_2)
           ArrowItem(
             id: 'l2_6',
             cells: const [Point(3, 3), Point(3, 2), Point(2, 2), Point(2, 3)],
@@ -191,7 +204,7 @@ class LevelsRepository {
         ],
       ),
 
-      // المستوى 3: عادي (مستوحى من الصورة الأولى المرفقة - شبكة متشابكة)
+      // المستوى 3: عادي (مطابق للصورة الأولى المرفقة - شبكة متشابكة)
       LevelConfig(
         levelNumber: 3,
         difficultyLabel: 'عادي',
@@ -617,13 +630,14 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
 
   late List<ArrowItem> _activeArrows;
   int _hearts = 3;
-  int _hintsCount = 3;
+  int _hintsCount = 2;
   bool _rulerEnabled = false;
   String? _hintedArrowId;
 
-  // تحريك السهم عند الخروج أو الاصطدام
+  // تحريك السهم عند الخروج (حركة ثعبانية على نفس مساره) أو الاصطدام
   String? _animatingArrowId;
   bool _isBlockedAnimation = false;
+  double _BlockedMaxSteps = 0.25;
   late AnimationController _moveController;
   late AnimationController _sunburstController;
 
@@ -638,14 +652,14 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
     _allLevels = LevelsRepository.getAllLevels();
     _moveController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 350),
+      duration: const Duration(milliseconds: 520),
     )..addListener(() {
         setState(() {});
       });
 
     _sunburstController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 12),
+      duration: const Duration(seconds: 16),
     )..repeat();
 
     _loadLevel(_currentLevelIndex);
@@ -680,8 +694,8 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
     return cleared / _activeArrows.length;
   }
 
-  /// فحص ما إذا كان طريق السهم مفتوحاً تماماً حتى حافة الشبكة
-  bool _isArrowFree(ArrowItem arrow) {
+  /// حساب عدد الخلايا الفارغة أمام رأس السهم قبل الاصطدام (أو -1 إذا كان مفتوحاً للنهاية)
+  int _freeCellsAhead(ArrowItem arrow) {
     final occupied = <Point<int>, String>{};
     for (final other in _activeArrows) {
       if (other.isCleared || other.id == arrow.id) continue;
@@ -693,29 +707,37 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
     final delta = arrow.headDir.delta;
     var checkX = arrow.head.x + delta.x;
     var checkY = arrow.head.y + delta.y;
+    int freeSteps = 0;
 
     while (checkX >= 0 &&
         checkX < _currentConfig.gridCols &&
         checkY >= 0 &&
         checkY < _currentConfig.gridRows) {
       if (occupied.containsKey(Point(checkX, checkY))) {
-        return false;
+        return freeSteps;
       }
+      freeSteps++;
       checkX += delta.x;
       checkY += delta.y;
     }
-    return true;
+    return -1; // مفتوح بالكامل حتى خارج الشاشة
   }
+
+  bool _isArrowFree(ArrowItem arrow) => _freeCellsAhead(arrow) == -1;
 
   void _onArrowTapped(ArrowItem arrow) {
     if (_animatingArrowId != null || arrow.isCleared || _isLevelCompleted) {
       return;
     }
 
-    final free = _isArrowFree(arrow);
+    final freeSteps = _freeCellsAhead(arrow);
+    final free = freeSteps == -1;
+
     setState(() {
       _animatingArrowId = arrow.id;
       _isBlockedAnimation = !free;
+      // إذا كان هناك مسافة صغيرة قبل العائق، يتحرك السهم عبر مساره المتني حتى يلمس العائق ثم يرجع!
+      _BlockedMaxSteps = free ? 0.0 : (freeSteps + 0.38);
       if (_hintedArrowId == arrow.id) {
         _hintedArrowId = null;
       }
@@ -723,8 +745,12 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
 
     if (free) {
       if (_vibrationEnabled) HapticFeedback.lightImpact();
-      _moveController.duration = const Duration(milliseconds: 380);
+      // سرعة انسيابية متناسبة مع طول السهم لكي نرى الجزء المتني وهو ينفرد ويمشي في مسار الرأس
+      final totalCells = arrow.cells.length + _currentConfig.gridCols + 3;
+      final durationMs = (totalCells * 36).clamp(380, 720);
+      _moveController.duration = Duration(milliseconds: durationMs);
       _moveController.forward(from: 0).then((_) {
+        if (!mounted) return;
         setState(() {
           arrow.isCleared = true;
           _animatingArrowId = null;
@@ -735,8 +761,9 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
       });
     } else {
       if (_vibrationEnabled) HapticFeedback.heavyImpact();
-      _moveController.duration = const Duration(milliseconds: 280);
+      _moveController.duration = const Duration(milliseconds: 340);
       _moveController.forward(from: 0).then((_) {
+        if (!mounted) return;
         setState(() {
           _animatingArrowId = null;
           _isBlockedAnimation = false;
@@ -752,9 +779,20 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
   void _useHint() {
     if (_hintsCount <= 0 || _isLevelCompleted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('انتهت التلميحات! يمكنك إعادة المستوى أو مشاهدة إعلان.'),
-          duration: Duration(seconds: 2),
+        SnackBar(
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          content: const Text(
+            'انتهت التلميحات! أعد المستوى أو شاهد إعلاناً للحصول على تلميحات إضافية.',
+            textAlign: TextAlign.center,
+          ),
+          action: SnackBarAction(
+            label: '+2 مجاناً',
+            textColor: const Color(0xFFFFCA28),
+            onPressed: () {
+              setState(() => _hintsCount += 2);
+            },
+          ),
         ),
       );
       return;
@@ -776,25 +814,47 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
       context: context,
       barrierDismissible: false,
       builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        title: const Text(
-          'نفدت القلوب! 💔',
-          textAlign: TextAlign.center,
-          style: TextStyle(fontWeight: FontWeight.bold),
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+        title: const Column(
+          children: [
+            Icon(Icons.heart_broken_rounded, color: Color(0xFFE53935), size: 54),
+            SizedBox(height: 10),
+            Text(
+              'نفدت القلوب!',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontWeight: FontWeight.w900, fontSize: 24),
+            ),
+          ],
         ),
         content: const Text(
-          'اصطدمت الأسهم ببعضها 3 مرات. هل ترغب في إعادة المحاولة في هذا المستوى؟',
+          'اصطدمت الأسهم ببعضها 3 مرات.\nتأكد من إخراج الأسهم التي طريقها مفتوح أولاً!',
           textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 16, color: Color(0xFF4B5563), height: 1.4),
         ),
         actionsAlignment: MainAxisAlignment.center,
         actions: [
-          FilledButton.icon(
-            onPressed: () {
-              Navigator.pop(ctx);
-              _loadLevel(_currentLevelIndex);
-            },
-            icon: const Icon(Icons.refresh),
-            label: const Text('إعادة المستوى'),
+          SizedBox(
+            width: double.infinity,
+            height: 52,
+            child: FilledButton.icon(
+              style: FilledButton.styleFrom(
+                backgroundColor: const Color(0xFF1976D2),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+              ),
+              onPressed: () {
+                Navigator.pop(ctx);
+                _loadLevel(_currentLevelIndex);
+              },
+              icon: const Icon(Icons.refresh_rounded),
+              label: const Text(
+                'إعادة المحاولة',
+                style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+              ),
+            ),
           ),
         ],
       ),
@@ -810,15 +870,24 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
       ),
       builder: (ctx) {
         return Padding(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.fromLTRB(24, 20, 24, 28),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(
-                'اختر المستوى (أول 10 مستويات)',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              Container(
+                width: 44,
+                height: 5,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFD1D5DB),
+                  borderRadius: BorderRadius.circular(10),
+                ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 18),
+              const Text(
+                'اختر المستوى (1 - 10)',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
+              ),
+              const SizedBox(height: 18),
               GridView.builder(
                 shrinkWrap: true,
                 itemCount: _allLevels.length,
@@ -837,27 +906,37 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                     borderRadius: BorderRadius.circular(16),
                     child: Container(
                       decoration: BoxDecoration(
-                        color: isCurrent
-                            ? const Color(0xFF1E88E5)
-                            : const Color(0xFFE3F2FD),
+                        gradient: isCurrent
+                            ? const LinearGradient(
+                                colors: [Color(0xFF2196F3), Color(0xFF1565C0)],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              )
+                            : null,
+                        color: isCurrent ? null : const Color(0xFFF0F5FF),
                         borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: isCurrent
+                              ? const Color(0xFF1565C0)
+                              : const Color(0xFFDBEAFE),
+                          width: 1.5,
+                        ),
                       ),
                       alignment: Alignment.center,
                       child: Text(
                         '${idx + 1}',
                         style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
+                          fontSize: 19,
+                          fontWeight: FontWeight.w800,
                           color: isCurrent
                               ? Colors.white
-                              : const Color(0xFF0D47A1),
+                              : const Color(0xFF1E3A8A),
                         ),
                       ),
                     ),
                   );
                 },
               ),
-              const SizedBox(height: 12),
             ],
           ),
         );
@@ -891,192 +970,274 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
       return _buildVictoryScreen();
     }
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Column(
-          children: [
-            // الشريط العلوي (الإعدادات - رقم المستوى والصعوبة - اختيار المستوى)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  IconButton(
-                    onPressed: _openSettingsModal,
-                    icon: const Icon(
-                      Icons.settings_outlined,
-                      color: Color(0xFF1E88E5),
-                      size: 32,
-                    ),
-                    tooltip: 'الإعدادات',
-                  ),
-                  Column(
-                    children: [
-                      Text(
-                        'المستوى ${_currentConfig.levelNumber}',
-                        style: const TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.w800,
-                          color: Color(0xFF111827),
-                        ),
+    // فرض تخطيط الهيدر والأدوات بنفس توزيع اللعبة الأصلية تماماً
+    return Directionality(
+      textDirection: TextDirection.ltr,
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: SafeArea(
+          child: Column(
+            children: [
+              // 1. الهيدر العلوي المطابق للصورة الثانية تماماً:
+              // ترس الإعدادات على اليسار | المستوى والصعوبة في الوسط | سهم المستويات على اليمين
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 10, 16, 4),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      onPressed: _openSettingsModal,
+                      icon: const Icon(
+                        Icons.settings_outlined,
+                        color: Color(0xFF1976D2),
+                        size: 33,
                       ),
-                      const SizedBox(height: 2),
-                      Text(
-                        _currentConfig.difficultyLabel,
-                        style: const TextStyle(
-                          fontSize: 15,
-                          color: Color(0xFF6B7280),
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                  IconButton(
-                    onPressed: _openLevelsSelector,
-                    icon: const Icon(
-                      Icons.arrow_forward_ios_rounded,
-                      color: Color(0xFF1E88E5),
-                      size: 28,
+                      tooltip: 'الإعدادات',
                     ),
-                    tooltip: 'المستويات',
-                  ),
-                ],
-              ),
-            ),
-
-            // صف القلوب الثلاثة
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(3, (index) {
-                final active = index < _hearts;
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 5),
-                  child: AnimatedScale(
-                    scale: active ? 1.0 : 0.85,
-                    duration: const Duration(milliseconds: 250),
-                    child: Icon(
-                      Icons.favorite_rounded,
-                      size: 34,
-                      color: active
-                          ? const Color(0xFFE53935)
-                          : const Color(0xFFE5E7EB),
-                    ),
-                  ),
-                );
-              }),
-            ),
-            const SizedBox(height: 14),
-
-            // شريط تقدم تفكيك الأسهم
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: LinearProgressIndicator(
-                  value: _progressFraction,
-                  minHeight: 6,
-                  backgroundColor: const Color(0xFFE5E7EB),
-                  valueColor:
-                      const AlwaysStoppedAnimation<Color>(Color(0xFF1E88E5)),
-                ),
-              ),
-            ),
-
-            // مساحة شبكة اللعب التفاعلية
-            Expanded(
-              child: Center(
-                child: AspectRatio(
-                  aspectRatio: 1,
-                  child: Padding(
-                    padding: const EdgeInsets.all(28.0),
-                    child: LayoutBuilder(
-                      builder: (context, constraints) {
-                        final boardSize = constraints.biggest.shortestSide;
-                        return GestureDetector(
-                          onTapUp: (details) => _handleBoardTap(
-                            details.localPosition,
-                            boardSize,
-                          ),
-                          child: CustomPaint(
-                            size: Size(boardSize, boardSize),
-                            painter: ArrowBoardPainter(
-                              gridCols: _currentConfig.gridCols,
-                              gridRows: _currentConfig.gridRows,
-                              arrows: _activeArrows,
-                              rulerEnabled: _rulerEnabled,
-                              hintedArrowId: _hintedArrowId,
-                              animatingArrowId: _animatingArrowId,
-                              isBlockedAnimation: _isBlockedAnimation,
-                              animationValue: _moveController.value,
+                    Directionality(
+                      textDirection: TextDirection.rtl,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            'المستوى ${_currentConfig.levelNumber}',
+                            style: const TextStyle(
+                              fontSize: 25,
+                              fontWeight: FontWeight.w800,
+                              color: Color(0xFF111827),
+                              height: 1.15,
                             ),
                           ),
-                        );
-                      },
+                          const SizedBox(height: 2),
+                          Text(
+                            _currentConfig.difficultyLabel,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              color: Color(0xFF757F8C),
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: _openLevelsSelector,
+                      icon: const Icon(
+                        Icons.chevron_right_rounded,
+                        color: Color(0xFF1976D2),
+                        size: 38,
+                      ),
+                      tooltip: 'المستويات',
+                    ),
+                  ],
+                ),
+              ),
+
+              // 2. صف القلوب الثلاثة بتأثير ثلاثي الأبعاد ناعم مطابق للصورة
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(3, (index) {
+                    final active = index < _hearts;
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 6),
+                      child: AnimatedScale(
+                        scale: active ? 1.0 : 0.82,
+                        duration: const Duration(milliseconds: 260),
+                        curve: Curves.easeOutBack,
+                        child: CustomPaint(
+                          size: const Size(34, 32),
+                          painter: GlossyHeartPainter(isActive: active),
+                        ),
+                      ),
+                    );
+                  }),
+                ),
+              ),
+
+              const SizedBox(height: 6),
+
+              // 3. شريط التقدم الرمادي الفاتح النحيف أسفل القلوب
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 18),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(6),
+                  child: LinearProgressIndicator(
+                    value: _progressFraction,
+                    minHeight: 5,
+                    backgroundColor: const Color(0xFFE9EDF2),
+                    valueColor: const AlwaysStoppedAnimation<Color>(
+                      Color(0xFF1E88E5),
                     ),
                   ),
                 ),
               ),
-            ),
 
-            // أزرار الأدوات المساعدة السفلية (المسطرة + المصباح)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 32, top: 8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // زر المسطرة
-                  _buildPowerUpButton(
-                    icon: Icons.straighten_rounded,
-                    iconColor: const Color(0xFF5C6BC0),
-                    isActive: _rulerEnabled,
-                    badgeText: null,
-                    onTap: () {
-                      setState(() {
-                        _rulerEnabled = !_rulerEnabled;
-                      });
-                    },
+              // 4. مساحة شبكة اللعب في المنتصف مع تقاطعات نقطية خفيفة وحركة السهم المتني الحقيقية
+              Expanded(
+                child: Center(
+                  child: AspectRatio(
+                    aspectRatio: 1,
+                    child: Padding(
+                      padding: const EdgeInsets.all(34.0),
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          final boardSize = constraints.biggest.shortestSide;
+                          return GestureDetector(
+                            behavior: HitTestBehavior.opaque,
+                            onTapUp: (details) => _handleBoardTap(
+                              details.localPosition,
+                              boardSize,
+                            ),
+                            child: CustomPaint(
+                              size: Size(boardSize, boardSize),
+                              painter: ArrowBoardPainter(
+                                gridCols: _currentConfig.gridCols,
+                                gridRows: _currentConfig.gridRows,
+                                arrows: _activeArrows,
+                                rulerEnabled: _rulerEnabled,
+                                hintedArrowId: _hintedArrowId,
+                                animatingArrowId: _animatingArrowId,
+                                isBlockedAnimation: _isBlockedAnimation,
+                                blockedMaxSteps: _BlockedMaxSteps,
+                                animationValue: Curves.easeInOutCubic
+                                    .transform(_moveController.value),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
                   ),
-                  const SizedBox(width: 36),
-                  // زر التلميح (المصباح)
-                  _buildPowerUpButton(
-                    icon: Icons.lightbulb_rounded,
-                    iconColor: const Color(0xFFFFB300),
-                    isActive: _hintedArrowId != null,
-                    badgeText: '$_hintsCount',
-                    onTap: _useHint,
-                  ),
-                ],
+                ),
               ),
-            ),
-          ],
+
+              // 5. أزرار الأدوات المساعدة السفلية (المسطرة المائلة البنفسجية على اليسار + المصباح المائل الذهبي مع شارة العدد أعلى اليسار)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 24, top: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // زر المسطرة
+                    _buildNeumorphicPowerButton(
+                      isActive: _rulerEnabled,
+                      badgeText: null,
+                      onTap: () {
+                        if (_vibrationEnabled) HapticFeedback.selectionClick();
+                        setState(() => _rulerEnabled = !_rulerEnabled);
+                      },
+                      customChild: Transform.rotate(
+                        angle: -0.55,
+                        child: Container(
+                          width: 44,
+                          height: 20,
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: [Color(0xFF7986CB), Color(0xFF5C6BC0)],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            borderRadius: BorderRadius.circular(5),
+                            border: Border.all(color: Colors.white, width: 1.5),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(0xFF5C6BC0).withOpacity(0.35),
+                                blurRadius: 6,
+                                offset: const Offset(0, 3),
+                              ),
+                            ],
+                          ),
+                          child: CustomPaint(painter: RulerMarksPainter()),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 36),
+                    // زر المصباح
+                    _buildNeumorphicPowerButton(
+                      isActive: _hintedArrowId != null,
+                      badgeText: '$_hintsCount',
+                      onTap: _useHint,
+                      customChild: Transform.rotate(
+                        angle: -0.35,
+                        child: const Icon(
+                          Icons.lightbulb_rounded,
+                          size: 42,
+                          color: Color(0xFFFFB300),
+                          shadows: [
+                            Shadow(
+                              color: Color(0x55FFA000),
+                              blurRadius: 10,
+                              offset: Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              // 6. الشريط السفلي الرمادي الفاتح (منطقة الإعلان السفلية كما في الصورة الثانية)
+              if (!_adsRemoved)
+                Container(
+                  width: double.infinity,
+                  height: 54,
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFE5EAEF),
+                    border: Border(
+                      top: BorderSide(color: Color(0xFFD5DCE4), width: 1),
+                    ),
+                  ),
+                  alignment: Alignment.center,
+                  child: const Text(
+                    'مساحة إعلانية (Google AdMob Banner)',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Color(0xFF8C96A5),
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
     );
   }
 
+  /// التفاعل الذكي باللمس: يلتقط أقرب سهم لمكان إصبع اللاعب حتى لو لمس بجانب الخط قليلاً
   void _handleBoardTap(Offset localPos, double boardSize) {
     final cellW = boardSize / _currentConfig.gridCols;
     final cellH = boardSize / _currentConfig.gridRows;
-    final col = (localPos.dx / cellW).floor();
-    final row = (localPos.dy / cellH).floor();
-    final tappedPoint = Point<int>(col, row);
+
+    ArrowItem? bestArrow;
+    double minDistance = cellW * 0.68; // نطاق لمس مريح جداً
 
     for (final arrow in _activeArrows) {
       if (arrow.isCleared) continue;
-      if (arrow.cells.contains(tappedPoint)) {
-        _onArrowTapped(arrow);
-        return;
+      for (int i = 0; i < arrow.cells.length; i++) {
+        final c = arrow.cells[i];
+        final center = Offset((c.x + 0.5) * cellW, (c.y + 0.5) * cellH);
+        final dist = (localPos - center).distance;
+        if (dist < minDistance) {
+          minDistance = dist;
+          bestArrow = arrow;
+        }
       }
+    }
+
+    if (bestArrow != null) {
+      _onArrowTapped(bestArrow);
     }
   }
 
-  Widget _buildPowerUpButton({
-    required IconData icon,
-    required Color iconColor,
+  Widget _buildNeumorphicPowerButton({
     required bool isActive,
     required String? badgeText,
     required VoidCallback onTap,
+    required Widget customChild,
   }) {
     return GestureDetector(
       onTap: onTap,
@@ -1085,46 +1246,66 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
         children: [
           AnimatedContainer(
             duration: const Duration(milliseconds: 200),
-            width: 78,
-            height: 78,
+            width: 82,
+            height: 82,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: isActive ? const Color(0xFFE3F2FD) : Colors.white,
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: isActive
+                    ? [const Color(0xFFE3F2FD), const Color(0xFFBBDEFB)]
+                    : [const Color(0xFFFFFFFF), const Color(0xFFF3F6FA)],
+              ),
               border: Border.all(
                 color: isActive
                     ? const Color(0xFF1E88E5)
-                    : const Color(0xFFE5E7EB),
-                width: isActive ? 2.5 : 1.5,
+                    : const Color(0xFFEBF0F5),
+                width: 2.5,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.08),
-                  blurRadius: 16,
-                  offset: const Offset(0, 6),
+                  color: const Color(0xFF90A4AE).withOpacity(0.22),
+                  blurRadius: 18,
+                  spreadRadius: 1,
+                  offset: const Offset(0, 8),
+                ),
+                const BoxShadow(
+                  color: Colors.white,
+                  blurRadius: 6,
+                  offset: Offset(-3, -3),
                 ),
               ],
             ),
-            child: Icon(icon, size: 38, color: iconColor),
+            alignment: Alignment.center,
+            child: customChild,
           ),
           if (badgeText != null)
             Positioned(
-              top: -4,
-              right: -4,
+              top: -2,
+              left: -2, // في أعلى اليسار تماماً مثل الصورة الثانية
               child: Container(
-                width: 28,
-                height: 28,
+                width: 30,
+                height: 30,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF1E88E5),
+                  color: const Color(0xFF2196F3),
                   shape: BoxShape.circle,
-                  border: Border.all(color: Colors.white, width: 2),
+                  border: Border.all(color: Colors.white, width: 2.2),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF2196F3).withOpacity(0.35),
+                      blurRadius: 6,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
                 ),
                 alignment: Alignment.center,
                 child: Text(
                   badgeText,
                   style: const TextStyle(
                     color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 13,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 14,
                   ),
                 ),
               ),
@@ -1139,138 +1320,220 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
     final nextLevelIndex = (_currentLevelIndex + 1) % _allLevels.length;
     final nextLevelNumber = _allLevels[nextLevelIndex].levelNumber;
 
-    return Scaffold(
-      body: Stack(
-        children: [
-          // خلفية الأشعة الزرقاء المتحركة
-          AnimatedBuilder(
-            animation: _sunburstController,
-            builder: (context, _) {
-              return CustomPaint(
-                size: MediaQuery.of(context).size,
-                painter: SunburstPainter(
-                  rotation: _sunburstController.value * 2 * math.pi,
-                ),
-              );
-            },
-          ),
-          SafeArea(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const SizedBox(height: 40),
-                const Text(
-                  'اكتمل المستوى!',
-                  style: TextStyle(
-                    fontSize: 38,
-                    fontWeight: FontWeight.w900,
-                    color: Colors.white,
-                    shadows: [
-                      Shadow(
-                        color: Colors.black26,
-                        blurRadius: 12,
-                        offset: Offset(0, 4),
-                      ),
-                    ],
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Scaffold(
+        body: Stack(
+          children: [
+            // خلفية الأشعة الزرقاء المتحركة
+            AnimatedBuilder(
+              animation: _sunburstController,
+              builder: (context, _) {
+                return CustomPaint(
+                  size: MediaQuery.of(context).size,
+                  painter: SunburstPainter(
+                    rotation: _sunburstController.value * 2 * math.pi,
                   ),
-                ),
-                // البطاقة البيضاء في المنتصف التي تعرض رسمة المستوى المكتمل
-                Container(
-                  width: 230,
-                  height: 230,
-                  padding: const EdgeInsets.all(26),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(24),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.18),
-                        blurRadius: 28,
-                        offset: const Offset(0, 12),
-                      ),
-                    ],
-                  ),
-                  child: CustomPaint(
-                    painter: ArrowBoardPainter(
-                      gridCols: _currentConfig.gridCols,
-                      gridRows: _currentConfig.gridRows,
-                      arrows: _currentConfig.arrows,
-                      rulerEnabled: false,
-                      hintedArrowId: null,
-                      animatingArrowId: null,
-                      isBlockedAnimation: false,
-                      animationValue: 0,
-                      ignoreClearedState: true,
+                );
+              },
+            ),
+            SafeArea(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const SizedBox(height: 45),
+                  const Text(
+                    'اكتمل المستوى!',
+                    style: TextStyle(
+                      fontSize: 40,
+                      fontWeight: FontWeight.w900,
+                      color: Colors.white,
+                      letterSpacing: 0.3,
                     ),
                   ),
-                ),
-                // أزرار الانتقال للمستوى التالي أو الرئيسية
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 32, vertical: 32),
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        width: double.infinity,
-                        height: 68,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            foregroundColor: const Color(0xFF1565C0),
-                            elevation: 6,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(36),
+                  // البطاقة البيضاء في المنتصف التي تعرض رسمة المستوى المكتمل
+                  Container(
+                    width: 225,
+                    height: 225,
+                    padding: const EdgeInsets.all(34),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(22),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFF0D47A1).withOpacity(0.28),
+                          blurRadius: 30,
+                          offset: const Offset(0, 14),
+                        ),
+                      ],
+                    ),
+                    child: CustomPaint(
+                      painter: ArrowBoardPainter(
+                        gridCols: _currentConfig.gridCols,
+                        gridRows: _currentConfig.gridRows,
+                        arrows: _currentConfig.arrows,
+                        rulerEnabled: false,
+                        hintedArrowId: null,
+                        animatingArrowId: null,
+                        isBlockedAnimation: false,
+                        blockedMaxSteps: 0,
+                        animationValue: 0,
+                        ignoreClearedState: true,
+                      ),
+                    ),
+                  ),
+                  // أزرار الانتقال للمستوى التالي أو الرئيسية
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 34,
+                      vertical: 28,
+                    ),
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          width: double.infinity,
+                          height: 68,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              foregroundColor: const Color(0xFF1976D2),
+                              elevation: 4,
+                              shadowColor: Colors.black26,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(36),
+                              ),
+                            ),
+                            onPressed: () => _loadLevel(nextLevelIndex),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Text(
+                                  'اللعبة التالية',
+                                  style: TextStyle(
+                                    fontSize: 21,
+                                    fontWeight: FontWeight.w800,
+                                    color: Color(0xFF1976D2),
+                                    height: 1.1,
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  'المستوى $nextLevelNumber',
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    color: Color(0xFF64B5F6),
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          onPressed: () => _loadLevel(nextLevelIndex),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Text(
-                                'اللعبة التالية',
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w800,
-                                  color: Color(0xFF1565C0),
-                                ),
-                              ),
-                              Text(
-                                'المستوى $nextLevelNumber',
-                                style: const TextStyle(
-                                  fontSize: 13,
-                                  color: Color(0xFF64B5F6),
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
+                        ),
+                        const SizedBox(height: 16),
+                        TextButton(
+                          onPressed: _openLevelsSelector,
+                          child: const Text(
+                            'الرئيسية',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w800,
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 18),
-                      TextButton(
-                        onPressed: _openLevelsSelector,
-                        child: const Text(
-                          'الرئيسية',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 19,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 }
 
-/// محرك رسم شبكة الأسهم (يرسم الأسهم الملتفة، رؤوس الأسهم، والمسطرة، وحركة الخروج)
+/// رسام علامات المسطرة الصغيرة داخل أيقونة المسطرة
+class RulerMarksPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.white.withOpacity(0.85)
+      ..strokeWidth = 1.4
+      ..strokeCap = StrokeCap.round;
+
+    for (int i = 1; i < 8; i++) {
+      final x = (size.width / 8) * i;
+      final h = (i % 2 == 0) ? size.height * 0.45 : size.height * 0.28;
+      canvas.drawLine(Offset(x, 0), Offset(x, h), paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+/// رسام القلب اللامع ثلاثي الأبعاد المطابق للصورة الثانية
+class GlossyHeartPainter extends CustomPainter {
+  final bool isActive;
+  GlossyHeartPainter({required this.isActive});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final w = size.width;
+    final h = size.height;
+
+    final path = Path()
+      ..moveTo(w * 0.5, h * 0.92)
+      ..cubicTo(w * 0.12, h * 0.62, -w * 0.05, h * 0.30, w * 0.18, h * 0.10)
+      ..cubicTo(w * 0.34, -h * 0.02, w * 0.46, h * 0.10, w * 0.5, h * 0.22)
+      ..cubicTo(w * 0.54, h * 0.10, w * 0.66, -h * 0.02, w * 0.82, h * 0.10)
+      ..cubicTo(w * 1.05, h * 0.30, w * 0.88, h * 0.62, w * 0.5, h * 0.92)
+      ..close();
+
+    if (!isActive) {
+      final inactivePaint = Paint()
+        ..color = const Color(0xFFE2E8F0)
+        ..style = PaintingStyle.fill;
+      canvas.drawPath(path, inactivePaint);
+      return;
+    }
+
+    // ظل سفلي خفيف للقلب
+    canvas.drawShadow(path, const Color(0xFFB71C1C).withOpacity(0.35), 4, true);
+
+    final rect = Offset.zero & size;
+    final fillPaint = Paint()
+      ..shader = const LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [
+          Color(0xFFFF6B5B),
+          Color(0xFFE53935),
+          Color(0xFFC62828),
+        ],
+      ).createShader(rect);
+
+    canvas.drawPath(path, fillPaint);
+
+    // لمعة علوية بيضاء ناعمة لإعطاء مظهر 3D
+    final highlightPaint = Paint()
+      ..color = Colors.white.withOpacity(0.28)
+      ..style = PaintingStyle.fill;
+    canvas.drawOval(
+      Rect.fromLTWH(w * 0.18, h * 0.13, w * 0.16, h * 0.10),
+      highlightPaint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant GlossyHeartPainter oldDelegate) =>
+      oldDelegate.isActive != isActive;
+}
+
+/// محرك رسم شبكة الأسهم مع الحركة الثعبانية الحقيقية (Snake Path-Following)
+/// بحيث يتبع الجزء المتني من السهم مسار السهم الأصلي وينفرد تدريجياً في اتجاه الرأس!
 class ArrowBoardPainter extends CustomPainter {
   final int gridCols;
   final int gridRows;
@@ -1279,6 +1542,7 @@ class ArrowBoardPainter extends CustomPainter {
   final String? hintedArrowId;
   final String? animatingArrowId;
   final bool isBlockedAnimation;
+  final double blockedMaxSteps;
   final double animationValue;
   final bool ignoreClearedState;
 
@@ -1290,6 +1554,7 @@ class ArrowBoardPainter extends CustomPainter {
     required this.hintedArrowId,
     required this.animatingArrowId,
     required this.isBlockedAnimation,
+    required this.blockedMaxSteps,
     required this.animationValue,
     this.ignoreClearedState = false,
   });
@@ -1298,73 +1563,91 @@ class ArrowBoardPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final cellW = size.width / gridCols;
     final cellH = size.height / gridRows;
-    final strokeW = math.min(cellW, cellH) * 0.14;
+    final strokeW = math.min(cellW, cellH) * 0.135;
 
     Offset centerOf(double col, double row) {
       return Offset((col + 0.5) * cellW, (row + 0.5) * cellH);
     }
 
-    // 1. رسم خطوط المسطرة الإرشادية عند تفعيل أداة المسطرة
-    if (rulerEnabled) {
+    // 1. رسم نقاط خفيفة جداً لمواضع الشبكة عند تفعيل المسطرة لزيادة الدقة البصرية
+    if (rulerEnabled && !ignoreClearedState) {
+      final dotPaint = Paint()
+        ..color = const Color(0xFFCBD5E1)
+        ..style = PaintingStyle.fill;
+      for (int r = 0; r < gridRows; r++) {
+        for (int c = 0; c < gridCols; c++) {
+          canvas.drawCircle(centerOf(c.toDouble(), r.toDouble()), 2.2, dotPaint);
+        }
+      }
+
+      // رسم خطوط المسطرة الإرشادية المتقطعة
       final guidePaint = Paint()
-        ..color = const Color(0xFF90CAF9).withOpacity(0.55)
+        ..color = const Color(0xFF64B5F6).withOpacity(0.65)
         ..strokeWidth = 2.0
         ..style = PaintingStyle.stroke;
 
       for (final arrow in arrows) {
-        if (!ignoreClearedState && arrow.isCleared) continue;
+        if (arrow.isCleared) continue;
         final start = centerOf(
           arrow.head.x.toDouble(),
           arrow.head.y.toDouble(),
         );
         final delta = arrow.headDir.delta;
         final end = Offset(
-          start.dx + delta.x * size.width * 1.2,
-          start.dy + delta.y * size.height * 1.2,
+          start.dx + delta.x * size.width * 1.1,
+          start.dy + delta.y * size.height * 1.1,
         );
         _drawDashedLine(canvas, start, end, guidePaint);
       }
     }
 
-    // 2. رسم كل سهم
+    // 2. رسم كل سهم مع حساب مسار انزلاق الجزء المتني (Snake Uncoiling)
     for (final arrow in arrows) {
       if (!ignoreClearedState && arrow.isCleared) continue;
 
       final isHinted = arrow.id == hintedArrowId;
       final isAnimating = arrow.id == animatingArrowId;
 
-      Color arrowColor = const Color(0xFF0A1931); // الكحلي الداكن الأصلي
+      Color arrowColor = const Color(0xFF071A3E); // الكحلي الداكن الأصلي
       if (isHinted) {
-        arrowColor = const Color(0xFFFF8F00); // ذهبي للتلميح
+        arrowColor = const Color(0xFFFF9800); // ذهبي للتلميح
       } else if (isAnimating && isBlockedAnimation) {
         arrowColor = const Color(0xFFE53935); // أحمر عند الاصطدام
       }
 
-      // حساب نقاط المسار
-      List<Offset> points = arrow.cells
-          .map((c) => centerOf(c.x.toDouble(), c.y.toDouble()))
-          .toList();
-
+      // مقدار التقدم بالخلايا (Steps) على امتداد مسار السهم نفسه
+      double shiftCells = 0.0;
       if (isAnimating) {
-        final delta = arrow.headDir.delta;
         if (isBlockedAnimation) {
-          // ارتداد قصير عند الاصطدام
-          final bump = math.sin(animationValue * math.pi) * (cellW * 0.22);
-          points = points
-              .map((p) => Offset(p.dx + delta.x * bump, p.dy + delta.y * bump))
-              .toList();
+          // يتحرك السهم للأمام على مساره حتى يلمس العائق ثم يرتد لمكانه!
+          shiftCells = math.sin(animationValue * math.pi) * blockedMaxSteps;
         } else {
-          // انزلاق السهم للخارج على امتداد مساره ثم خارج الشاشة
-          final shiftDistance = animationValue * (size.width * 1.35);
-          points = points
-              .map(
-                (p) => Offset(
-                  p.dx + delta.x * shiftDistance,
-                  p.dy + delta.y * shiftDistance,
-                ),
-              )
-              .toList();
+          // يتحرك السهم بالكامل على مساره المتني ثم يخرج في اتجاه الرأس خارج الشاشة
+          final totalEscapeSteps =
+              arrow.cells.length + math.max(gridCols, gridRows) + 3.0;
+          shiftCells = animationValue * totalEscapeSteps;
         }
+      }
+
+      final polylinePoints = _computeSnakePolyline(
+        arrow: arrow,
+        shiftCells: shiftCells,
+        cellW: cellW,
+        cellH: cellH,
+      );
+
+      if (polylinePoints.length < 2) continue;
+
+      // تأثير توهج ناعم إذا كان السهم مُلمّحاً بالمصباح
+      if (isHinted) {
+        final glowPaint = Paint()
+          ..color = const Color(0xFFFFB300).withOpacity(0.35)
+          ..strokeWidth = strokeW * 2.4
+          ..style = PaintingStyle.stroke
+          ..strokeCap = StrokeCap.round
+          ..strokeJoin = StrokeJoin.round;
+        final glowPath = _buildRoundedCornerPath(polylinePoints, cellW * 0.16);
+        canvas.drawPath(glowPath, glowPaint);
       }
 
       final linePaint = Paint()
@@ -1374,26 +1657,117 @@ class ArrowBoardPainter extends CustomPainter {
         ..strokeCap = StrokeCap.round
         ..strokeJoin = StrokeJoin.round;
 
-      final path = Path();
-      if (points.isNotEmpty) {
-        path.moveTo(points.first.dx, points.first.dy);
-        for (int i = 1; i < points.length; i++) {
-          path.lineTo(points[i].dx, points[i].dy);
-        }
-      }
-      canvas.drawPath(path, linePaint);
+      // رسم جسم السهم مع زوايا منحنية ناعمة ومستديرة قليلاً كما في اللعبة الأصلية
+      final arrowPath = _buildRoundedCornerPath(polylinePoints, cellW * 0.15);
+      canvas.drawPath(arrowPath, linePaint);
 
-      // رسم رأس السهم المثلث عند آخر نقطة
-      if (points.isNotEmpty) {
-        _drawArrowHead(
-          canvas,
-          points.last,
-          arrow.headDir,
-          strokeW * 2.5,
-          arrowColor,
-        );
+      // رسم رأس السهم المثلث عند مقدمة المسار المتحرك
+      _drawArrowHead(
+        canvas,
+        polylinePoints.last,
+        arrow.headDir,
+        strokeW * 2.55,
+        arrowColor,
+      );
+    }
+  }
+
+  /// الدالة الأساسية التي تجعل الحتة المتنية (الذيل والمفاصل) تمشي داخل مسار السهم الأصلي
+  /// وتلتف عند الزوايا ثم تنفرد في اتجاه الرأس تماماً مثل الثعبان أو القطار على القضبان!
+  List<Offset> _computeSnakePolyline({
+    required ArrowItem arrow,
+    required double shiftCells,
+    required double cellW,
+    required double cellH,
+  }) {
+    final baseOffsets = arrow.cells
+        .map((c) => Offset((c.x + 0.5) * cellW, (c.y + 0.5) * cellH))
+        .toList();
+
+    final N = baseOffsets.length;
+    final dirUnit = arrow.headDir.unitOffset;
+    final stepVec = Offset(dirUnit.dx * cellW, dirUnit.dy * cellH);
+
+    // دالة تعطي موقع أي نقطة افتراضية على سكة السهم (سواء داخل الخلايا أو بعد خروجها من الرأس)
+    Offset pointAtRail(double s) {
+      if (s <= N - 1) {
+        final idx = s.floor().clamp(0, N - 2);
+        final frac = s - idx;
+        return Offset.lerp(baseOffsets[idx], baseOffsets[idx + 1], frac)!;
+      } else {
+        final extra = s - (N - 1);
+        return baseOffsets.last + stepVec * extra;
       }
     }
+
+    if (shiftCells <= 0.0001) {
+      return baseOffsets;
+    }
+
+    final startS = shiftCells;
+    final endS = (N - 1) + shiftCells;
+
+    final result = <Offset>[];
+    // 1. موقع الذيل الجديد بعد تحركه على السكة
+    result.add(pointAtRail(startS));
+
+    // 2. إضافة جميع مفاصل وزوايا السهم الأصلية التي لم يتجاوزها الذيل بعد!
+    // هذا يضمن أن الجزء المتني يظل ماشياً في مساره الأصلي وينفرد زاوية بزاوية عند الرأس
+    final firstCorner = startS.floor() + 1;
+    for (int k = firstCorner; k <= N - 1; k++) {
+      if (k > startS + 0.001 && k < endS - 0.001) {
+        result.add(baseOffsets[k]);
+      }
+    }
+
+    // 3. موقع الرأس الجديد المنطلق في اتجاه السهم
+    result.add(pointAtRail(endS));
+    return result;
+  }
+
+  /// تحويل نقاط المفاصل إلى مسار ذي زوايا ناعمة غير حادة
+  Path _buildRoundedCornerPath(List<Offset> pts, double cornerRadius) {
+    final path = Path();
+    if (pts.isEmpty) return path;
+    path.moveTo(pts.first.dx, pts.first.dy);
+    if (pts.length == 2) {
+      path.lineTo(pts.last.dx, pts.last.dy);
+      return path;
+    }
+
+    for (int i = 1; i < pts.length - 1; i++) {
+      final prev = pts[i - 1];
+      final curr = pts[i];
+      final next = pts[i + 1];
+
+      final v1 = curr - prev;
+      final v2 = next - curr;
+      final len1 = v1.distance;
+      final len2 = v2.distance;
+
+      if (len1 < 0.001 || len2 < 0.001) {
+        path.lineTo(curr.dx, curr.dy);
+        continue;
+      }
+
+      // إذا كانت النقاط على استقامة واحدة لا نحتاج لمنحنى
+      final u1 = v1 / len1;
+      final u2 = v2 / len2;
+      if ((u1 - u2).distance < 0.01) {
+        path.lineTo(curr.dx, curr.dy);
+        continue;
+      }
+
+      final r = math.min(cornerRadius, math.min(len1, len2) * 0.35);
+      final pStart = curr - u1 * r;
+      final pEnd = curr + u2 * r;
+
+      path.lineTo(pStart.dx, pStart.dy);
+      path.quadraticBezierTo(curr.dx, curr.dy, pEnd.dx, pEnd.dy);
+    }
+
+    path.lineTo(pts.last.dx, pts.last.dy);
+    return path;
   }
 
   void _drawArrowHead(
@@ -1405,7 +1779,8 @@ class ArrowBoardPainter extends CustomPainter {
   ) {
     final paint = Paint()
       ..color = color
-      ..style = PaintingStyle.fill;
+      ..style = PaintingStyle.fill
+      ..strokeJoin = StrokeJoin.round;
 
     double angle = 0;
     switch (dir) {
@@ -1428,9 +1803,9 @@ class ArrowBoardPainter extends CustomPainter {
     canvas.rotate(angle);
 
     final path = Path()
-      ..moveTo(headSize * 0.45, 0)
-      ..lineTo(-headSize * 0.55, -headSize * 0.52)
-      ..lineTo(-headSize * 0.55, headSize * 0.52)
+      ..moveTo(headSize * 0.48, 0)
+      ..lineTo(-headSize * 0.52, -headSize * 0.52)
+      ..lineTo(-headSize * 0.52, headSize * 0.52)
       ..close();
 
     canvas.drawPath(path, paint);
@@ -1470,16 +1845,16 @@ class SunburstPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final rect = Offset.zero & size;
     final bgPaint = Paint()
-      ..shader = const LinearGradient(
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-        colors: [Color(0xFF1E88E5), Color(0xFF1565C0)],
+      ..shader = const RadialGradient(
+        center: Alignment(0, -0.1),
+        radius: 0.95,
+        colors: [Color(0xFF29B6F6), Color(0xFF1976D2)],
       ).createShader(rect);
     canvas.drawRect(rect, bgPaint);
 
-    final center = Offset(size.width / 2, size.height * 0.43);
-    final radius = math.max(size.width, size.height) * 1.2;
-    const raysCount = 24;
+    final center = Offset(size.width / 2, size.height * 0.44);
+    final radius = math.max(size.width, size.height) * 1.25;
+    const raysCount = 28;
     final rayPaint = Paint()
       ..color = Colors.white.withOpacity(0.08)
       ..style = PaintingStyle.fill;
@@ -1505,7 +1880,7 @@ class SunburstPainter extends CustomPainter {
       oldDelegate.rotation != rotation;
 }
 
-/// شاشة الإعدادات المطابقة للصورة الثالثة مع تصحيح كتابة العنوان العربي بالكامل
+/// شاشة الإعدادات المطابقة للصورة الثالثة تماماً (الأيقونة الملونة يمين، النص يمين، السهم يسار، زر "تم" أزرق يسار، وعنوان "الإعدادات" سليم 100%)
 class SettingsScreen extends StatefulWidget {
   final bool soundEnabled;
   final bool vibrationEnabled;
@@ -1541,113 +1916,119 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFEEF1F6),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        automaticallyImplyLeading: false,
-        centerTitle: true,
-        title: const Text(
-          'الإعدادات',
-          style: TextStyle(
-            color: Colors.black87,
-            fontWeight: FontWeight.w800,
-            fontSize: 22,
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Scaffold(
+        backgroundColor: const Color(0xFFEBEEF2),
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          surfaceTintColor: Colors.white,
+          elevation: 0,
+          automaticallyImplyLeading: false,
+          centerTitle: true,
+          title: const Text(
+            'الإعدادات',
+            style: TextStyle(
+              color: Color(0xFF111827),
+              fontWeight: FontWeight.w800,
+              fontSize: 23,
+            ),
           ),
+          // في وضع RTL: actions تظهر في أقصى اليسار تماماً مثل كلمة "تم" في الصورة الثالثة
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text(
+                'تم',
+                style: TextStyle(
+                  color: Color(0xFF1976D2),
+                  fontWeight: FontWeight.w800,
+                  fontSize: 19,
+                ),
+              ),
+            ),
+            const SizedBox(width: 6),
+          ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text(
-              'تم',
-              style: TextStyle(
-                color: Color(0xFF1E88E5),
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
+        body: ListView(
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 24),
+          children: [
+            // البطاقة الأولى: الإعدادات
+            _buildCardGroup([
+              _buildMenuRow(
+                title: 'الإعدادات',
+                icon: Icons.settings_rounded,
+                iconBgColor: const Color(0xFF1E88E5),
+                onTap: () => _showAudioSettingsSheet(context),
               ),
-            ),
-          ),
-        ],
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(18),
-        children: [
-          // بطاقة الإعدادات الصوتية والاهتزاز
-          _buildCardGroup([
-            _buildMenuRow(
-              title: 'الإعدادات (الصوت والاهتزاز)',
-              icon: Icons.settings_rounded,
-              iconBgColor: const Color(0xFF1E88E5),
-              onTap: () => _showAudioSettingsSheet(context),
-            ),
-          ]),
-          const SizedBox(height: 18),
+            ]),
+            const SizedBox(height: 22),
 
-          // بطاقة المساعدة والمعلومات والخصوصية
-          _buildCardGroup([
-            _buildMenuRow(
-              title: 'المساعدة',
-              icon: Icons.help_outline_rounded,
-              iconBgColor: const Color(0xFF2ECC71),
-              onTap: () => _showInfoDialog(
-                context,
-                'كيف تلعب؟',
-                'اضغط على الأسهم التي يكون طريقها مفتوحاً لإخراجها من الشبكة.\n\n'
-                    '• إذا كان أمام السهم سهم آخر، سيرتد السهم وتفقد قلباً واحداً.\n'
-                    '• استخدم أداة المسطرة لإظهار خطوط المسار.\n'
-                    '• استخدم المصباح لتحديد السهم الصحيح التالي.',
+            // البطاقة الثانية: المساعدة، حول اللعبة، حقوق الخصوصية، تفضيلات الخصوصية
+            _buildCardGroup([
+              _buildMenuRow(
+                title: 'المساعدة',
+                icon: Icons.help_rounded,
+                iconBgColor: const Color(0xFF2ECC71),
+                onTap: () => _showInfoDialog(
+                  context,
+                  'المساعدة',
+                  'اضغط على الأسهم التي يكون طريقها مفتوحاً لإخراجها من الشبكة.\n\n'
+                      '• عند خروج السهم، ينفرد الجزء المتني ويمشي في نفس مسار السهم الأصلي.\n'
+                      '• إذا كان أمام السهم سهم آخر، سيرتد السهم وتفقد قلباً واحداً.\n'
+                      '• استخدم المسطرة لإظهار المسارات والمصباح للتلميح الذكي.',
+                ),
               ),
-            ),
-            const Divider(height: 1, indent: 16, endIndent: 16),
-            _buildMenuRow(
-              title: 'حول اللعبة',
-              icon: Icons.info_outline_rounded,
-              iconBgColor: const Color(0xFF1E88E5),
-              onTap: () => _showInfoDialog(
-                context,
-                'حول اللعبة',
-                'لعبة مسار الأسهم (الإصدار 1.0.0)\nنسخة أولية تحتوي على أول 10 مستويات جاهزة للتجربة والنشر على Google Play.',
+              const Divider(height: 1, indent: 18, endIndent: 18, color: Color(0xFFF1F5F9)),
+              _buildMenuRow(
+                title: 'حول اللعبة',
+                icon: Icons.info_rounded,
+                iconBgColor: const Color(0xFF1E88E5),
+                onTap: () => _showInfoDialog(
+                  context,
+                  'حول اللعبة',
+                  'لعبة مسار الأسهم (الإصدار 1.1.0)\nتم تطويرها بواجهة عربية احترافية وحركة أسهم انسيابية.',
+                ),
               ),
-            ),
-            const Divider(height: 1, indent: 16, endIndent: 16),
-            _buildMenuRow(
-              title: 'حقوق الخصوصية',
-              icon: Icons.assignment_turned_in_rounded,
-              iconBgColor: const Color(0xFF5C6BC0),
-              onTap: () => _showInfoDialog(
-                context,
-                'سياسة الخصوصية',
-                'تحترم اللعبة خصوصية المستخدمين ولا تقوم بجمع أي بيانات شخصية حساسة. يتم حفظ تقدمك في المستويات محلياً على جهازك.',
+              const Divider(height: 1, indent: 18, endIndent: 18, color: Color(0xFFF1F5F9)),
+              _buildMenuRow(
+                title: 'حقوق الخصوصية',
+                icon: Icons.assignment_turned_in_rounded,
+                iconBgColor: const Color(0xFF5C6BC0),
+                onTap: () => _showInfoDialog(
+                  context,
+                  'حقوق الخصوصية',
+                  'تحترم اللعبة خصوصية المستخدمين ولا تقوم بجمع أي بيانات شخصية. يتم حفظ تقدمك محلياً على جهازك.',
+                ),
               ),
-            ),
-            const Divider(height: 1, indent: 16, endIndent: 16),
-            _buildMenuRow(
-              title: 'تفضيلات الخصوصية',
-              icon: Icons.verified_user_rounded,
-              iconBgColor: const Color(0xFF00ACC1),
-              onTap: () => _showInfoDialog(
-                context,
-                'تفضيلات الخصوصية',
-                'يمكنك التحكم في تفضيلات الإعلانات المخصصة عند ربط حزمة Google AdMob قبل النشر النهائي على المتجر.',
+              const Divider(height: 1, indent: 18, endIndent: 18, color: Color(0xFFF1F5F9)),
+              _buildMenuRow(
+                title: 'تفضيلات الخصوصية',
+                icon: Icons.manage_accounts_rounded,
+                iconBgColor: const Color(0xFF00ACC1),
+                onTap: () => _showInfoDialog(
+                  context,
+                  'تفضيلات الخصوصية',
+                  'يمكنك إدارة تفضيلات الإعلانات والبيانات من هنا عند ربط Google AdMob.',
+                ),
               ),
-            ),
-          ]),
-          const SizedBox(height: 18),
+            ]),
+            const SizedBox(height: 22),
 
-          // بطاقة إزالة الإعلانات
-          _buildCardGroup([
-            _buildMenuRow(
-              title: widget.adsRemoved
-                  ? 'تمت إزالة الإعلانات ✓'
-                  : 'إزالة الإعلانات',
-              icon: Icons.block_rounded,
-              iconBgColor: const Color(0xFFE53935),
-              showChevron: false,
-              onTap: widget.onRemoveAds,
-            ),
-          ]),
-        ],
+            // البطاقة الثالثة: إزالة الإعلانات
+            _buildCardGroup([
+              _buildMenuRow(
+                title: widget.adsRemoved
+                    ? 'تمت إزالة الإعلانات ✓'
+                    : 'إزالة الإعلانات',
+                icon: Icons.block_flipped,
+                iconBgColor: const Color(0xFFE53935),
+                showChevron: false,
+                onTap: widget.onRemoveAds,
+              ),
+            ]),
+          ],
+        ),
       ),
     );
   }
@@ -1676,33 +2057,45 @@ class _SettingsScreenState extends State<SettingsScreen> {
     required VoidCallback onTap,
     bool showChevron = true,
   }) {
-    return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 6),
+    return InkWell(
       onTap: onTap,
-      leading: Container(
-        width: 44,
-        height: 44,
-        decoration: BoxDecoration(
-          color: iconBgColor,
-          borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(18),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+        child: Row(
+          children: [
+            // في وضع RTL: أول عنصر يظهر على اليمين (الأيقونة الملونة)
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: iconBgColor,
+                borderRadius: BorderRadius.circular(11),
+              ),
+              child: Icon(icon, color: Colors.white, size: 26),
+            ),
+            const SizedBox(width: 16),
+            // النص بجانب الأيقونة من اليمين
+            Expanded(
+              child: Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w500,
+                  color: Color(0xFF111827),
+                ),
+              ),
+            ),
+            // سهم الانتقال الصغير في أقصى اليسار يشير لليسار (<) تماماً مثل الصورة الثالثة
+            if (showChevron)
+              const Icon(
+                Icons.chevron_right_rounded, // في RTL ينعكس تلقائياً ليشير لليسار <
+                color: Color(0xFFB0B8C4),
+                size: 28,
+              ),
+          ],
         ),
-        child: Icon(icon, color: Colors.white, size: 26),
       ),
-      title: Text(
-        title,
-        style: const TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.w600,
-          color: Color(0xFF1F2937),
-        ),
-      ),
-      trailing: showChevron
-          ? const Icon(
-              Icons.chevron_right_rounded,
-              color: Color(0xFF9CA3AF),
-              size: 28,
-            )
-          : null,
     );
   }
 
@@ -1714,40 +2107,43 @@ class _SettingsScreenState extends State<SettingsScreen> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (ctx) {
-        return StatefulBuilder(
-          builder: (context, setModalState) {
-            return Padding(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text(
-                    'إعدادات الصوت والاهتزاز',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 16),
-                  SwitchListTile(
-                    title: const Text('المؤثرات الصوتية'),
-                    value: _sound,
-                    onChanged: (val) {
-                      setModalState(() => _sound = val);
-                      setState(() => _sound = val);
-                      widget.onSoundChanged(val);
-                    },
-                  ),
-                  SwitchListTile(
-                    title: const Text('الاهتزاز التفاعلي'),
-                    value: _vibration,
-                    onChanged: (val) {
-                      setModalState(() => _vibration = val);
-                      setState(() => _vibration = val);
-                      widget.onVibrationChanged(val);
-                    },
-                  ),
-                ],
-              ),
-            );
-          },
+        return Directionality(
+          textDirection: TextDirection.rtl,
+          child: StatefulBuilder(
+            builder: (context, setModalState) {
+              return Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      'إعدادات الصوت والاهتزاز',
+                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 16),
+                    SwitchListTile(
+                      title: const Text('المؤثرات الصوتية'),
+                      value: _sound,
+                      onChanged: (val) {
+                        setModalState(() => _sound = val);
+                        setState(() => _sound = val);
+                        widget.onSoundChanged(val);
+                      },
+                    ),
+                    SwitchListTile(
+                      title: const Text('الاهتزاز التفاعلي'),
+                      value: _vibration,
+                      onChanged: (val) {
+                        setModalState(() => _vibration = val);
+                        setState(() => _vibration = val);
+                        widget.onVibrationChanged(val);
+                      },
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
         );
       },
     );
@@ -1756,16 +2152,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void _showInfoDialog(BuildContext context, String title, String message) {
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-        content: Text(message, style: const TextStyle(height: 1.5)),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('حسناً'),
-          ),
-        ],
+      builder: (ctx) => Directionality(
+        textDirection: TextDirection.rtl,
+        child: AlertDialog(
+          backgroundColor: Colors.white,
+          surfaceTintColor: Colors.white,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+          content: Text(message, style: const TextStyle(height: 1.5, fontSize: 16)),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('حسناً', style: TextStyle(fontWeight: FontWeight.bold)),
+            ),
+          ],
+        ),
       ),
     );
   }
