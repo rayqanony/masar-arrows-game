@@ -75,11 +75,121 @@ extension ArrowDirOffset on ArrowDir {
   }
 }
 
-/// أشكال نهاية السهم (عادية أو مزخرفة بـ ❤️ أو ⭐ للتنويع البصري)
+/// أشكال نهاية السهم (عادية أو مزخرفة بـ ❤️ أو ⭐)
 enum ArrowBadgeStyle { none, heart, star }
 
-/// شارة المستوى البصرية (تظهر للمستويات التي تشكل رسمة ❤️ أو ⭐)
-enum LevelThemeShape { standard, heart, star }
+/// المجموعات البصرية للمستويات (Visual Stage Themes):
+/// تغير الخلفية والإضاءة المحيطية ولون شريط التقدم والأسهم بهدوء دون تعقيد قواعد اللعب
+enum StageVisualTheme {
+  clean,    // المستويات 1-4: البداية النقية (أبيض ناصع وأزرق كلاسيكي)
+  ocean,    // المستويات المتوسطة الكثيفة: تدرج محيطي بارد وهادئ
+  heart,    // مستويات القلب ❤️: لمسة وردية/ياقوتية دافئة متناسقة مع شكل القلب
+  star,     // مستويات النجمة ⭐: لمسة ذهبية/كهرمانية مشرقة
+  diamond,  // مستوى الماسة 💎: طابع كريستالي سماوي
+  twilight, // المستويات المتقدمة 16-19: طابع الشفق البنفسجي الهادئ
+  crown,    // المستوى 20 الختامي 👑: طابع ملكي فاخر بلمسات ذهبية وبنفسجية
+}
+
+class StagePalette {
+  final Color bgTop;
+  final Color bgBottom;
+  final Color boardCardColor;
+  final Color boardGlowColor;
+  final Color arrowNormalColor;
+  final Color progressColor;
+  final Color gridDotColor;
+  final String? badgeEmoji;
+
+  const StagePalette({
+    required this.bgTop,
+    required this.bgBottom,
+    required this.boardCardColor,
+    required this.boardGlowColor,
+    required this.arrowNormalColor,
+    required this.progressColor,
+    required this.gridDotColor,
+    this.badgeEmoji,
+  });
+
+  static StagePalette of(StageVisualTheme theme) {
+    switch (theme) {
+      case StageVisualTheme.clean:
+        return const StagePalette(
+          bgTop: Color(0xFFFFFFFF),
+          bgBottom: Color(0xFFF8FAFC),
+          boardCardColor: Color(0xFFFFFFFF),
+          boardGlowColor: Color(0x081976D2),
+          arrowNormalColor: Color(0xFF0A1D3B),
+          progressColor: Color(0xFF2196F3),
+          gridDotColor: Color(0xFFD0D7E2),
+        );
+      case StageVisualTheme.ocean:
+        return const StagePalette(
+          bgTop: Color(0xFFF4F9FF),
+          bgBottom: Color(0xFFEBF3FE),
+          boardCardColor: Color(0xFFFAFCFF),
+          boardGlowColor: Color(0x181E88E5),
+          arrowNormalColor: Color(0xFF0C2244),
+          progressColor: Color(0xFF1976D2),
+          gridDotColor: Color(0xFFC5D4E8),
+        );
+      case StageVisualTheme.heart:
+        return const StagePalette(
+          bgTop: Color(0xFFFFF5F7),
+          bgBottom: Color(0xFFFFEBEF),
+          boardCardColor: Color(0xFFFFFBFC),
+          boardGlowColor: Color(0x22E91E63),
+          arrowNormalColor: Color(0xFF2C1024),
+          progressColor: Color(0xFFE91E63),
+          gridDotColor: Color(0xFFEBC5D0),
+          badgeEmoji: '❤️',
+        );
+      case StageVisualTheme.star:
+        return const StagePalette(
+          bgTop: Color(0xFFFFFBF0),
+          bgBottom: Color(0xFFFFF3D6),
+          boardCardColor: Color(0xFFFFFEFA),
+          boardGlowColor: Color(0x26FFA000),
+          arrowNormalColor: Color(0xFF1F2438),
+          progressColor: Color(0xFFFF9800),
+          gridDotColor: Color(0xFFE5D5B5),
+          badgeEmoji: '⭐',
+        );
+      case StageVisualTheme.diamond:
+        return const StagePalette(
+          bgTop: Color(0xFFF0FDFA),
+          bgBottom: Color(0xFFE0F7FA),
+          boardCardColor: Color(0xFFFAFFFF),
+          boardGlowColor: Color(0x2400ACC1),
+          arrowNormalColor: Color(0xFF0A2E36),
+          progressColor: Color(0xFF00ACC1),
+          gridDotColor: Color(0xFFB8DCE0),
+          badgeEmoji: '💎',
+        );
+      case StageVisualTheme.twilight:
+        return const StagePalette(
+          bgTop: Color(0xFFF6F4FF),
+          bgBottom: Color(0xFFEDE9FE),
+          boardCardColor: Color(0xFFFCFAFF),
+          boardGlowColor: Color(0x205E35B1),
+          arrowNormalColor: Color(0xFF1A1438),
+          progressColor: Color(0xFF5E35B1),
+          gridDotColor: Color(0xFFD0C8E8),
+        );
+      case StageVisualTheme.crown:
+        return const StagePalette(
+          bgTop: Color(0xFFFAF5FF),
+          bgBottom: Color(0xFFFFF7E6),
+          boardCardColor: Color(0xFFFFFDF9),
+          boardGlowColor: Color(0x28D97706),
+          arrowNormalColor: Color(0xFF241538),
+          progressColor: Color(0xFFD97706),
+          gridDotColor: Color(0xFFDECFE8),
+          badgeEmoji: '👑',
+        );
+    }
+  }
+}
 
 /// نقطة على الشبكة (عمود، صف)
 class Point<T extends num> {
@@ -114,7 +224,6 @@ class ArrowItem {
 
   Point<int> get head => cells.last;
 
-  /// اتجاه الرأس مطابق دائماً لاتجاه آخر مفصل في السهم
   ArrowDir get headDir {
     final prev = cells[cells.length - 2];
     final last = cells.last;
@@ -141,7 +250,7 @@ class LevelConfig {
   final String difficultyLabel;
   final int gridCols;
   final int gridRows;
-  final LevelThemeShape themeShape;
+  final StageVisualTheme stageTheme;
   final List<ArrowItem> arrows;
 
   const LevelConfig({
@@ -149,978 +258,606 @@ class LevelConfig {
     required this.difficultyLabel,
     required this.gridCols,
     required this.gridRows,
-    this.themeShape = LevelThemeShape.standard,
+    this.stageTheme = StageVisualTheme.clean,
     required this.arrows,
   });
 }
 
-/// مستودع أول 20 مستوى مصممة ومفحوصة هندسياً لتكون قابلة للحل 100%
+/// مستودع الـ 20 مستوى عالية الكثافة والعمق (مفحوصة بخوارزمية free0=1..2 وعمق متسلسل 11..25)
 class LevelsRepository {
   static List<LevelConfig> getAllLevels() {
     return [
-      // المستوى 1: سهل (تعليمي - 4 أسهم ملتفة حول المركز)
+      // المستوى 1: سهل • البداية (6x6 | n=11 | free0=1 | depth=11 | E=111.8)
       LevelConfig(
         levelNumber: 1,
-        difficultyLabel: 'سهل',
-        gridCols: 5,
-        gridRows: 5,
+        difficultyLabel: 'سهل • البداية',
+        gridCols: 6,
+        gridRows: 6,
+        stageTheme: StageVisualTheme.clean,
         arrows: [
-          ArrowItem(
-            id: 'a1',
-            cells: const [Point(1, 2), Point(1, 1), Point(2, 1), Point(3, 1)],
-            badge: ArrowBadgeStyle.star,
-          ),
-          ArrowItem(
-            id: 'a2',
-            cells: const [Point(3, 3), Point(3, 2), Point(2, 2)],
-          ),
-          ArrowItem(
-            id: 'a3',
-            cells: const [Point(2, 3), Point(1, 3)],
-            badge: ArrowBadgeStyle.heart,
-          ),
-          ArrowItem(
-            id: 'a4',
-            cells: const [Point(2, 4), Point(3, 4), Point(4, 4), Point(4, 3), Point(4, 2)],
-          ),
+          ArrowItem(id: 'l1_1', cells: const [Point(0, 5), Point(0, 4)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l1_2', cells: const [Point(0, 0), Point(0, 1), Point(1, 1)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l1_3', cells: const [Point(2, 0), Point(2, 1)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l1_4', cells: const [Point(2, 4), Point(3, 4), Point(3, 3)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l1_5', cells: const [Point(3, 0), Point(4, 0), Point(5, 0), Point(5, 1)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l1_6', cells: const [Point(5, 3), Point(5, 2), Point(4, 2)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l1_7', cells: const [Point(4, 1), Point(3, 1), Point(3, 2), Point(2, 2)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l1_8', cells: const [Point(0, 2), Point(1, 2), Point(1, 3)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l1_9', cells: const [Point(1, 5), Point(2, 5)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l1_10', cells: const [Point(3, 5), Point(4, 5)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l1_11', cells: const [Point(4, 3), Point(4, 4), Point(5, 4), Point(5, 5)], badge: ArrowBadgeStyle.none),
         ],
       ),
-
-      // المستوى 2: عادي (الحلزون المتداخل)
+      // المستوى 2: سهل • خطوة للأمام (7x7 | n=15 | free0=2 | depth=11 | E=113.6)
       LevelConfig(
         levelNumber: 2,
-        difficultyLabel: 'عادي',
-        gridCols: 6,
-        gridRows: 6,
+        difficultyLabel: 'سهل • خطوة للأمام',
+        gridCols: 7,
+        gridRows: 7,
+        stageTheme: StageVisualTheme.clean,
         arrows: [
-          ArrowItem(
-            id: 'l2_1',
-            cells: const [Point(1, 0), Point(0, 0), Point(0, 1), Point(0, 2), Point(0, 3), Point(0, 4), Point(0, 5)],
-          ),
-          ArrowItem(
-            id: 'l2_2',
-            cells: const [Point(2, 5), Point(3, 5), Point(4, 5), Point(5, 5), Point(5, 4), Point(5, 3), Point(5, 2), Point(5, 1), Point(5, 0), Point(4, 0), Point(3, 0), Point(2, 0)],
-            badge: ArrowBadgeStyle.star,
-          ),
-          ArrowItem(
-            id: 'l2_3',
-            cells: const [Point(3, 4), Point(4, 4), Point(4, 3), Point(4, 2)],
-          ),
-          ArrowItem(
-            id: 'l2_4',
-            cells: const [Point(1, 3), Point(1, 2), Point(1, 1), Point(2, 1), Point(3, 1), Point(4, 1)],
-          ),
-          ArrowItem(
-            id: 'l2_5',
-            cells: const [Point(2, 4), Point(1, 4)],
-          ),
-          ArrowItem(
-            id: 'l2_6',
-            cells: const [Point(3, 3), Point(3, 2), Point(2, 2), Point(2, 3)],
-            badge: ArrowBadgeStyle.heart,
-          ),
+          ArrowItem(id: 'l2_1', cells: const [Point(0, 5), Point(0, 6), Point(1, 6)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l2_2', cells: const [Point(2, 6), Point(2, 5)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l2_3', cells: const [Point(1, 1), Point(2, 1)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l2_4', cells: const [Point(6, 1), Point(6, 0), Point(5, 0)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l2_5', cells: const [Point(3, 0), Point(3, 1)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l2_6', cells: const [Point(4, 4), Point(3, 4)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l2_7', cells: const [Point(0, 4), Point(1, 4), Point(1, 3), Point(2, 3)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l2_8', cells: const [Point(6, 3), Point(6, 2), Point(5, 2)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l2_9', cells: const [Point(4, 1), Point(4, 2), Point(3, 2)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l2_10', cells: const [Point(0, 3), Point(0, 2)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l2_11', cells: const [Point(0, 1), Point(0, 0)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l2_12', cells: const [Point(4, 3), Point(5, 3), Point(5, 4)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l2_13', cells: const [Point(4, 5), Point(5, 5)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l2_14', cells: const [Point(6, 4), Point(6, 5)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l2_15', cells: const [Point(3, 6), Point(4, 6), Point(5, 6), Point(6, 6)], badge: ArrowBadgeStyle.none),
         ],
       ),
-
-      // المستوى 3: عادي (شبكة متشابكة)
+      // المستوى 3: عادي • تشابك خفيف (8x8 | n=16 | free0=2 | depth=13 | E=147.5)
       LevelConfig(
         levelNumber: 3,
-        difficultyLabel: 'عادي',
-        gridCols: 6,
-        gridRows: 6,
+        difficultyLabel: 'عادي • تشابك خفيف',
+        gridCols: 8,
+        gridRows: 8,
+        stageTheme: StageVisualTheme.clean,
         arrows: [
-          ArrowItem(
-            id: 'l3_1',
-            cells: const [Point(0, 0), Point(1, 0), Point(2, 0), Point(2, 1), Point(1, 1), Point(0, 1)],
-          ),
-          ArrowItem(
-            id: 'l3_2',
-            cells: const [Point(3, 0), Point(4, 0), Point(5, 0), Point(5, 1), Point(5, 2)],
-            badge: ArrowBadgeStyle.star,
-          ),
-          ArrowItem(
-            id: 'l3_3',
-            cells: const [Point(5, 3), Point(5, 4), Point(5, 5), Point(4, 5), Point(3, 5)],
-          ),
-          ArrowItem(
-            id: 'l3_4',
-            cells: const [Point(2, 5), Point(1, 5), Point(0, 5), Point(0, 4), Point(0, 3), Point(0, 2)],
-          ),
-          ArrowItem(
-            id: 'l3_5',
-            cells: const [Point(3, 4), Point(4, 4), Point(4, 3), Point(4, 2), Point(4, 1)],
-            badge: ArrowBadgeStyle.heart,
-          ),
-          ArrowItem(
-            id: 'l3_6',
-            cells: const [Point(2, 2), Point(3, 2), Point(3, 3)],
-          ),
-          ArrowItem(
-            id: 'l3_7',
-            cells: const [Point(2, 3), Point(1, 3), Point(1, 2)],
-          ),
-          ArrowItem(
-            id: 'l3_8',
-            cells: const [Point(1, 4), Point(2, 4)],
-          ),
+          ArrowItem(id: 'l3_1', cells: const [Point(1, 1), Point(0, 1), Point(0, 0), Point(1, 0)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l3_2', cells: const [Point(7, 0), Point(7, 1)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l3_3', cells: const [Point(7, 2), Point(7, 3), Point(6, 3)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l3_4', cells: const [Point(1, 2), Point(1, 3), Point(0, 3), Point(0, 4), Point(1, 4)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l3_5', cells: const [Point(1, 5), Point(2, 5), Point(2, 4)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l3_6', cells: const [Point(2, 0), Point(3, 0), Point(3, 1)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l3_7', cells: const [Point(3, 4), Point(3, 5), Point(3, 6), Point(4, 6), Point(4, 5)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l3_8', cells: const [Point(4, 1), Point(5, 1), Point(5, 2)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l3_9', cells: const [Point(5, 6), Point(6, 6), Point(6, 7), Point(5, 7)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l3_10', cells: const [Point(4, 7), Point(3, 7)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l3_11', cells: const [Point(2, 7), Point(2, 6), Point(1, 6)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l3_12', cells: const [Point(0, 5), Point(0, 6)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l3_13', cells: const [Point(1, 7), Point(0, 7)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l3_14', cells: const [Point(4, 3), Point(4, 4), Point(5, 4)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l3_15', cells: const [Point(6, 5), Point(6, 4), Point(7, 4), Point(7, 5)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l3_16', cells: const [Point(7, 6), Point(7, 7)], badge: ArrowBadgeStyle.none),
         ],
       ),
-
-      // المستوى 4: عادي (المروحة الرباعية المتداخلة)
+      // المستوى 4: عادي • مسار متداخل (9x9 | n=20 | free0=2 | depth=18 | E=194.5)
       LevelConfig(
         levelNumber: 4,
-        difficultyLabel: 'عادي',
-        gridCols: 6,
-        gridRows: 6,
+        difficultyLabel: 'عادي • مسار متداخل',
+        gridCols: 9,
+        gridRows: 9,
+        stageTheme: StageVisualTheme.clean,
         arrows: [
-          ArrowItem(
-            id: 'l4_1',
-            cells: const [Point(2, 0), Point(1, 0), Point(0, 0)],
-          ),
-          ArrowItem(
-            id: 'l4_2',
-            cells: const [Point(5, 2), Point(5, 1), Point(5, 0), Point(4, 0), Point(3, 0)],
-          ),
-          ArrowItem(
-            id: 'l4_3',
-            cells: const [Point(3, 5), Point(4, 5), Point(5, 5), Point(5, 4), Point(5, 3)],
-            badge: ArrowBadgeStyle.star,
-          ),
-          ArrowItem(
-            id: 'l4_4',
-            cells: const [Point(0, 1), Point(0, 2), Point(0, 3), Point(0, 4), Point(0, 5), Point(1, 5), Point(2, 5)],
-          ),
-          ArrowItem(
-            id: 'l4_5',
-            cells: const [Point(1, 2), Point(1, 1), Point(2, 1), Point(3, 1), Point(4, 1)],
-          ),
-          ArrowItem(
-            id: 'l4_6',
-            cells: const [Point(4, 2), Point(4, 3), Point(4, 4), Point(3, 4), Point(2, 4), Point(1, 4), Point(1, 3)],
-            badge: ArrowBadgeStyle.heart,
-          ),
-          ArrowItem(
-            id: 'l4_7',
-            cells: const [Point(2, 2), Point(3, 2), Point(3, 3), Point(2, 3)],
-          ),
+          ArrowItem(id: 'l4_1', cells: const [Point(8, 2), Point(8, 3)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l4_2', cells: const [Point(7, 7), Point(8, 7), Point(8, 8), Point(7, 8)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l4_3', cells: const [Point(5, 7), Point(5, 8), Point(6, 8), Point(6, 7), Point(6, 6)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l4_4', cells: const [Point(6, 3), Point(5, 3)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l4_5', cells: const [Point(3, 2), Point(3, 3)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l4_6', cells: const [Point(3, 8), Point(3, 7), Point(2, 7), Point(2, 6)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l4_7', cells: const [Point(2, 1), Point(1, 1), Point(1, 2)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l4_8', cells: const [Point(2, 3), Point(2, 4), Point(1, 4), Point(1, 5), Point(2, 5)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l4_9', cells: const [Point(4, 6), Point(4, 5)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l4_10', cells: const [Point(3, 5), Point(3, 4), Point(4, 4)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l4_11', cells: const [Point(8, 4), Point(8, 5), Point(7, 5), Point(7, 4)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l4_12', cells: const [Point(8, 1), Point(8, 0), Point(7, 0)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l4_13', cells: const [Point(6, 0), Point(5, 0)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l4_14', cells: const [Point(1, 0), Point(0, 0), Point(0, 1)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l4_15', cells: const [Point(0, 2), Point(0, 3)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l4_16', cells: const [Point(0, 4), Point(0, 5)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l4_17', cells: const [Point(1, 6), Point(0, 6), Point(0, 7)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l4_18', cells: const [Point(1, 7), Point(1, 8), Point(0, 8)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l4_19', cells: const [Point(4, 3), Point(4, 2)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l4_20', cells: const [Point(5, 2), Point(5, 1), Point(4, 1), Point(4, 0)], badge: ArrowBadgeStyle.none),
         ],
       ),
-
-      // المستوى 5: تشكيل القلب ❤️ (أسهم تشكل قلباً جميلاً في الشبكة)
+      // المستوى 5: متوسط • المتاهة (10x10 | n=22 | free0=2 | depth=19 | E=201.8)
       LevelConfig(
         levelNumber: 5,
-        difficultyLabel: 'تشكيل القلب ❤️',
-        gridCols: 7,
-        gridRows: 7,
-        themeShape: LevelThemeShape.heart,
+        difficultyLabel: 'متوسط • المتاهة',
+        gridCols: 10,
+        gridRows: 10,
+        stageTheme: StageVisualTheme.ocean,
         arrows: [
-          // الجناح الأيسر العلوي للقلب
-          ArrowItem(
-            id: 'l5_1',
-            cells: const [Point(2, 1), Point(1, 1), Point(1, 2), Point(0, 2), Point(0, 3)],
-            badge: ArrowBadgeStyle.heart,
-          ),
-          // الجناح الأيمن العلوي للقلب
-          ArrowItem(
-            id: 'l5_2',
-            cells: const [Point(4, 1), Point(5, 1), Point(5, 2), Point(6, 2), Point(6, 3)],
-            badge: ArrowBadgeStyle.heart,
-          ),
-          // القوس الأيسر السفلي للقلب
-          ArrowItem(
-            id: 'l5_3',
-            cells: const [Point(2, 5), Point(1, 5), Point(1, 4), Point(0, 4)],
-          ),
-          // القوس الأيمن السفلي للقلب
-          ArrowItem(
-            id: 'l5_4',
-            cells: const [Point(4, 5), Point(5, 5), Point(5, 4), Point(6, 4)],
-          ),
-          // رأس القلب السفلي
-          ArrowItem(
-            id: 'l5_5',
-            cells: const [Point(3, 4), Point(3, 5), Point(3, 6)],
-            badge: ArrowBadgeStyle.heart,
-          ),
-          // الضلع الأيسر لقلب الوسط
-          ArrowItem(
-            id: 'l5_6',
-            cells: const [Point(2, 4), Point(2, 3), Point(2, 2)],
-          ),
-          // الضلع الأيمن لقلب الوسط
-          ArrowItem(
-            id: 'l5_7',
-            cells: const [Point(4, 4), Point(4, 3), Point(4, 2)],
-          ),
-          // مركز القلب النابض
-          ArrowItem(
-            id: 'l5_8',
-            cells: const [Point(3, 3), Point(3, 2)],
-            badge: ArrowBadgeStyle.heart,
-          ),
+          ArrowItem(id: 'l5_1', cells: const [Point(2, 6), Point(3, 6), Point(3, 5)], badge: ArrowBadgeStyle.heart),
+          ArrowItem(id: 'l5_2', cells: const [Point(2, 4), Point(3, 4)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l5_3', cells: const [Point(8, 3), Point(8, 4)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l5_4', cells: const [Point(9, 7), Point(8, 7)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l5_5', cells: const [Point(1, 7), Point(1, 6)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l5_6', cells: const [Point(1, 1), Point(1, 2), Point(2, 2), Point(3, 2)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l5_7', cells: const [Point(6, 1), Point(6, 2)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l5_8', cells: const [Point(5, 8), Point(6, 8), Point(6, 7), Point(5, 7), Point(5, 6)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l5_9', cells: const [Point(6, 3), Point(5, 3)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l5_10', cells: const [Point(3, 3), Point(4, 3), Point(4, 4)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l5_11', cells: const [Point(3, 8), Point(3, 9), Point(4, 9)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l5_12', cells: const [Point(8, 8), Point(8, 9), Point(7, 9), Point(7, 8)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l5_13', cells: const [Point(7, 7), Point(7, 6)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l5_14', cells: const [Point(8, 1), Point(8, 0), Point(7, 0)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l5_15', cells: const [Point(2, 0), Point(1, 0), Point(0, 0), Point(0, 1)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l5_16', cells: const [Point(0, 2), Point(0, 3)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l5_17', cells: const [Point(1, 4), Point(0, 4), Point(0, 5)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l5_18', cells: const [Point(0, 6), Point(0, 7)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l5_19', cells: const [Point(1, 9), Point(1, 8), Point(0, 8), Point(0, 9)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l5_20', cells: const [Point(8, 5), Point(8, 6), Point(9, 6), Point(9, 5)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l5_21', cells: const [Point(9, 4), Point(9, 3)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l5_22', cells: const [Point(9, 2), Point(9, 1)], badge: ArrowBadgeStyle.none),
         ],
       ),
-
-      // المستوى 6: متوسط (المتاهة المتقاطعة 7x7)
+      // المستوى 6: تشكيل القلب ❤️ (10x10 | n=20 | free0=2 | depth=16 | E=168.1)
       LevelConfig(
         levelNumber: 6,
-        difficultyLabel: 'متوسط',
-        gridCols: 7,
-        gridRows: 7,
+        difficultyLabel: 'تشكيل القلب ❤️',
+        gridCols: 10,
+        gridRows: 10,
+        stageTheme: StageVisualTheme.heart,
         arrows: [
-          ArrowItem(
-            id: 'l6_1',
-            cells: const [Point(2, 0), Point(1, 0), Point(0, 0)],
-          ),
-          ArrowItem(
-            id: 'l6_2',
-            cells: const [Point(3, 2), Point(3, 1), Point(3, 0), Point(4, 0), Point(5, 0), Point(6, 0)],
-            badge: ArrowBadgeStyle.star,
-          ),
-          ArrowItem(
-            id: 'l6_3',
-            cells: const [Point(6, 4), Point(6, 3), Point(6, 2), Point(6, 1)],
-          ),
-          ArrowItem(
-            id: 'l6_4',
-            cells: const [Point(4, 6), Point(5, 6), Point(6, 6), Point(6, 5)],
-          ),
-          ArrowItem(
-            id: 'l6_5',
-            cells: const [Point(3, 4), Point(3, 5), Point(3, 6), Point(2, 6), Point(1, 6), Point(0, 6)],
-            badge: ArrowBadgeStyle.heart,
-          ),
-          ArrowItem(
-            id: 'l6_6',
-            cells: const [Point(0, 1), Point(0, 2), Point(0, 3), Point(0, 4), Point(0, 5)],
-          ),
-          ArrowItem(
-            id: 'l6_7',
-            cells: const [Point(2, 2), Point(2, 1), Point(1, 1), Point(1, 2), Point(1, 3), Point(1, 4), Point(1, 5)],
-          ),
-          ArrowItem(
-            id: 'l6_8',
-            cells: const [Point(4, 2), Point(4, 1), Point(5, 1), Point(5, 2), Point(5, 3), Point(5, 4), Point(5, 5)],
-          ),
-          ArrowItem(
-            id: 'l6_9',
-            cells: const [Point(2, 5), Point(2, 4), Point(2, 3), Point(3, 3), Point(4, 3), Point(4, 4), Point(4, 5)],
-            badge: ArrowBadgeStyle.star,
-          ),
+          ArrowItem(id: 'l6_1', cells: const [Point(0, 2), Point(0, 3)], badge: ArrowBadgeStyle.heart),
+          ArrowItem(id: 'l6_2', cells: const [Point(1, 7), Point(0, 7), Point(0, 6), Point(1, 6)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l6_3', cells: const [Point(8, 6), Point(8, 5), Point(8, 4), Point(7, 4)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l6_4', cells: const [Point(2, 3), Point(2, 4)], badge: ArrowBadgeStyle.heart),
+          ArrowItem(id: 'l6_5', cells: const [Point(2, 7), Point(3, 7), Point(4, 7), Point(4, 6)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l6_6', cells: const [Point(3, 3), Point(4, 3)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l6_7', cells: const [Point(9, 3), Point(9, 4)], badge: ArrowBadgeStyle.heart),
+          ArrowItem(id: 'l6_8', cells: const [Point(9, 5), Point(9, 6)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l6_9', cells: const [Point(9, 7), Point(8, 7), Point(7, 7), Point(7, 8), Point(6, 8)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l6_10', cells: const [Point(4, 9), Point(5, 9), Point(5, 8)], badge: ArrowBadgeStyle.heart),
+          ArrowItem(id: 'l6_11', cells: const [Point(5, 7), Point(6, 7), Point(6, 6)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l6_12', cells: const [Point(6, 1), Point(5, 1)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l6_13', cells: const [Point(3, 1), Point(3, 2), Point(4, 2)], badge: ArrowBadgeStyle.heart),
+          ArrowItem(id: 'l6_14', cells: const [Point(5, 2), Point(6, 2)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l6_15', cells: const [Point(6, 3), Point(7, 3), Point(7, 2)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l6_16', cells: const [Point(7, 1), Point(8, 1)], badge: ArrowBadgeStyle.heart),
+          ArrowItem(id: 'l6_17', cells: const [Point(7, 5), Point(6, 5)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l6_18', cells: const [Point(1, 5), Point(1, 4)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l6_19', cells: const [Point(1, 3), Point(1, 2)], badge: ArrowBadgeStyle.heart),
+          ArrowItem(id: 'l6_20', cells: const [Point(2, 2), Point(2, 1), Point(1, 1)], badge: ArrowBadgeStyle.none),
         ],
       ),
-
-      // المستوى 7: متوسط (عقدة السلسلة)
+      // المستوى 7: صعب • عقدة المسار (10x10 | n=23 | free0=2 | depth=18 | E=202.9)
       LevelConfig(
         levelNumber: 7,
-        difficultyLabel: 'متوسط',
-        gridCols: 7,
-        gridRows: 7,
+        difficultyLabel: 'صعب • عقدة المسار',
+        gridCols: 10,
+        gridRows: 10,
+        stageTheme: StageVisualTheme.ocean,
         arrows: [
-          ArrowItem(
-            id: 'l7_1',
-            cells: const [Point(0, 3), Point(0, 2), Point(0, 1), Point(0, 0)],
-          ),
-          ArrowItem(
-            id: 'l7_2',
-            cells: const [Point(6, 3), Point(6, 2), Point(6, 1), Point(6, 0), Point(5, 0), Point(4, 0), Point(3, 0), Point(2, 0), Point(1, 0)],
-            badge: ArrowBadgeStyle.star,
-          ),
-          ArrowItem(
-            id: 'l7_3',
-            cells: const [Point(6, 4), Point(6, 5), Point(6, 6), Point(5, 6), Point(4, 6), Point(3, 6)],
-          ),
-          ArrowItem(
-            id: 'l7_4',
-            cells: const [Point(2, 6), Point(1, 6), Point(0, 6), Point(0, 5), Point(0, 4)],
-          ),
-          ArrowItem(
-            id: 'l7_5',
-            cells: const [Point(1, 3), Point(1, 2), Point(1, 1), Point(2, 1), Point(3, 1), Point(4, 1), Point(5, 1)],
-          ),
-          ArrowItem(
-            id: 'l7_6',
-            cells: const [Point(5, 2), Point(5, 3), Point(5, 4), Point(5, 5), Point(4, 5), Point(3, 5), Point(2, 5), Point(1, 5), Point(1, 4)],
-            badge: ArrowBadgeStyle.heart,
-          ),
-          ArrowItem(
-            id: 'l7_7',
-            cells: const [Point(4, 2), Point(3, 2), Point(2, 2), Point(2, 3), Point(2, 4)],
-          ),
-          ArrowItem(
-            id: 'l7_8',
-            cells: const [Point(3, 4), Point(4, 4), Point(4, 3), Point(3, 3)],
-          ),
+          ArrowItem(id: 'l7_1', cells: const [Point(7, 5), Point(6, 5)], badge: ArrowBadgeStyle.heart),
+          ArrowItem(id: 'l7_2', cells: const [Point(1, 5), Point(1, 6), Point(0, 6), Point(0, 5)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l7_3', cells: const [Point(0, 3), Point(0, 4), Point(1, 4)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l7_4', cells: const [Point(7, 3), Point(8, 3), Point(8, 4)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l7_5', cells: const [Point(9, 9), Point(9, 8), Point(8, 8)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l7_6', cells: const [Point(7, 8), Point(6, 8)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l7_7', cells: const [Point(4, 9), Point(5, 9), Point(5, 8), Point(4, 8), Point(4, 7)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l7_8', cells: const [Point(3, 6), Point(4, 6)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l7_9', cells: const [Point(9, 6), Point(9, 5)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l7_10', cells: const [Point(8, 2), Point(8, 1), Point(9, 1), Point(9, 0), Point(8, 0)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l7_11', cells: const [Point(6, 1), Point(6, 0), Point(5, 0)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l7_12', cells: const [Point(2, 0), Point(2, 1)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l7_13', cells: const [Point(1, 3), Point(2, 3), Point(2, 4)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l7_14', cells: const [Point(3, 4), Point(3, 5), Point(2, 5), Point(2, 6)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l7_15', cells: const [Point(3, 7), Point(3, 8), Point(2, 8)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l7_16', cells: const [Point(2, 7), Point(1, 7), Point(1, 8)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l7_17', cells: const [Point(2, 9), Point(1, 9)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l7_18', cells: const [Point(0, 7), Point(0, 8), Point(0, 9)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l7_19', cells: const [Point(7, 0), Point(7, 1), Point(7, 2), Point(6, 2)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l7_20', cells: const [Point(5, 2), Point(4, 2)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l7_21', cells: const [Point(3, 2), Point(2, 2)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l7_22', cells: const [Point(1, 2), Point(1, 1)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l7_23', cells: const [Point(1, 0), Point(0, 0)], badge: ArrowBadgeStyle.none),
         ],
       ),
-
-      // المستوى 8: صعب (الدرع المزدوج)
+      // المستوى 8: صعب • الممر الضيق (10x10 | n=20 | free0=1 | depth=20 | E=207.3)
       LevelConfig(
         levelNumber: 8,
-        difficultyLabel: 'صعب',
-        gridCols: 7,
-        gridRows: 7,
+        difficultyLabel: 'صعب • الممر الضيق',
+        gridCols: 10,
+        gridRows: 10,
+        stageTheme: StageVisualTheme.ocean,
         arrows: [
-          ArrowItem(
-            id: 'l8_1',
-            cells: const [Point(2, 0), Point(1, 0), Point(0, 0), Point(0, 1), Point(0, 2), Point(0, 3), Point(0, 4), Point(0, 5)],
-          ),
-          ArrowItem(
-            id: 'l8_2',
-            cells: const [Point(4, 0), Point(5, 0), Point(6, 0), Point(6, 1), Point(6, 2), Point(6, 3), Point(6, 4), Point(6, 5)],
-          ),
-          ArrowItem(
-            id: 'l8_3',
-            cells: const [Point(2, 6), Point(1, 6), Point(0, 6)],
-            badge: ArrowBadgeStyle.star,
-          ),
-          ArrowItem(
-            id: 'l8_4',
-            cells: const [Point(4, 6), Point(5, 6), Point(6, 6)],
-            badge: ArrowBadgeStyle.star,
-          ),
-          ArrowItem(
-            id: 'l8_5',
-            cells: const [Point(3, 2), Point(3, 1), Point(3, 0)],
-          ),
-          ArrowItem(
-            id: 'l8_6',
-            cells: const [Point(3, 4), Point(3, 5), Point(3, 6)],
-          ),
-          ArrowItem(
-            id: 'l8_7',
-            cells: const [Point(2, 4), Point(2, 3), Point(2, 2), Point(2, 1), Point(1, 1), Point(1, 2), Point(1, 3), Point(1, 4), Point(1, 5)],
-            badge: ArrowBadgeStyle.heart,
-          ),
-          ArrowItem(
-            id: 'l8_8',
-            cells: const [Point(4, 4), Point(4, 3), Point(4, 2), Point(4, 1), Point(5, 1), Point(5, 2), Point(5, 3), Point(5, 4), Point(5, 5)],
-            badge: ArrowBadgeStyle.heart,
-          ),
+          ArrowItem(id: 'l8_1', cells: const [Point(0, 7), Point(0, 6)], badge: ArrowBadgeStyle.star),
+          ArrowItem(id: 'l8_2', cells: const [Point(0, 2), Point(1, 2), Point(1, 3)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l8_3', cells: const [Point(0, 4), Point(0, 5), Point(1, 5)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l8_4', cells: const [Point(4, 6), Point(5, 6), Point(5, 5)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l8_5', cells: const [Point(5, 2), Point(6, 2), Point(6, 3)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l8_6', cells: const [Point(6, 8), Point(6, 9), Point(5, 9)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l8_7', cells: const [Point(2, 9), Point(2, 8), Point(2, 7)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l8_8', cells: const [Point(2, 6), Point(2, 5)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l8_9', cells: const [Point(1, 1), Point(2, 1)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l8_10', cells: const [Point(8, 1), Point(9, 1), Point(9, 2)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l8_11', cells: const [Point(9, 3), Point(9, 4)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l8_12', cells: const [Point(9, 5), Point(8, 5), Point(8, 6)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l8_13', cells: const [Point(8, 9), Point(7, 9), Point(7, 8)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l8_14', cells: const [Point(6, 1), Point(7, 1), Point(7, 0), Point(6, 0), Point(5, 0)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l8_15', cells: const [Point(2, 0), Point(3, 0), Point(3, 1)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l8_16', cells: const [Point(3, 3), Point(3, 4)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l8_17', cells: const [Point(3, 8), Point(3, 7), Point(4, 7)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l8_18', cells: const [Point(4, 8), Point(5, 8), Point(5, 7), Point(6, 7)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l8_19', cells: const [Point(9, 6), Point(9, 7)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l8_20', cells: const [Point(8, 7), Point(8, 8), Point(9, 8)], badge: ArrowBadgeStyle.none),
         ],
       ),
-
-      // المستوى 9: تشكيل النجمة ⭐ (أسهم تشكل نجمة مشعة من المركز)
+      // المستوى 9: صعب • الشبكة المقفلة (10x10 | n=22 | free0=2 | depth=17 | E=186.4)
       LevelConfig(
         levelNumber: 9,
-        difficultyLabel: 'تشكيل النجمة ⭐',
-        gridCols: 7,
-        gridRows: 7,
-        themeShape: LevelThemeShape.star,
+        difficultyLabel: 'صعب • الشبكة المقفلة',
+        gridCols: 10,
+        gridRows: 10,
+        stageTheme: StageVisualTheme.ocean,
         arrows: [
-          ArrowItem(
-            id: 'l9_1',
-            cells: const [Point(3, 3), Point(3, 2), Point(3, 1), Point(3, 0)],
-            badge: ArrowBadgeStyle.star,
-          ),
-          ArrowItem(
-            id: 'l9_2',
-            cells: const [Point(3, 4), Point(3, 5), Point(3, 6)],
-            badge: ArrowBadgeStyle.star,
-          ),
-          ArrowItem(
-            id: 'l9_3',
-            cells: const [Point(2, 3), Point(1, 3), Point(0, 3)],
-            badge: ArrowBadgeStyle.star,
-          ),
-          ArrowItem(
-            id: 'l9_4',
-            cells: const [Point(4, 3), Point(5, 3), Point(6, 3)],
-            badge: ArrowBadgeStyle.star,
-          ),
-          ArrowItem(
-            id: 'l9_5',
-            cells: const [Point(2, 2), Point(1, 2), Point(1, 1)],
-          ),
-          ArrowItem(
-            id: 'l9_6',
-            cells: const [Point(4, 2), Point(5, 2), Point(5, 1)],
-          ),
-          ArrowItem(
-            id: 'l9_7',
-            cells: const [Point(2, 4), Point(1, 4), Point(1, 5)],
-          ),
-          ArrowItem(
-            id: 'l9_8',
-            cells: const [Point(4, 4), Point(5, 4), Point(5, 5)],
-          ),
+          ArrowItem(id: 'l9_1', cells: const [Point(0, 3), Point(0, 2), Point(1, 2)], badge: ArrowBadgeStyle.heart),
+          ArrowItem(id: 'l9_2', cells: const [Point(7, 2), Point(8, 2), Point(8, 3)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l9_3', cells: const [Point(8, 4), Point(7, 4), Point(6, 4)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l9_4', cells: const [Point(4, 3), Point(4, 4)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l9_5', cells: const [Point(3, 5), Point(4, 5)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l9_6', cells: const [Point(8, 6), Point(9, 6), Point(9, 5)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l9_7', cells: const [Point(8, 0), Point(9, 0), Point(9, 1), Point(8, 1)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l9_8', cells: const [Point(6, 1), Point(7, 1), Point(7, 0), Point(6, 0)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l9_9', cells: const [Point(5, 0), Point(5, 1), Point(5, 2)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l9_10', cells: const [Point(6, 9), Point(6, 8), Point(5, 8)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l9_11', cells: const [Point(2, 8), Point(2, 7), Point(2, 6)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l9_12', cells: const [Point(2, 5), Point(2, 4)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l9_13', cells: const [Point(2, 3), Point(1, 3), Point(1, 4)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l9_14', cells: const [Point(1, 5), Point(0, 5), Point(0, 6)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l9_15', cells: const [Point(0, 7), Point(1, 7), Point(1, 8)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l9_16', cells: const [Point(2, 9), Point(1, 9)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l9_17', cells: const [Point(0, 8), Point(0, 9)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l9_18', cells: const [Point(3, 8), Point(3, 7), Point(4, 7)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l9_19', cells: const [Point(5, 6), Point(5, 7), Point(6, 7)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l9_20', cells: const [Point(7, 6), Point(7, 7)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l9_21', cells: const [Point(7, 8), Point(7, 9), Point(8, 9)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l9_22', cells: const [Point(9, 8), Point(9, 9)], badge: ArrowBadgeStyle.none),
         ],
       ),
-
-      // المستوى 10: تحدي الحلزون الملكي 8x8
+      // المستوى 10: تشكيل النجمة ⭐ (11x11 | n=14 | free0=3 | depth=9 | E=96.0)
       LevelConfig(
         levelNumber: 10,
-        difficultyLabel: 'تحدي خاص ⭐',
-        gridCols: 8,
-        gridRows: 8,
+        difficultyLabel: 'تشكيل النجمة ⭐',
+        gridCols: 11,
+        gridRows: 11,
+        stageTheme: StageVisualTheme.star,
         arrows: [
-          ArrowItem(
-            id: 'l10_1',
-            cells: const [Point(7, 0), Point(6, 0), Point(5, 0), Point(4, 0), Point(3, 0), Point(2, 0), Point(1, 0), Point(0, 0), Point(0, 1), Point(0, 2), Point(0, 3), Point(0, 4), Point(0, 5), Point(0, 6), Point(0, 7)],
-            badge: ArrowBadgeStyle.star,
-          ),
-          ArrowItem(
-            id: 'l10_2',
-            cells: const [Point(1, 7), Point(2, 7), Point(3, 7), Point(4, 7), Point(5, 7), Point(6, 7), Point(7, 7), Point(7, 6), Point(7, 5), Point(7, 4), Point(7, 3), Point(7, 2), Point(7, 1)],
-          ),
-          ArrowItem(
-            id: 'l10_3',
-            cells: const [Point(6, 1), Point(5, 1), Point(4, 1), Point(3, 1), Point(2, 1), Point(1, 1), Point(1, 2), Point(1, 3), Point(1, 4), Point(1, 5), Point(1, 6)],
-            badge: ArrowBadgeStyle.heart,
-          ),
-          ArrowItem(
-            id: 'l10_4',
-            cells: const [Point(2, 6), Point(3, 6), Point(4, 6), Point(5, 6), Point(6, 6), Point(6, 5), Point(6, 4), Point(6, 3), Point(6, 2)],
-          ),
-          ArrowItem(
-            id: 'l10_5',
-            cells: const [Point(5, 2), Point(4, 2), Point(3, 2), Point(2, 2), Point(2, 3), Point(2, 4), Point(2, 5)],
-            badge: ArrowBadgeStyle.star,
-          ),
-          ArrowItem(
-            id: 'l10_6',
-            cells: const [Point(3, 5), Point(4, 5), Point(5, 5), Point(5, 4), Point(5, 3)],
-          ),
-          ArrowItem(
-            id: 'l10_7',
-            cells: const [Point(4, 3), Point(3, 3), Point(3, 4), Point(4, 4)],
-            badge: ArrowBadgeStyle.heart,
-          ),
+          ArrowItem(id: 'l10_1', cells: const [Point(5, 2), Point(4, 2), Point(4, 3), Point(5, 3)], badge: ArrowBadgeStyle.star),
+          ArrowItem(id: 'l10_2', cells: const [Point(9, 3), Point(8, 3), Point(8, 4), Point(8, 5)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l10_3', cells: const [Point(8, 8), Point(8, 9), Point(7, 9)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l10_4', cells: const [Point(2, 9), Point(3, 9), Point(3, 8)], badge: ArrowBadgeStyle.star),
+          ArrowItem(id: 'l10_5', cells: const [Point(4, 6), Point(3, 6), Point(3, 5)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l10_6', cells: const [Point(4, 4), Point(3, 4)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l10_7', cells: const [Point(2, 5), Point(2, 4), Point(2, 3), Point(1, 3), Point(1, 4)], badge: ArrowBadgeStyle.star),
+          ArrowItem(id: 'l10_8', cells: const [Point(3, 7), Point(4, 7)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l10_9', cells: const [Point(6, 8), Point(6, 7)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l10_10', cells: const [Point(6, 6), Point(7, 6), Point(7, 5)], badge: ArrowBadgeStyle.star),
+          ArrowItem(id: 'l10_11', cells: const [Point(7, 4), Point(6, 4), Point(6, 3)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l10_12', cells: const [Point(6, 1), Point(5, 1)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l10_13', cells: const [Point(5, 4), Point(5, 5)], badge: ArrowBadgeStyle.star),
+          ArrowItem(id: 'l10_14', cells: const [Point(5, 6), Point(5, 7)], badge: ArrowBadgeStyle.none),
         ],
       ),
-
-      // المستوى 11: متوسط (الأجنحة المتناظرة 7x7)
+      // المستوى 11: صعب • تقاطع الأسهم (10x10 | n=22 | free0=2 | depth=19 | E=222.3)
       LevelConfig(
         levelNumber: 11,
-        difficultyLabel: 'متوسط',
-        gridCols: 7,
-        gridRows: 7,
+        difficultyLabel: 'صعب • تقاطع الأسهم',
+        gridCols: 10,
+        gridRows: 10,
+        stageTheme: StageVisualTheme.ocean,
         arrows: [
-          ArrowItem(
-            id: 'l11_1',
-            cells: const [Point(3, 0), Point(2, 0), Point(1, 0), Point(0, 0)],
-          ),
-          ArrowItem(
-            id: 'l11_2',
-            cells: const [Point(6, 2), Point(6, 1), Point(6, 0), Point(5, 0), Point(4, 0)],
-            badge: ArrowBadgeStyle.star,
-          ),
-          ArrowItem(
-            id: 'l11_3',
-            cells: const [Point(2, 6), Point(1, 6), Point(0, 6), Point(0, 5), Point(0, 4), Point(0, 3)],
-          ),
-          ArrowItem(
-            id: 'l11_4',
-            cells: const [Point(6, 3), Point(6, 4), Point(6, 5), Point(6, 6), Point(5, 6), Point(4, 6), Point(3, 6)],
-          ),
-          ArrowItem(
-            id: 'l11_5',
-            cells: const [Point(3, 1), Point(2, 1), Point(1, 1)],
-            badge: ArrowBadgeStyle.heart,
-          ),
-          ArrowItem(
-            id: 'l11_6',
-            cells: const [Point(4, 1), Point(5, 1)],
-          ),
-          ArrowItem(
-            id: 'l11_7',
-            cells: const [Point(1, 2), Point(1, 3), Point(1, 4), Point(1, 5), Point(2, 5), Point(3, 5), Point(4, 5), Point(5, 5), Point(5, 4), Point(5, 3), Point(5, 2)],
-          ),
-          ArrowItem(
-            id: 'l11_8',
-            cells: const [Point(3, 3), Point(3, 2), Point(2, 2), Point(2, 3), Point(2, 4), Point(3, 4), Point(4, 4), Point(4, 3), Point(4, 2)],
-            badge: ArrowBadgeStyle.star,
-          ),
+          ArrowItem(id: 'l11_1', cells: const [Point(8, 3), Point(7, 3)], badge: ArrowBadgeStyle.heart),
+          ArrowItem(id: 'l11_2', cells: const [Point(2, 2), Point(3, 2), Point(3, 3)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l11_3', cells: const [Point(2, 3), Point(2, 4), Point(3, 4)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l11_4', cells: const [Point(5, 2), Point(5, 3), Point(4, 3), Point(4, 4)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l11_5', cells: const [Point(3, 9), Point(4, 9)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l11_6', cells: const [Point(8, 8), Point(8, 9), Point(7, 9), Point(7, 8), Point(6, 8)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l11_7', cells: const [Point(3, 8), Point(3, 7), Point(4, 7)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l11_8', cells: const [Point(9, 8), Point(9, 7)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l11_9', cells: const [Point(9, 6), Point(8, 6)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l11_10', cells: const [Point(6, 6), Point(5, 6)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l11_11', cells: const [Point(4, 6), Point(3, 6), Point(3, 5), Point(4, 5)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l11_12', cells: const [Point(7, 5), Point(6, 5), Point(6, 4)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l11_13', cells: const [Point(6, 1), Point(7, 1), Point(7, 0), Point(6, 0)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l11_14', cells: const [Point(3, 1), Point(2, 1), Point(2, 0), Point(1, 0), Point(1, 1)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l11_15', cells: const [Point(0, 2), Point(1, 2), Point(1, 3), Point(0, 3), Point(0, 4)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l11_16', cells: const [Point(0, 5), Point(1, 5), Point(2, 5), Point(2, 6)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l11_17', cells: const [Point(2, 8), Point(1, 8)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l11_18', cells: const [Point(1, 6), Point(1, 7), Point(0, 7), Point(0, 8)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l11_19', cells: const [Point(1, 9), Point(0, 9)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l11_20', cells: const [Point(8, 4), Point(8, 5), Point(9, 5), Point(9, 4)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l11_21', cells: const [Point(9, 3), Point(9, 2)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l11_22', cells: const [Point(7, 2), Point(8, 2), Point(8, 1), Point(9, 1), Point(9, 0)], badge: ArrowBadgeStyle.none),
         ],
       ),
-
-      // المستوى 12: متوسط (المعبر المزدوج 7x7)
+      // المستوى 12: القلب الكبير ❤️ (11x11 | n=22 | free0=2 | depth=18 | E=200.0)
       LevelConfig(
         levelNumber: 12,
-        difficultyLabel: 'متوسط',
-        gridCols: 7,
-        gridRows: 7,
+        difficultyLabel: 'القلب الكبير ❤️',
+        gridCols: 11,
+        gridRows: 11,
+        stageTheme: StageVisualTheme.heart,
         arrows: [
-          ArrowItem(
-            id: 'l12_1',
-            cells: const [Point(2, 0), Point(1, 0), Point(0, 0)],
-          ),
-          ArrowItem(
-            id: 'l12_2',
-            cells: const [Point(6, 2), Point(6, 1), Point(6, 0), Point(5, 0), Point(4, 0), Point(3, 0)],
-          ),
-          ArrowItem(
-            id: 'l12_3',
-            cells: const [Point(6, 3), Point(6, 4), Point(6, 5), Point(6, 6), Point(5, 6), Point(4, 6)],
-            badge: ArrowBadgeStyle.star,
-          ),
-          ArrowItem(
-            id: 'l12_4',
-            cells: const [Point(3, 6), Point(2, 6), Point(1, 6), Point(0, 6), Point(0, 5), Point(0, 4), Point(0, 3), Point(0, 2), Point(0, 1)],
-          ),
-          ArrowItem(
-            id: 'l12_5',
-            cells: const [Point(3, 1), Point(2, 1), Point(1, 1), Point(1, 2), Point(1, 3), Point(1, 4), Point(1, 5)],
-          ),
-          ArrowItem(
-            id: 'l12_6',
-            cells: const [Point(4, 1), Point(5, 1), Point(5, 2), Point(5, 3), Point(5, 4), Point(5, 5)],
-            badge: ArrowBadgeStyle.heart,
-          ),
-          ArrowItem(
-            id: 'l12_7',
-            cells: const [Point(2, 5), Point(2, 4), Point(2, 3), Point(2, 2), Point(3, 2)],
-          ),
-          ArrowItem(
-            id: 'l12_8',
-            cells: const [Point(3, 5), Point(4, 5), Point(4, 4), Point(4, 3), Point(4, 2)],
-          ),
-          ArrowItem(
-            id: 'l12_9',
-            cells: const [Point(3, 4), Point(3, 3)],
-            badge: ArrowBadgeStyle.star,
-          ),
+          ArrowItem(id: 'l12_1', cells: const [Point(10, 7), Point(10, 8), Point(9, 8)], badge: ArrowBadgeStyle.heart),
+          ArrowItem(id: 'l12_2', cells: const [Point(4, 9), Point(4, 8)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l12_3', cells: const [Point(4, 1), Point(5, 1)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l12_4', cells: const [Point(6, 1), Point(6, 2)], badge: ArrowBadgeStyle.heart),
+          ArrowItem(id: 'l12_5', cells: const [Point(6, 3), Point(7, 3), Point(8, 3), Point(8, 4)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l12_6', cells: const [Point(8, 5), Point(7, 5)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l12_7', cells: const [Point(7, 4), Point(6, 4), Point(6, 5)], badge: ArrowBadgeStyle.heart),
+          ArrowItem(id: 'l12_8', cells: const [Point(6, 9), Point(7, 9), Point(7, 10), Point(6, 10)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l12_9', cells: const [Point(4, 10), Point(3, 10), Point(3, 9)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l12_10', cells: const [Point(2, 9), Point(2, 8), Point(3, 8), Point(3, 7)], badge: ArrowBadgeStyle.heart),
+          ArrowItem(id: 'l12_11', cells: const [Point(4, 7), Point(4, 6), Point(3, 6), Point(3, 5)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l12_12', cells: const [Point(3, 2), Point(4, 2), Point(5, 2), Point(5, 3)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l12_13', cells: const [Point(4, 5), Point(4, 4), Point(5, 4), Point(5, 5)], badge: ArrowBadgeStyle.heart),
+          ArrowItem(id: 'l12_14', cells: const [Point(6, 7), Point(5, 7), Point(5, 6), Point(6, 6)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l12_15', cells: const [Point(9, 7), Point(9, 6)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l12_16', cells: const [Point(10, 5), Point(9, 5), Point(9, 4)], badge: ArrowBadgeStyle.heart),
+          ArrowItem(id: 'l12_17', cells: const [Point(9, 3), Point(9, 2)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l12_18', cells: const [Point(8, 1), Point(9, 1)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l12_19', cells: const [Point(1, 3), Point(1, 4)], badge: ArrowBadgeStyle.heart),
+          ArrowItem(id: 'l12_20', cells: const [Point(1, 6), Point(0, 6), Point(0, 5)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l12_21', cells: const [Point(0, 4), Point(0, 3)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l12_22', cells: const [Point(0, 2), Point(1, 2), Point(2, 2), Point(2, 1)], badge: ArrowBadgeStyle.heart),
         ],
       ),
-
-      // المستوى 13: تشكيل القلب المزدوج ❤️ (7x7)
+      // المستوى 13: صعب • الحصار (11x11 | n=22 | free0=1 | depth=22 | E=235.0)
       LevelConfig(
         levelNumber: 13,
-        difficultyLabel: 'القلب المزدوج ❤️',
-        gridCols: 7,
-        gridRows: 7,
-        themeShape: LevelThemeShape.heart,
+        difficultyLabel: 'صعب • الحصار',
+        gridCols: 11,
+        gridRows: 11,
+        stageTheme: StageVisualTheme.ocean,
         arrows: [
-          ArrowItem(
-            id: 'l13_1',
-            cells: const [Point(2, 0), Point(1, 0), Point(0, 0), Point(0, 1), Point(0, 2)],
-            badge: ArrowBadgeStyle.heart,
-          ),
-          ArrowItem(
-            id: 'l13_2',
-            cells: const [Point(4, 0), Point(5, 0), Point(6, 0), Point(6, 1), Point(6, 2)],
-            badge: ArrowBadgeStyle.heart,
-          ),
-          ArrowItem(
-            id: 'l13_3',
-            cells: const [Point(0, 3), Point(0, 4), Point(1, 4), Point(1, 5), Point(2, 5), Point(2, 6)],
-          ),
-          ArrowItem(
-            id: 'l13_4',
-            cells: const [Point(6, 3), Point(6, 4), Point(5, 4), Point(5, 5), Point(4, 5), Point(4, 6)],
-          ),
-          ArrowItem(
-            id: 'l13_5',
-            cells: const [Point(3, 5), Point(3, 6)],
-            badge: ArrowBadgeStyle.heart,
-          ),
-          ArrowItem(
-            id: 'l13_6',
-            cells: const [Point(3, 1), Point(2, 1), Point(1, 1), Point(1, 2), Point(1, 3)],
-          ),
-          ArrowItem(
-            id: 'l13_7',
-            cells: const [Point(4, 1), Point(5, 1), Point(5, 2), Point(5, 3)],
-          ),
-          ArrowItem(
-            id: 'l13_8',
-            cells: const [Point(3, 3), Point(3, 2), Point(2, 2), Point(2, 3), Point(2, 4), Point(3, 4), Point(4, 4), Point(4, 3), Point(4, 2)],
-            badge: ArrowBadgeStyle.heart,
-          ),
+          ArrowItem(id: 'l13_1', cells: const [Point(3, 6), Point(4, 6)], badge: ArrowBadgeStyle.heart),
+          ArrowItem(id: 'l13_2', cells: const [Point(7, 5), Point(7, 6), Point(8, 6), Point(8, 7), Point(7, 7)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l13_3', cells: const [Point(1, 7), Point(1, 6)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l13_4', cells: const [Point(0, 3), Point(1, 3)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l13_5', cells: const [Point(7, 3), Point(8, 3), Point(8, 4), Point(7, 4)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l13_6', cells: const [Point(3, 4), Point(2, 4), Point(2, 5)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l13_7', cells: const [Point(2, 7), Point(2, 8), Point(3, 8), Point(4, 8)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l13_8', cells: const [Point(8, 8), Point(9, 8), Point(9, 7)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l13_9', cells: const [Point(9, 6), Point(9, 5)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l13_10', cells: const [Point(9, 2), Point(8, 2)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l13_11', cells: const [Point(4, 3), Point(5, 3), Point(5, 2), Point(6, 2), Point(6, 3)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l13_12', cells: const [Point(5, 5), Point(5, 4), Point(6, 4), Point(6, 5)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l13_13', cells: const [Point(6, 10), Point(5, 10)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l13_14', cells: const [Point(0, 10), Point(0, 9), Point(1, 9)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l13_15', cells: const [Point(3, 10), Point(3, 9), Point(4, 9)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l13_16', cells: const [Point(10, 10), Point(10, 9)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l13_17', cells: const [Point(10, 2), Point(10, 1), Point(9, 1)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l13_18', cells: const [Point(1, 1), Point(1, 0), Point(2, 0)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l13_19', cells: const [Point(3, 1), Point(3, 0), Point(4, 0)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l13_20', cells: const [Point(5, 1), Point(5, 0), Point(6, 0)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l13_21', cells: const [Point(7, 1), Point(7, 0), Point(8, 0)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l13_22', cells: const [Point(9, 0), Point(10, 0)], badge: ArrowBadgeStyle.none),
         ],
       ),
-
-      // المستوى 14: صعب (القفل المتشابك 8x8)
+      // المستوى 14: صعب • المتاهة العميقة (11x11 | n=24 | free0=2 | depth=19 | E=223.3)
       LevelConfig(
         levelNumber: 14,
-        difficultyLabel: 'صعب',
-        gridCols: 8,
-        gridRows: 8,
+        difficultyLabel: 'صعب • المتاهة العميقة',
+        gridCols: 11,
+        gridRows: 11,
+        stageTheme: StageVisualTheme.ocean,
         arrows: [
-          ArrowItem(
-            id: 'l14_1',
-            cells: const [Point(3, 0), Point(2, 0), Point(1, 0), Point(0, 0)],
-          ),
-          ArrowItem(
-            id: 'l14_2',
-            cells: const [Point(4, 0), Point(5, 0), Point(6, 0), Point(7, 0)],
-            badge: ArrowBadgeStyle.star,
-          ),
-          ArrowItem(
-            id: 'l14_3',
-            cells: const [Point(0, 4), Point(0, 3), Point(0, 2), Point(0, 1)],
-          ),
-          ArrowItem(
-            id: 'l14_4',
-            cells: const [Point(7, 4), Point(7, 3), Point(7, 2), Point(7, 1)],
-          ),
-          ArrowItem(
-            id: 'l14_5',
-            cells: const [Point(3, 7), Point(2, 7), Point(1, 7), Point(0, 7), Point(0, 6), Point(0, 5)],
-            badge: ArrowBadgeStyle.heart,
-          ),
-          ArrowItem(
-            id: 'l14_6',
-            cells: const [Point(7, 5), Point(7, 6), Point(7, 7), Point(6, 7), Point(5, 7), Point(4, 7)],
-          ),
-          ArrowItem(
-            id: 'l14_7',
-            cells: const [Point(3, 1), Point(2, 1), Point(1, 1), Point(1, 2), Point(1, 3), Point(1, 4), Point(1, 5), Point(1, 6)],
-          ),
-          ArrowItem(
-            id: 'l14_8',
-            cells: const [Point(4, 1), Point(5, 1), Point(6, 1), Point(6, 2), Point(6, 3), Point(6, 4), Point(6, 5), Point(6, 6)],
-            badge: ArrowBadgeStyle.star,
-          ),
-          ArrowItem(
-            id: 'l14_9',
-            cells: const [Point(2, 6), Point(3, 6), Point(4, 6), Point(5, 6)],
-          ),
-          ArrowItem(
-            id: 'l14_10',
-            cells: const [Point(5, 2), Point(4, 2), Point(3, 2), Point(2, 2), Point(2, 3), Point(2, 4), Point(2, 5)],
-          ),
-          ArrowItem(
-            id: 'l14_11',
-            cells: const [Point(3, 4), Point(3, 5), Point(4, 5), Point(5, 5), Point(5, 4), Point(5, 3), Point(4, 3), Point(3, 3)],
-            badge: ArrowBadgeStyle.heart,
-          ),
+          ArrowItem(id: 'l14_1', cells: const [Point(5, 6), Point(6, 6), Point(6, 5)], badge: ArrowBadgeStyle.star),
+          ArrowItem(id: 'l14_2', cells: const [Point(6, 3), Point(6, 4), Point(5, 4)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l14_3', cells: const [Point(1, 4), Point(1, 3), Point(1, 2), Point(2, 2)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l14_4', cells: const [Point(8, 2), Point(7, 2), Point(7, 3)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l14_5', cells: const [Point(6, 9), Point(7, 9), Point(7, 8), Point(6, 8), Point(5, 8)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l14_6', cells: const [Point(1, 9), Point(1, 8), Point(0, 8), Point(0, 7)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l14_7', cells: const [Point(1, 1), Point(0, 1), Point(0, 0), Point(1, 0), Point(2, 0)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l14_8', cells: const [Point(4, 0), Point(4, 1), Point(5, 1)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l14_9', cells: const [Point(10, 1), Point(10, 2)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l14_10', cells: const [Point(10, 3), Point(9, 3), Point(9, 4)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l14_11', cells: const [Point(9, 10), Point(8, 10), Point(7, 10)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l14_12', cells: const [Point(3, 10), Point(3, 9), Point(3, 8)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l14_13', cells: const [Point(2, 1), Point(3, 1), Point(3, 2), Point(4, 2), Point(4, 3)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l14_14', cells: const [Point(2, 3), Point(3, 3), Point(3, 4), Point(4, 4), Point(4, 5)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l14_15', cells: const [Point(4, 6), Point(4, 7), Point(5, 7)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l14_16', cells: const [Point(6, 7), Point(7, 7)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l14_17', cells: const [Point(9, 6), Point(10, 6), Point(10, 7)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l14_18', cells: const [Point(10, 8), Point(9, 8), Point(8, 8), Point(8, 9), Point(9, 9)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l14_19', cells: const [Point(10, 9), Point(10, 10)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l14_20', cells: const [Point(2, 4), Point(2, 5)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l14_21', cells: const [Point(3, 6), Point(2, 6), Point(2, 7)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l14_22', cells: const [Point(2, 8), Point(2, 9)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l14_23', cells: const [Point(2, 10), Point(1, 10)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l14_24', cells: const [Point(0, 9), Point(0, 10)], badge: ArrowBadgeStyle.none),
         ],
       ),
-
-      // المستوى 15: تشكيل النجمة الكبرى ⭐ (8x8)
+      // المستوى 15: تشكيل الماسة 💎 (11x11 | n=16 | free0=2 | depth=15 | E=154.6)
       LevelConfig(
         levelNumber: 15,
-        difficultyLabel: 'النجمة الكبرى ⭐',
-        gridCols: 8,
-        gridRows: 8,
-        themeShape: LevelThemeShape.star,
+        difficultyLabel: 'تشكيل الماسة 💎',
+        gridCols: 11,
+        gridRows: 11,
+        stageTheme: StageVisualTheme.diamond,
         arrows: [
-          ArrowItem(
-            id: 'l15_1',
-            cells: const [Point(3, 2), Point(3, 1), Point(3, 0), Point(2, 0), Point(1, 0), Point(0, 0)],
-            badge: ArrowBadgeStyle.star,
-          ),
-          ArrowItem(
-            id: 'l15_2',
-            cells: const [Point(4, 2), Point(4, 1), Point(4, 0), Point(5, 0), Point(6, 0), Point(7, 0)],
-            badge: ArrowBadgeStyle.star,
-          ),
-          ArrowItem(
-            id: 'l15_3',
-            cells: const [Point(2, 3), Point(1, 3), Point(0, 3), Point(0, 2), Point(0, 1)],
-            badge: ArrowBadgeStyle.star,
-          ),
-          ArrowItem(
-            id: 'l15_4',
-            cells: const [Point(5, 3), Point(6, 3), Point(7, 3), Point(7, 2), Point(7, 1)],
-            badge: ArrowBadgeStyle.star,
-          ),
-          ArrowItem(
-            id: 'l15_5',
-            cells: const [Point(2, 4), Point(1, 4), Point(0, 4), Point(0, 5), Point(0, 6), Point(0, 7)],
-          ),
-          ArrowItem(
-            id: 'l15_6',
-            cells: const [Point(5, 4), Point(6, 4), Point(7, 4), Point(7, 5), Point(7, 6), Point(7, 7)],
-          ),
-          ArrowItem(
-            id: 'l15_7',
-            cells: const [Point(3, 5), Point(3, 6), Point(3, 7), Point(2, 7), Point(1, 7)],
-            badge: ArrowBadgeStyle.star,
-          ),
-          ArrowItem(
-            id: 'l15_8',
-            cells: const [Point(4, 5), Point(4, 6), Point(4, 7), Point(5, 7), Point(6, 7)],
-            badge: ArrowBadgeStyle.star,
-          ),
-          ArrowItem(
-            id: 'l15_9',
-            cells: const [Point(2, 2), Point(2, 1), Point(1, 1), Point(1, 2)],
-          ),
-          ArrowItem(
-            id: 'l15_10',
-            cells: const [Point(5, 2), Point(5, 1), Point(6, 1), Point(6, 2)],
-          ),
-          ArrowItem(
-            id: 'l15_11',
-            cells: const [Point(3, 4), Point(3, 3), Point(4, 3), Point(4, 4)],
-            badge: ArrowBadgeStyle.heart,
-          ),
+          ArrowItem(id: 'l15_1', cells: const [Point(9, 3), Point(9, 4), Point(8, 4)], badge: ArrowBadgeStyle.star),
+          ArrowItem(id: 'l15_2', cells: const [Point(6, 4), Point(6, 3), Point(6, 2), Point(5, 2)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l15_3', cells: const [Point(4, 2), Point(4, 3)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l15_4', cells: const [Point(3, 5), Point(4, 5)], badge: ArrowBadgeStyle.star),
+          ArrowItem(id: 'l15_5', cells: const [Point(4, 4), Point(5, 4), Point(5, 5)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l15_6', cells: const [Point(6, 9), Point(5, 9)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l15_7', cells: const [Point(4, 9), Point(3, 9), Point(3, 8), Point(4, 8)], badge: ArrowBadgeStyle.star),
+          ArrowItem(id: 'l15_8', cells: const [Point(8, 8), Point(7, 8), Point(7, 7), Point(6, 7)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l15_9', cells: const [Point(1, 7), Point(1, 6), Point(1, 5)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l15_10', cells: const [Point(1, 4), Point(2, 4), Point(2, 5)], badge: ArrowBadgeStyle.star),
+          ArrowItem(id: 'l15_11', cells: const [Point(2, 7), Point(2, 6), Point(3, 6)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l15_12', cells: const [Point(4, 6), Point(5, 6)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l15_13', cells: const [Point(8, 6), Point(7, 6), Point(7, 5)], badge: ArrowBadgeStyle.star),
+          ArrowItem(id: 'l15_14', cells: const [Point(7, 2), Point(7, 1), Point(6, 1), Point(5, 1)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l15_15', cells: const [Point(3, 2), Point(3, 1), Point(4, 1), Point(4, 0), Point(5, 0)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l15_16', cells: const [Point(0, 4), Point(0, 5)], badge: ArrowBadgeStyle.star),
         ],
       ),
-
-      // المستوى 16: صعب (المتاهة العكسية 8x8)
+      // المستوى 16: محترف • الشفق (11x11 | n=23 | free0=2 | depth=21 | E=221.7)
       LevelConfig(
         levelNumber: 16,
-        difficultyLabel: 'صعب',
-        gridCols: 8,
-        gridRows: 8,
+        difficultyLabel: 'محترف • الشفق',
+        gridCols: 11,
+        gridRows: 11,
+        stageTheme: StageVisualTheme.twilight,
         arrows: [
-          ArrowItem(
-            id: 'l16_1',
-            cells: const [Point(0, 6), Point(0, 5), Point(0, 4), Point(0, 3), Point(0, 2), Point(0, 1), Point(0, 0)],
-          ),
-          ArrowItem(
-            id: 'l16_2',
-            cells: const [Point(7, 0), Point(6, 0), Point(5, 0), Point(4, 0), Point(3, 0), Point(2, 0), Point(1, 0)],
-            badge: ArrowBadgeStyle.star,
-          ),
-          ArrowItem(
-            id: 'l16_3',
-            cells: const [Point(7, 7), Point(7, 6), Point(7, 5), Point(7, 4), Point(7, 3), Point(7, 2), Point(7, 1)],
-          ),
-          ArrowItem(
-            id: 'l16_4',
-            cells: const [Point(0, 7), Point(1, 7), Point(2, 7), Point(3, 7), Point(4, 7), Point(5, 7), Point(6, 7)],
-            badge: ArrowBadgeStyle.heart,
-          ),
-          ArrowItem(
-            id: 'l16_5',
-            cells: const [Point(1, 5), Point(1, 4), Point(1, 3), Point(1, 2), Point(1, 1), Point(2, 1), Point(3, 1), Point(4, 1), Point(5, 1), Point(6, 1)],
-          ),
-          ArrowItem(
-            id: 'l16_6',
-            cells: const [Point(6, 2), Point(6, 3), Point(6, 4), Point(6, 5), Point(6, 6), Point(5, 6), Point(4, 6), Point(3, 6), Point(2, 6), Point(1, 6)],
-            badge: ArrowBadgeStyle.star,
-          ),
-          ArrowItem(
-            id: 'l16_7',
-            cells: const [Point(5, 2), Point(4, 2), Point(3, 2), Point(2, 2), Point(2, 3), Point(2, 4), Point(2, 5)],
-          ),
-          ArrowItem(
-            id: 'l16_8',
-            cells: const [Point(3, 5), Point(4, 5), Point(5, 5), Point(5, 4), Point(5, 3)],
-          ),
-          ArrowItem(
-            id: 'l16_9',
-            cells: const [Point(4, 4), Point(3, 4), Point(3, 3), Point(4, 3)],
-            badge: ArrowBadgeStyle.heart,
-          ),
+          ArrowItem(id: 'l16_1', cells: const [Point(10, 0), Point(10, 1)], badge: ArrowBadgeStyle.star),
+          ArrowItem(id: 'l16_2', cells: const [Point(10, 10), Point(9, 10)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l16_3', cells: const [Point(7, 10), Point(7, 9), Point(6, 9)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l16_4', cells: const [Point(2, 10), Point(3, 10), Point(3, 9), Point(4, 9), Point(4, 8)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l16_5', cells: const [Point(3, 3), Point(4, 3)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l16_6', cells: const [Point(6, 3), Point(5, 3), Point(5, 4), Point(5, 5)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l16_7', cells: const [Point(6, 7), Point(6, 6), Point(5, 6)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l16_8', cells: const [Point(1, 6), Point(1, 5)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l16_9', cells: const [Point(1, 4), Point(0, 4), Point(0, 5)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l16_10', cells: const [Point(0, 9), Point(1, 9), Point(2, 9), Point(2, 8)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l16_11', cells: const [Point(1, 7), Point(2, 7), Point(2, 6)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l16_12', cells: const [Point(1, 2), Point(2, 2)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l16_13', cells: const [Point(4, 2), Point(5, 2)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l16_14', cells: const [Point(8, 1), Point(8, 2)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l16_15', cells: const [Point(7, 8), Point(8, 8), Point(8, 9), Point(9, 9), Point(9, 8)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l16_16', cells: const [Point(9, 7), Point(9, 6)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l16_17', cells: const [Point(9, 0), Point(8, 0), Point(7, 0)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l16_18', cells: const [Point(6, 1), Point(6, 0), Point(5, 0)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l16_19', cells: const [Point(4, 1), Point(4, 0), Point(3, 0)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l16_20', cells: const [Point(2, 1), Point(2, 0), Point(1, 0)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l16_21', cells: const [Point(1, 1), Point(0, 1), Point(0, 0)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l16_22', cells: const [Point(6, 4), Point(6, 5), Point(7, 5)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l16_23', cells: const [Point(8, 5), Point(8, 4), Point(8, 3), Point(9, 3)], badge: ArrowBadgeStyle.none),
         ],
       ),
-
-      // المستوى 17: صعب (القلعة الحصينة 8x8)
+      // المستوى 17: محترف • القلعة (11x11 | n=25 | free0=2 | depth=22 | E=238.8)
       LevelConfig(
         levelNumber: 17,
-        difficultyLabel: 'صعب',
-        gridCols: 8,
-        gridRows: 8,
+        difficultyLabel: 'محترف • القلعة',
+        gridCols: 11,
+        gridRows: 11,
+        stageTheme: StageVisualTheme.twilight,
         arrows: [
-          ArrowItem(
-            id: 'l17_1',
-            cells: const [Point(2, 0), Point(1, 0), Point(0, 0), Point(0, 1), Point(0, 2)], // exits down after l17_9/l17_11/l17_3 leave!
-          ),
-          ArrowItem(
-            id: 'l17_2',
-            cells: const [Point(5, 0), Point(6, 0), Point(7, 0), Point(7, 1), Point(7, 2)], // exits down after l17_10/l17_12/l17_4 leave!
-          ),
-          ArrowItem(
-            id: 'l17_3',
-            cells: const [Point(0, 5), Point(0, 6), Point(0, 7), Point(1, 7), Point(2, 7)], // exits right after l17_7/l17_8/l17_4 leave!
-            badge: ArrowBadgeStyle.star,
-          ),
-          ArrowItem(
-            id: 'l17_4',
-            cells: const [Point(7, 5), Point(7, 6), Point(6, 6), Point(5, 6), Point(5, 7), Point(6, 7), Point(7, 7)],
-            badge: ArrowBadgeStyle.star,
-          ),
-          ArrowItem(
-            id: 'l17_5',
-            cells: const [Point(3, 2), Point(3, 1), Point(3, 0)],
-          ),
-          ArrowItem(
-            id: 'l17_6',
-            cells: const [Point(4, 2), Point(4, 1), Point(4, 0)],
-          ),
-          ArrowItem(
-            id: 'l17_7',
-            cells: const [Point(3, 5), Point(3, 6), Point(3, 7)],
-          ),
-          ArrowItem(
-            id: 'l17_8',
-            cells: const [Point(4, 5), Point(4, 6), Point(4, 7)],
-          ),
-          ArrowItem(
-            id: 'l17_9',
-            cells: const [Point(2, 3), Point(1, 3), Point(0, 3)],
-            badge: ArrowBadgeStyle.heart,
-          ),
-          ArrowItem(
-            id: 'l17_10',
-            cells: const [Point(5, 3), Point(6, 3), Point(7, 3)],
-            badge: ArrowBadgeStyle.heart,
-          ),
-          ArrowItem(
-            id: 'l17_11',
-            cells: const [Point(2, 4), Point(1, 4), Point(0, 4)],
-          ),
-          ArrowItem(
-            id: 'l17_12',
-            cells: const [Point(5, 4), Point(6, 4), Point(7, 4)],
-          ),
-          ArrowItem(
-            id: 'l17_13',
-            cells: const [Point(3, 4), Point(3, 3), Point(4, 3), Point(4, 4)],
-            badge: ArrowBadgeStyle.star,
-          ),
+          ArrowItem(id: 'l17_1', cells: const [Point(9, 2), Point(9, 1), Point(8, 1)], badge: ArrowBadgeStyle.heart),
+          ArrowItem(id: 'l17_2', cells: const [Point(3, 1), Point(4, 1), Point(4, 2)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l17_3', cells: const [Point(4, 10), Point(4, 9), Point(5, 9)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l17_4', cells: const [Point(7, 9), Point(6, 9), Point(6, 8)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l17_5', cells: const [Point(6, 6), Point(5, 6), Point(5, 5)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l17_6', cells: const [Point(6, 5), Point(6, 4), Point(5, 4)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l17_7', cells: const [Point(0, 4), Point(0, 5)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l17_8', cells: const [Point(0, 9), Point(1, 9), Point(1, 8)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l17_9', cells: const [Point(1, 6), Point(2, 6), Point(2, 5)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l17_10', cells: const [Point(1, 0), Point(2, 0)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l17_11', cells: const [Point(9, 0), Point(10, 0), Point(10, 1)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l17_12', cells: const [Point(10, 3), Point(9, 3)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l17_13', cells: const [Point(9, 4), Point(8, 4), Point(8, 3), Point(7, 3)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l17_14', cells: const [Point(6, 3), Point(5, 3)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l17_15', cells: const [Point(4, 3), Point(3, 3), Point(3, 4), Point(3, 5)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l17_16', cells: const [Point(2, 7), Point(3, 7)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l17_17', cells: const [Point(3, 6), Point(4, 6), Point(4, 7), Point(5, 7)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l17_18', cells: const [Point(9, 6), Point(8, 6), Point(8, 7)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l17_19', cells: const [Point(6, 7), Point(7, 7), Point(7, 8), Point(8, 8)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l17_20', cells: const [Point(10, 8), Point(10, 7), Point(9, 7), Point(9, 8)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l17_21', cells: const [Point(9, 10), Point(8, 10), Point(8, 9), Point(9, 9)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l17_22', cells: const [Point(10, 9), Point(10, 10)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l17_23', cells: const [Point(3, 2), Point(2, 2)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l17_24', cells: const [Point(0, 3), Point(0, 2)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l17_25', cells: const [Point(1, 1), Point(0, 1)], badge: ArrowBadgeStyle.none),
         ],
       ),
-
-      // المستوى 18: تشكيل قلب الحب الكبير ❤️ (8x8)
+      // المستوى 18: نجمة السماء ⭐ (12x12 | n=15 | free0=3 | depth=13 | E=124.4)
       LevelConfig(
         levelNumber: 18,
-        difficultyLabel: 'قلب الحب ❤️',
-        gridCols: 8,
-        gridRows: 8,
-        themeShape: LevelThemeShape.heart,
+        difficultyLabel: 'نجمة السماء ⭐',
+        gridCols: 12,
+        gridRows: 12,
+        stageTheme: StageVisualTheme.star,
         arrows: [
-          ArrowItem(
-            id: 'l18_1',
-            cells: const [Point(3, 1), Point(2, 1), Point(1, 1), Point(1, 2), Point(0, 2), Point(0, 3), Point(0, 4)],
-            badge: ArrowBadgeStyle.heart,
-          ),
-          ArrowItem(
-            id: 'l18_2',
-            cells: const [Point(4, 1), Point(5, 1), Point(6, 1), Point(6, 2), Point(7, 2), Point(7, 3), Point(7, 4)],
-            badge: ArrowBadgeStyle.heart,
-          ),
-          ArrowItem(
-            id: 'l18_3',
-            cells: const [Point(1, 5), Point(1, 6), Point(2, 6), Point(2, 7), Point(1, 7)],
-          ),
-          ArrowItem(
-            id: 'l18_4',
-            cells: const [Point(6, 5), Point(6, 6), Point(5, 6), Point(5, 7), Point(6, 7)],
-          ),
-          ArrowItem(
-            id: 'l18_5',
-            cells: const [Point(3, 2), Point(2, 2), Point(2, 3), Point(1, 3)],
-            badge: ArrowBadgeStyle.heart,
-          ),
-          ArrowItem(
-            id: 'l18_6',
-            cells: const [Point(4, 2), Point(5, 2), Point(5, 3), Point(6, 3)],
-            badge: ArrowBadgeStyle.heart,
-          ),
-          ArrowItem(
-            id: 'l18_7',
-            cells: const [Point(2, 4), Point(2, 5), Point(3, 5), Point(3, 6)],
-          ),
-          ArrowItem(
-            id: 'l18_8',
-            cells: const [Point(5, 4), Point(5, 5), Point(4, 5), Point(4, 6)],
-          ),
-          ArrowItem(
-            id: 'l18_9',
-            cells: const [Point(4, 4), Point(3, 4), Point(3, 3), Point(4, 3)],
-            badge: ArrowBadgeStyle.star,
-          ),
+          ArrowItem(id: 'l18_1', cells: const [Point(6, 1), Point(6, 0), Point(5, 0)], badge: ArrowBadgeStyle.star),
+          ArrowItem(id: 'l18_2', cells: const [Point(2, 4), Point(3, 4)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l18_3', cells: const [Point(5, 4), Point(6, 4)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l18_4', cells: const [Point(7, 4), Point(7, 5)], badge: ArrowBadgeStyle.star),
+          ArrowItem(id: 'l18_5', cells: const [Point(7, 7), Point(7, 6), Point(6, 6)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l18_6', cells: const [Point(5, 5), Point(5, 6)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l18_7', cells: const [Point(6, 7), Point(5, 7)], badge: ArrowBadgeStyle.star),
+          ArrowItem(id: 'l18_8', cells: const [Point(4, 7), Point(3, 7), Point(3, 8), Point(4, 8)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l18_9', cells: const [Point(5, 8), Point(6, 8)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l18_10', cells: const [Point(8, 9), Point(7, 9), Point(7, 8), Point(8, 8), Point(8, 7)], badge: ArrowBadgeStyle.star),
+          ArrowItem(id: 'l18_11', cells: const [Point(8, 6), Point(8, 5)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l18_12', cells: const [Point(8, 4), Point(9, 4), Point(9, 5)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l18_13', cells: const [Point(9, 10), Point(8, 10)], badge: ArrowBadgeStyle.star),
+          ArrowItem(id: 'l18_14', cells: const [Point(2, 10), Point(3, 10), Point(3, 9), Point(2, 9)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l18_15', cells: const [Point(5, 1), Point(5, 2), Point(6, 2)], badge: ArrowBadgeStyle.none),
         ],
       ),
-
-      // المستوى 19: صعب جداً (الشبكة الذهبية 8x8)
+      // المستوى 19: محترف • التحدي الأقصى (12x12 | n=25 | free0=1 | depth=25 | E=257.6)
       LevelConfig(
         levelNumber: 19,
-        difficultyLabel: 'صعب جداً',
-        gridCols: 8,
-        gridRows: 8,
+        difficultyLabel: 'محترف • التحدي الأقصى',
+        gridCols: 12,
+        gridRows: 12,
+        stageTheme: StageVisualTheme.twilight,
         arrows: [
-          ArrowItem(
-            id: 'l19_1',
-            cells: const [Point(3, 0), Point(2, 0), Point(1, 0), Point(0, 0)],
-          ),
-          ArrowItem(
-            id: 'l19_2',
-            cells: const [Point(7, 3), Point(7, 2), Point(7, 1), Point(7, 0), Point(6, 0), Point(5, 0), Point(4, 0)],
-            badge: ArrowBadgeStyle.star,
-          ),
-          ArrowItem(
-            id: 'l19_3',
-            cells: const [Point(3, 7), Point(2, 7), Point(1, 7), Point(0, 7), Point(0, 6), Point(0, 5), Point(0, 4), Point(0, 3), Point(0, 2), Point(0, 1)],
-          ),
-          ArrowItem(
-            id: 'l19_4',
-            cells: const [Point(4, 7), Point(5, 7), Point(6, 7), Point(7, 7), Point(7, 6), Point(7, 5), Point(7, 4)],
-            badge: ArrowBadgeStyle.star,
-          ),
-          ArrowItem(
-            id: 'l19_5',
-            cells: const [Point(3, 1), Point(2, 1), Point(1, 1)],
-          ),
-          ArrowItem(
-            id: 'l19_6',
-            cells: const [Point(4, 1), Point(5, 1), Point(6, 1)],
-          ),
-          ArrowItem(
-            id: 'l19_7',
-            cells: const [Point(3, 6), Point(2, 6), Point(1, 6)],
-            badge: ArrowBadgeStyle.heart,
-          ),
-          ArrowItem(
-            id: 'l19_8',
-            cells: const [Point(4, 6), Point(5, 6), Point(6, 6)],
-            badge: ArrowBadgeStyle.heart,
-          ),
-          ArrowItem(
-            id: 'l19_9',
-            cells: const [Point(3, 5), Point(2, 5), Point(2, 4), Point(2, 3), Point(2, 2), Point(3, 2)],
-          ),
-          ArrowItem(
-            id: 'l19_10',
-            cells: const [Point(4, 5), Point(5, 5), Point(5, 4), Point(5, 3), Point(5, 2)],
-          ),
-          ArrowItem(
-            id: 'l19_11',
-            cells: const [Point(3, 4), Point(3, 3), Point(4, 3), Point(4, 4)],
-            badge: ArrowBadgeStyle.star,
-          ),
+          ArrowItem(id: 'l19_1', cells: const [Point(3, 11), Point(4, 11), Point(4, 10), Point(5, 10)], badge: ArrowBadgeStyle.heart),
+          ArrowItem(id: 'l19_2', cells: const [Point(8, 11), Point(8, 10)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l19_3', cells: const [Point(9, 2), Point(9, 3), Point(8, 3)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l19_4', cells: const [Point(1, 4), Point(1, 3), Point(0, 3), Point(0, 4)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l19_5', cells: const [Point(0, 5), Point(0, 6), Point(1, 6)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l19_6', cells: const [Point(11, 6), Point(11, 5)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l19_7', cells: const [Point(11, 1), Point(10, 1), Point(9, 1)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l19_8', cells: const [Point(3, 1), Point(2, 1), Point(2, 0), Point(3, 0)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l19_9', cells: const [Point(6, 0), Point(6, 1)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l19_10', cells: const [Point(6, 10), Point(7, 10), Point(7, 9)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l19_11', cells: const [Point(6, 3), Point(7, 3), Point(7, 2), Point(6, 2)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l19_12', cells: const [Point(3, 2), Point(2, 2), Point(2, 3)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l19_13', cells: const [Point(2, 5), Point(2, 6)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l19_14', cells: const [Point(2, 9), Point(2, 8), Point(3, 8)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l19_15', cells: const [Point(5, 8), Point(6, 8)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l19_16', cells: const [Point(9, 8), Point(9, 7), Point(8, 7)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l19_17', cells: const [Point(6, 7), Point(5, 7)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l19_18', cells: const [Point(4, 9), Point(4, 8), Point(4, 7)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l19_19', cells: const [Point(4, 4), Point(5, 4)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l19_20', cells: const [Point(10, 3), Point(10, 4)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l19_21', cells: const [Point(9, 5), Point(10, 5), Point(10, 6)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l19_22', cells: const [Point(10, 7), Point(10, 8)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l19_23', cells: const [Point(10, 10), Point(10, 9), Point(9, 9), Point(9, 10)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l19_24', cells: const [Point(9, 11), Point(10, 11)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l19_25', cells: const [Point(11, 10), Point(11, 11)], badge: ArrowBadgeStyle.none),
         ],
       ),
-
-      // المستوى 20: تحدي الماستر النهائي ⭐❤️ (8x8)
+      // المستوى 20: التاج الملكي 👑 (12x12 | n=16 | free0=2 | depth=14 | E=152.4)
       LevelConfig(
         levelNumber: 20,
-        difficultyLabel: 'تحدي الماستر ⭐',
-        gridCols: 8,
-        gridRows: 8,
-        themeShape: LevelThemeShape.star,
+        difficultyLabel: 'التاج الملكي 👑',
+        gridCols: 12,
+        gridRows: 12,
+        stageTheme: StageVisualTheme.crown,
         arrows: [
-          ArrowItem(
-            id: 'l20_1',
-            cells: const [Point(0, 7), Point(0, 6), Point(0, 5), Point(0, 4), Point(0, 3), Point(0, 2), Point(0, 1), Point(0, 0), Point(1, 0), Point(2, 0), Point(3, 0), Point(4, 0), Point(5, 0), Point(6, 0), Point(7, 0)],
-            badge: ArrowBadgeStyle.star,
-          ),
-          ArrowItem(
-            id: 'l20_2',
-            cells: const [Point(7, 1), Point(7, 2), Point(7, 3), Point(7, 4), Point(7, 5), Point(7, 6), Point(7, 7), Point(6, 7), Point(5, 7), Point(4, 7), Point(3, 7), Point(2, 7), Point(1, 7)],
-            badge: ArrowBadgeStyle.heart,
-          ),
-          ArrowItem(
-            id: 'l20_3',
-            cells: const [Point(1, 6), Point(1, 5), Point(1, 4), Point(1, 3), Point(1, 2), Point(1, 1), Point(2, 1), Point(3, 1), Point(4, 1), Point(5, 1), Point(6, 1)],
-            badge: ArrowBadgeStyle.star,
-          ),
-          ArrowItem(
-            id: 'l20_4',
-            cells: const [Point(6, 2), Point(6, 3), Point(6, 4), Point(6, 5), Point(6, 6), Point(5, 6), Point(4, 6), Point(3, 6), Point(2, 6)],
-            badge: ArrowBadgeStyle.heart,
-          ),
-          ArrowItem(
-            id: 'l20_5',
-            cells: const [Point(2, 5), Point(2, 4), Point(2, 3), Point(2, 2), Point(3, 2), Point(4, 2), Point(5, 2)],
-            badge: ArrowBadgeStyle.star,
-          ),
-          ArrowItem(
-            id: 'l20_6',
-            cells: const [Point(5, 3), Point(5, 4), Point(5, 5), Point(4, 5), Point(3, 5)],
-            badge: ArrowBadgeStyle.heart,
-          ),
-          ArrowItem(
-            id: 'l20_7',
-            cells: const [Point(3, 4), Point(3, 3), Point(4, 3), Point(4, 4)],
-            badge: ArrowBadgeStyle.star,
-          ),
+          ArrowItem(id: 'l20_1', cells: const [Point(6, 8), Point(6, 9), Point(5, 9)], badge: ArrowBadgeStyle.star),
+          ArrowItem(id: 'l20_2', cells: const [Point(0, 9), Point(0, 8), Point(0, 7)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l20_3', cells: const [Point(0, 6), Point(0, 5), Point(1, 5)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l20_4', cells: const [Point(5, 5), Point(5, 6), Point(6, 6)], badge: ArrowBadgeStyle.star),
+          ArrowItem(id: 'l20_5', cells: const [Point(6, 7), Point(7, 7), Point(7, 6)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l20_6', cells: const [Point(6, 5), Point(7, 5)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l20_7', cells: const [Point(11, 7), Point(11, 6), Point(11, 5), Point(10, 5), Point(10, 6)], badge: ArrowBadgeStyle.star),
+          ArrowItem(id: 'l20_8', cells: const [Point(10, 8), Point(10, 9), Point(9, 9), Point(9, 8)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l20_9', cells: const [Point(8, 5), Point(8, 6), Point(9, 6), Point(9, 5)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l20_10', cells: const [Point(10, 4), Point(9, 4)], badge: ArrowBadgeStyle.star),
+          ArrowItem(id: 'l20_11', cells: const [Point(6, 4), Point(5, 4)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l20_12', cells: const [Point(1, 4), Point(2, 4), Point(2, 5)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l20_13', cells: const [Point(2, 8), Point(2, 9), Point(3, 9), Point(4, 9), Point(4, 8)], badge: ArrowBadgeStyle.star),
+          ArrowItem(id: 'l20_14', cells: const [Point(3, 6), Point(4, 6), Point(4, 5)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l20_15', cells: const [Point(2, 7), Point(2, 6), Point(1, 6), Point(1, 7)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l20_16', cells: const [Point(1, 8), Point(1, 9)], badge: ArrowBadgeStyle.star),
         ],
       ),
     ];
@@ -1147,13 +884,12 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
   bool _rulerEnabled = false;
   String? _hintedArrowId;
 
-  // تحريك السهم عند الخروج أو الاصطدام
+  // تحريك السهم عند الخروج أو الاصطدام (يعمل فقط لحظة لمس السهم لتوفير البطارية 100%)
   String? _animatingArrowId;
   bool _isBlockedAnimation = false;
   double _blockedMaxSteps = 0.25;
   late AnimationController _moveController;
   late AnimationController _sunburstController;
-  late AnimationController _ambientGlowController;
 
   bool _isLevelCompleted = false;
   bool _soundEnabled = true;
@@ -1169,15 +905,11 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
       duration: const Duration(milliseconds: 520),
     );
 
+    // لا يعمل _sunburstController إلا عند فتح شاشة الفوز فقط لتوفير البطارية!
     _sunburstController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 16),
-    )..repeat();
-
-    _ambientGlowController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1900),
-    )..repeat(reverse: true);
+    );
 
     _loadLevel(_currentLevelIndex, stayInHome: true);
   }
@@ -1186,13 +918,13 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
   void dispose() {
     _moveController.dispose();
     _sunburstController.dispose();
-    _ambientGlowController.dispose();
     super.dispose();
   }
 
   void _loadLevel(int index, {bool stayInHome = false}) {
     _moveController.stop();
     _moveController.reset();
+    _sunburstController.stop();
     final config = _allLevels[index];
     setState(() {
       _currentLevelIndex = index;
@@ -1206,6 +938,15 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
       if (!stayInHome) {
         _isInHomeScreen = false;
       }
+    });
+  }
+
+  void _goToHomeScreen() {
+    _moveController.stop();
+    _sunburstController.stop();
+    setState(() {
+      _isInHomeScreen = true;
+      _isLevelCompleted = false;
     });
   }
 
@@ -1263,7 +1004,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
 
     if (_vibrationEnabled) HapticFeedback.lightImpact();
     final totalCells = arrow.cells.length + _currentConfig.gridCols + 3;
-    final durationMs = (totalCells * 32).clamp(340, 640);
+    final durationMs = (totalCells * 28).clamp(320, 620);
     _moveController.duration = Duration(milliseconds: durationMs);
     _moveController.forward(from: 0).then((_) {
       if (!mounted || _animatingArrowId != arrow.id) return;
@@ -1290,6 +1031,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
 
     // إذا لم يتبقَ أي سهم في الشبكة، اكتمل المستوى!
     if (_activeArrows.every((a) => a.isCleared)) {
+      _sunburstController.repeat();
       setState(() {
         _isLevelCompleted = true;
       });
@@ -1297,7 +1039,6 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
   }
 
   void _onArrowTapped(ArrowItem arrow) {
-    // منع التداخل أو الضغط المتكرر أثناء الحركة
     if (_animatingArrowId != null ||
         _moveController.isAnimating ||
         arrow.isCleared ||
@@ -1311,26 +1052,24 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
     if (free) {
       _launchFreeArrow(arrow);
     } else {
-      // السهم مسدود: يتحول للون الأحمر ويدخل في وضع الانتظار (isQueuedRed = true)
       final wasAlreadyQueued = arrow.isQueuedRed;
       setState(() {
         arrow.isQueuedRed = true;
         _animatingArrowId = arrow.id;
         _isBlockedAnimation = true;
-        _blockedMaxSteps = freeSteps + 0.38;
+        _blockedMaxSteps = freeSteps + 0.36;
         if (_hintedArrowId == arrow.id) {
           _hintedArrowId = null;
         }
       });
 
       if (_vibrationEnabled) HapticFeedback.heavyImpact();
-      _moveController.duration = const Duration(milliseconds: 340);
+      _moveController.duration = const Duration(milliseconds: 320);
       _moveController.forward(from: 0).then((_) {
         if (!mounted || _animatingArrowId != arrow.id) return;
         setState(() {
           _animatingArrowId = null;
           _isBlockedAnimation = false;
-          // لا نخصم قلباً إضافياً إذا ضغط اللاعب بالخطأ مرة ثانية على نفس السهم الأحمر المنتظر
           if (!wasAlreadyQueued) {
             _hearts = math.max(0, _hearts - 1);
           }
@@ -1403,7 +1142,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
             ],
           ),
           content: const Text(
-            'اصطدمت الأسهم ببعضها 3 مرات.\nتأكد من إخراج الأسهم التي طريقها مفتوح أولاً!',
+            'اصطدمت الأسهم ببعضها 3 مرات.\nابحث عن السهم الوحيد المفتوح في البداية لفك عقدة المتاهة!',
             textAlign: TextAlign.center,
             style:
                 TextStyle(fontSize: 16, color: Color(0xFF4B5563), height: 1.4),
@@ -1478,10 +1217,9 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                   ),
                   itemBuilder: (context, idx) {
                     final isCurrent = idx == _currentLevelIndex;
-                    final themeShape = _allLevels[idx].themeShape;
-                    String? shapeEmoji;
-                    if (themeShape == LevelThemeShape.heart) shapeEmoji = '❤️';
-                    if (themeShape == LevelThemeShape.star) shapeEmoji = '⭐';
+                    final palette =
+                        StagePalette.of(_allLevels[idx].stageTheme);
+                    final shapeEmoji = palette.badgeEmoji;
 
                     return InkWell(
                       onTap: () {
@@ -1492,16 +1230,16 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                       child: Container(
                         decoration: BoxDecoration(
                           gradient: isCurrent
-                              ? const LinearGradient(
+                              ? LinearGradient(
                                   colors: [
-                                    Color(0xFF2196F3),
-                                    Color(0xFF1565C0)
+                                    palette.progressColor,
+                                    const Color(0xFF1565C0)
                                   ],
                                   begin: Alignment.topLeft,
                                   end: Alignment.bottomRight,
                                 )
                               : null,
-                          color: isCurrent ? null : const Color(0xFFF0F5FF),
+                          color: isCurrent ? null : palette.bgBottom,
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(
                             color: isCurrent
@@ -1585,11 +1323,12 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
             ],
           ),
           content: const Text(
-            'لعبة ألغاز منطقية هادئة وممتعة تعتمد على التركيز وترتيب خطوات تفكيك الأسهم المتشابكة دون اصطدام.\n\n'
-            '• تحتوي هذه النسخة المحسنة على 20 مستوى متدرج الصعوبة.\n'
-            '• تدعم نظام الانتظار الذكي (خروج الأسهم الحمراء تلقائياً عند فتح مسارها).\n'
-            '• مزودة بمستويات خاصة بتشكيلات ❤️ و ⭐.',
-            style: TextStyle(fontSize: 16, height: 1.5, color: Color(0xFF374151)),
+            'لعبة ألغاز منطقية تعتمد على التركيز وترتيب خطوات تفكيك الأسهم المتشابكة ذات المسار العميق دون اصطدام.\n\n'
+            '• تضم 20 مستوى متدرج الصعوبة بشبكات كثيفة (حتى 12×12 و26 سهماً متداخلاً).\n'
+            '• كل مستوى يبدأ بسهم أو سهمين مفتوحين فقط لفتح سلسلة المتاهة بالكامل.\n'
+            '• مزودة بمجموعات بصرية متنوعة وتشكيلات القلب ❤️ والنجمة ⭐ والماسة 💎 والتاج 👑.',
+            style:
+                TextStyle(fontSize: 16, height: 1.5, color: Color(0xFF374151)),
           ),
           actions: [
             TextButton(
@@ -1607,6 +1346,19 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    // إصلاح زر الرجوع في أندرويد: إذا كان اللاعب داخل المستوى أو شاشة الفوز، يعود للرئيسية بدلاً من قفل اللعبة!
+    return PopScope(
+      canPop: _isInHomeScreen,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop && !_isInHomeScreen) {
+          _goToHomeScreen();
+        }
+      },
+      child: _buildCurrentView(context),
+    );
+  }
+
+  Widget _buildCurrentView(BuildContext context) {
     if (_isInHomeScreen) {
       return _buildHomeScreen();
     }
@@ -1615,291 +1367,297 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
       return _buildVictoryScreen();
     }
 
+    final palette = StagePalette.of(_currentConfig.stageTheme);
+
     return Directionality(
       textDirection: TextDirection.ltr,
       child: Scaffold(
-        backgroundColor: Colors.white,
-        body: SafeArea(
-          child: Column(
-            children: [
-              // 1. الهيدر العلوي: ترس الإعدادات يسار | المستوى والصعوبة وسط | سهم المستويات يمين
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 10, 16, 4),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          onPressed: _openSettingsModal,
-                          icon: const Icon(
-                            Icons.settings_outlined,
-                            color: Color(0xFF1976D2),
-                            size: 31,
-                          ),
-                          tooltip: 'الإعدادات',
-                        ),
-                        IconButton(
-                          onPressed: () =>
-                              setState(() => _isInHomeScreen = true),
-                          icon: const Icon(
-                            Icons.home_outlined,
-                            color: Color(0xFF1976D2),
-                            size: 31,
-                          ),
-                          tooltip: 'الرئيسية',
-                        ),
-                      ],
-                    ),
-                    Directionality(
-                      textDirection: TextDirection.rtl,
-                      child: Column(
+        body: AnimatedContainer(
+          duration: const Duration(milliseconds: 450),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [palette.bgTop, palette.bgBottom],
+            ),
+          ),
+          child: SafeArea(
+            child: Column(
+              children: [
+                // 1. الهيدر العلوي: الإعدادات والرئيسية يسار | المستوى والصعوبة وسط | اختيار المستوى يمين
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(12, 10, 12, 4),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text(
-                            'المستوى ${_currentConfig.levelNumber}',
-                            style: const TextStyle(
-                              fontSize: 25,
-                              fontWeight: FontWeight.w800,
-                              color: Color(0xFF111827),
-                              height: 1.15,
+                          IconButton(
+                            onPressed: _openSettingsModal,
+                            icon: Icon(
+                              Icons.settings_outlined,
+                              color: palette.progressColor,
+                              size: 30,
                             ),
+                            tooltip: 'الإعدادات',
                           ),
-                          const SizedBox(height: 2),
-                          Text(
-                            _currentConfig.difficultyLabel,
-                            style: const TextStyle(
-                              fontSize: 15,
-                              color: Color(0xFF64748B),
-                              fontWeight: FontWeight.w600,
+                          IconButton(
+                            onPressed: _goToHomeScreen,
+                            icon: Icon(
+                              Icons.home_outlined,
+                              color: palette.progressColor,
+                              size: 30,
                             ),
+                            tooltip: 'الرئيسية',
                           ),
                         ],
                       ),
-                    ),
-                    IconButton(
-                      onPressed: _openLevelsSelector,
-                      icon: const Icon(
-                        Icons.grid_view_rounded,
-                        color: Color(0xFF1976D2),
-                        size: 30,
-                      ),
-                      tooltip: 'المستويات',
-                    ),
-                  ],
-                ),
-              ),
-
-              // 2. صف القلوب الثلاثة المحسّن
-              AnimatedBuilder(
-                animation: _ambientGlowController,
-                builder: (context, _) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(3, (index) {
-                        final active = index < _hearts;
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 6),
-                          child: AnimatedScale(
-                            scale: active
-                                ? 1.0 + (_ambientGlowController.value * 0.035)
-                                : 0.82,
-                            duration: const Duration(milliseconds: 240),
-                            child: CustomPaint(
-                              size: const Size(36, 34),
-                              painter: GlossyHeartPainter(
-                                isActive: active,
-                                glowPulse: _ambientGlowController.value,
+                      Directionality(
+                        textDirection: TextDirection.rtl,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              'المستوى ${_currentConfig.levelNumber}',
+                              style: const TextStyle(
+                                fontSize: 25,
+                                fontWeight: FontWeight.w800,
+                                color: Color(0xFF111827),
+                                height: 1.15,
                               ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              _currentConfig.difficultyLabel,
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: palette.progressColor.withOpacity(0.85),
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: _openLevelsSelector,
+                        icon: Icon(
+                          Icons.grid_view_rounded,
+                          color: palette.progressColor,
+                          size: 29,
+                        ),
+                        tooltip: 'المستويات',
+                      ),
+                    ],
+                  ),
+                ),
+
+                // 2. صف القلوب الثلاثة (ثابت بدون إعادة رسم 60fps لتوفير البطارية 100%)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(3, (index) {
+                      final active = index < _hearts;
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 6),
+                        child: AnimatedScale(
+                          scale: active ? 1.0 : 0.82,
+                          duration: const Duration(milliseconds: 240),
+                          child: CustomPaint(
+                            size: const Size(36, 34),
+                            painter: GlossyHeartPainter(
+                              isActive: active,
+                              glowPulse: 0.6,
                             ),
                           ),
-                        );
-                      }),
-                    ),
-                  );
-                },
-              ),
-
-              const SizedBox(height: 6),
-
-              // 3. شريط التقدم الرمادي الفاتح النحيف أسفل القلوب
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 18),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(6),
-                  child: LinearProgressIndicator(
-                    value: _progressFraction,
-                    minHeight: 5,
-                    backgroundColor: const Color(0xFFE9EDF2),
-                    valueColor: const AlwaysStoppedAnimation<Color>(
-                      Color(0xFF2196F3),
-                    ),
+                        ),
+                      );
+                    }),
                   ),
                 ),
-              ),
 
-              // 4. مساحة شبكة اللعب مع RepaintBoundary و Listenable.merge لأداء سلس 60fps على هواتف الأندرويد المتوسطة
-              Expanded(
-                child: Center(
-                  child: AspectRatio(
-                    aspectRatio: 1,
-                    child: Padding(
-                      padding: const EdgeInsets.all(28.0),
-                      child: LayoutBuilder(
-                        builder: (context, constraints) {
-                          final boardSize = constraints.biggest.shortestSide;
-                          return RepaintBoundary(
-                            child: GestureDetector(
-                              behavior: HitTestBehavior.opaque,
-                              onTapUp: (details) => _handleBoardTap(
-                                details.localPosition,
-                                boardSize,
-                              ),
-                              child: AnimatedBuilder(
-                                animation: Listenable.merge([
-                                  _moveController,
-                                  _ambientGlowController,
-                                ]),
-                                builder: (context, _) {
-                                  return CustomPaint(
-                                    size: Size(boardSize, boardSize),
-                                    painter: ArrowBoardPainter(
-                                      gridCols: _currentConfig.gridCols,
-                                      gridRows: _currentConfig.gridRows,
-                                      arrows: _activeArrows,
-                                      rulerEnabled: _rulerEnabled,
-                                      hintedArrowId: _hintedArrowId,
-                                      animatingArrowId: _animatingArrowId,
-                                      isBlockedAnimation: _isBlockedAnimation,
-                                      blockedMaxSteps: _blockedMaxSteps,
-                                      animationValue: Curves.easeOutCubic
-                                          .transform(_moveController.value),
-                                      glowPulse: _ambientGlowController.value,
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                          );
-                        },
+                const SizedBox(height: 6),
+
+                // 3. شريط التقدم المتناغم مع الطابع البصري للمرحلة
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 18),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(6),
+                    child: LinearProgressIndicator(
+                      value: _progressFraction,
+                      minHeight: 5,
+                      backgroundColor: Colors.black.withOpacity(0.06),
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        palette.progressColor,
                       ),
                     ),
                   ),
                 ),
-              ),
 
-              // 5. أزرار الأدوات المساعدة السفلية
-              AnimatedBuilder(
-                animation: _ambientGlowController,
-                builder: (context, _) {
-                  final hasHintActive = _hintedArrowId != null;
-                  final lampGlow = _ambientGlowController.value;
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 24, top: 8),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        // زر المسطرة
-                        _buildNeumorphicPowerButton(
-                          isActive: _rulerEnabled,
-                          badgeText: null,
-                          ambientGlowColor: const Color(0xFF5C6BC0),
-                          glowIntensity: _rulerEnabled ? 0.8 : 0.15,
-                          onTap: () {
-                            if (_vibrationEnabled) {
-                              HapticFeedback.selectionClick();
-                            }
-                            setState(() => _rulerEnabled = !_rulerEnabled);
-                          },
-                          customChild: Transform.rotate(
-                            angle: -0.55,
-                            child: Container(
-                              width: 44,
-                              height: 20,
-                              decoration: BoxDecoration(
-                                gradient: const LinearGradient(
-                                  colors: [
-                                    Color(0xFF7986CB),
-                                    Color(0xFF5C6BC0)
-                                  ],
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                ),
-                                borderRadius: BorderRadius.circular(5),
-                                border:
-                                    Border.all(color: Colors.white, width: 1.5),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: const Color(0xFF5C6BC0)
-                                        .withOpacity(0.35),
-                                    blurRadius: 6,
-                                    offset: const Offset(0, 3),
+                // 4. مساحة شبكة اللعب الكثيفة (Zero Idle Repaints: لا تعيد الرسم إلا لحظة تحرك السهم فقط!)
+                Expanded(
+                  child: Center(
+                    child: AspectRatio(
+                      aspectRatio: 1,
+                      child: Padding(
+                        padding: const EdgeInsets.all(18.0),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: palette.boardCardColor,
+                            borderRadius: BorderRadius.circular(26),
+                            boxShadow: [
+                              BoxShadow(
+                                color: palette.boardGlowColor,
+                                blurRadius: 28,
+                                spreadRadius: 2,
+                                offset: const Offset(0, 10),
+                              ),
+                            ],
+                          ),
+                          padding: const EdgeInsets.all(14.0),
+                          child: LayoutBuilder(
+                            builder: (context, constraints) {
+                              final boardSize =
+                                  constraints.biggest.shortestSide;
+                              return RepaintBoundary(
+                                child: GestureDetector(
+                                  behavior: HitTestBehavior.opaque,
+                                  onTapUp: (details) => _handleBoardTap(
+                                    details.localPosition,
+                                    boardSize,
                                   ),
-                                ],
-                              ),
-                              child: CustomPaint(painter: RulerMarksPainter()),
-                            ),
+                                  child: AnimatedBuilder(
+                                    animation: _moveController,
+                                    builder: (context, _) {
+                                      return CustomPaint(
+                                        size: Size(boardSize, boardSize),
+                                        painter: ArrowBoardPainter(
+                                          gridCols: _currentConfig.gridCols,
+                                          gridRows: _currentConfig.gridRows,
+                                          arrows: _activeArrows,
+                                          rulerEnabled: _rulerEnabled,
+                                          hintedArrowId: _hintedArrowId,
+                                          animatingArrowId: _animatingArrowId,
+                                          isBlockedAnimation:
+                                              _isBlockedAnimation,
+                                          blockedMaxSteps: _blockedMaxSteps,
+                                          animationValue: Curves.easeOutCubic
+                                              .transform(_moveController.value),
+                                          palette: palette,
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                              );
+                            },
                           ),
                         ),
-                        const SizedBox(width: 38),
-                        // زر اللمبة المضيئة
-                        _buildNeumorphicPowerButton(
-                          isActive: hasHintActive,
-                          badgeText: '$_hintsCount',
-                          ambientGlowColor: const Color(0xFFFFAB3D),
-                          glowIntensity:
-                              hasHintActive ? 1.0 : (0.45 + lampGlow * 0.45),
-                          onTap: _useHint,
-                          customChild: CustomPaint(
-                            size: const Size(54, 54),
-                            painter: NeonLampBulbPainter(
-                              glowPulse: lampGlow,
-                              isBoosted: hasHintActive,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
-
-              // 6. الشريط السفلي الرمادي الفاتح
-              if (!_adsRemoved)
-                Container(
-                  width: double.infinity,
-                  height: 54,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFE5EAEF),
-                    border: Border(
-                      top: BorderSide(color: Color(0xFFD5DCE4), width: 1),
-                    ),
-                  ),
-                  alignment: Alignment.center,
-                  child: const Text(
-                    'مساحة إعلانية (Google AdMob Banner)',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Color(0xFF8C96A5),
-                      fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
                 ),
-            ],
+
+                // 5. أزرار الأدوات المساعدة السفلية (توهج ثابت أنيق بدون استنزاف البطارية)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 22, top: 6),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // زر المسطرة
+                      _buildNeumorphicPowerButton(
+                        isActive: _rulerEnabled,
+                        badgeText: null,
+                        ambientGlowColor: const Color(0xFF5C6BC0),
+                        glowIntensity: _rulerEnabled ? 0.85 : 0.20,
+                        onTap: () {
+                          if (_vibrationEnabled) {
+                            HapticFeedback.selectionClick();
+                          }
+                          setState(() => _rulerEnabled = !_rulerEnabled);
+                        },
+                        customChild: Transform.rotate(
+                          angle: -0.55,
+                          child: Container(
+                            width: 44,
+                            height: 20,
+                            decoration: BoxDecoration(
+                              gradient: const LinearGradient(
+                                colors: [
+                                  Color(0xFF7986CB),
+                                  Color(0xFF5C6BC0)
+                                ],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                              borderRadius: BorderRadius.circular(5),
+                              border:
+                                  Border.all(color: Colors.white, width: 1.5),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color(0xFF5C6BC0)
+                                      .withOpacity(0.35),
+                                  blurRadius: 6,
+                                  offset: const Offset(0, 3),
+                                ),
+                              ],
+                            ),
+                            child: CustomPaint(painter: RulerMarksPainter()),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 38),
+                      // زر اللمبة المضيئة
+                      _buildNeumorphicPowerButton(
+                        isActive: _hintedArrowId != null,
+                        badgeText: '$_hintsCount',
+                        ambientGlowColor: const Color(0xFFFFAB3D),
+                        glowIntensity: _hintedArrowId != null ? 1.0 : 0.65,
+                        onTap: _useHint,
+                        customChild: CustomPaint(
+                          size: const Size(54, 54),
+                          painter: NeonLampBulbPainter(
+                            glowPulse: 0.7,
+                            isBoosted: _hintedArrowId != null,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // 6. الشريط السفلي الرمادي الفاتح
+                if (!_adsRemoved)
+                  Container(
+                    width: double.infinity,
+                    height: 52,
+                    decoration: const BoxDecoration(
+                      color: Color(0xFFE5EAEF),
+                      border: Border(
+                        top: BorderSide(color: Color(0xFFD5DCE4), width: 1),
+                      ),
+                    ),
+                    alignment: Alignment.center,
+                    child: const Text(
+                      'مساحة إعلانية (Google AdMob Banner)',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Color(0xFF8C96A5),
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  /// 🏠 الصفحة الرئيسية البسيطة والاحترافية:
-  /// - في الأعلى: شعار بصري يعبر عن الأسهم والحركة + اسم اللعبة "مسار الأسهم"
-  /// - في المنتصف: زر كبير وواضح "▶️ ابدأ اللعب"
-  /// - في الأسفل: أزرار صغيرة ومنظمة "⚙️ الإعدادات" و "ℹ️ حول اللعبة"
+  /// 🏠 الصفحة الرئيسية البسيطة والاحترافية (بدون أنيميشن لا نهائي يستهلك البطارية)
   Widget _buildHomeScreen() {
     return Directionality(
       textDirection: TextDirection.rtl,
@@ -1923,46 +1681,32 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // 1. في الأعلى: الشعار البصري المتحرك + اسم اللعبة
+                  // 1. في الأعلى: الشعار البصري + اسم اللعبة
                   Column(
                     children: [
                       const SizedBox(height: 24),
-                      AnimatedBuilder(
-                        animation: _ambientGlowController,
-                        builder: (context, _) {
-                          final floatY =
-                              math.sin(_ambientGlowController.value * math.pi) *
-                                  5.0;
-                          return Transform.translate(
-                            offset: Offset(0, -floatY),
-                            child: Container(
-                              width: 126,
-                              height: 126,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(34),
-                                border: Border.all(
-                                  color: const Color(0xFFDBEAFE),
-                                  width: 2.5,
-                                ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: const Color(0xFF1976D2)
-                                        .withOpacity(0.16),
-                                    blurRadius: 28,
-                                    offset: const Offset(0, 12),
-                                  ),
-                                ],
-                              ),
-                              padding: const EdgeInsets.all(22),
-                              child: CustomPaint(
-                                painter: HomeLogoPainter(
-                                  pulse: _ambientGlowController.value,
-                                ),
-                              ),
+                      Container(
+                        width: 126,
+                        height: 126,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(34),
+                          border: Border.all(
+                            color: const Color(0xFFDBEAFE),
+                            width: 2.5,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFF1976D2).withOpacity(0.16),
+                              blurRadius: 28,
+                              offset: const Offset(0, 12),
                             ),
-                          );
-                        },
+                          ],
+                        ),
+                        padding: const EdgeInsets.all(22),
+                        child: CustomPaint(
+                          painter: HomeLogoPainter(pulse: 0.5),
+                        ),
                       ),
                       const SizedBox(height: 24),
                       const Text(
@@ -1986,74 +1730,63 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                     ],
                   ),
 
-                  // 2. في المنتصف: زر كبير وواضح "▶️ ابدأ اللعب" (أهم عنصر في الصفحة)
+                  // 2. في المنتصف: زر كبير وواضح "▶️ ابدأ اللعب"
                   Column(
                     children: [
-                      AnimatedBuilder(
-                        animation: _ambientGlowController,
-                        builder: (context, _) {
-                          final scale = 1.0 +
-                              (_ambientGlowController.value * 0.025);
-                          return Transform.scale(
-                            scale: scale,
-                            child: Container(
-                              width: double.infinity,
-                              height: 74,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(38),
-                                gradient: const LinearGradient(
-                                  colors: [
-                                    Color(0xFF2196F3),
-                                    Color(0xFF1565C0),
-                                  ],
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: const Color(0xFF1976D2)
-                                        .withOpacity(0.38),
-                                    blurRadius: 24,
-                                    offset: const Offset(0, 10),
-                                  ),
-                                ],
-                              ),
-                              child: Material(
-                                color: Colors.transparent,
-                                child: InkWell(
-                                  borderRadius: BorderRadius.circular(38),
-                                  onTap: () {
-                                    if (_vibrationEnabled) {
-                                      HapticFeedback.mediumImpact();
-                                    }
-                                    setState(() {
-                                      _isInHomeScreen = false;
-                                    });
-                                  },
-                                  child: const Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Icon(
-                                        Icons.play_arrow_rounded,
-                                        color: Colors.white,
-                                        size: 38,
-                                      ),
-                                      SizedBox(width: 10),
-                                      Text(
-                                        'ابدأ اللعب',
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 25,
-                                          fontWeight: FontWeight.w900,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
+                      Container(
+                        width: double.infinity,
+                        height: 74,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(38),
+                          gradient: const LinearGradient(
+                            colors: [
+                              Color(0xFF2196F3),
+                              Color(0xFF1565C0),
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFF1976D2).withOpacity(0.38),
+                              blurRadius: 24,
+                              offset: const Offset(0, 10),
                             ),
-                          );
-                        },
+                          ],
+                        ),
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(38),
+                            onTap: () {
+                              if (_vibrationEnabled) {
+                                HapticFeedback.mediumImpact();
+                              }
+                              setState(() {
+                                _isInHomeScreen = false;
+                              });
+                            },
+                            child: const Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.play_arrow_rounded,
+                                  color: Colors.white,
+                                  size: 38,
+                                ),
+                                SizedBox(width: 10),
+                                Text(
+                                  'ابدأ اللعب',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 25,
+                                    fontWeight: FontWeight.w900,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
                       ),
                       const SizedBox(height: 16),
                       TextButton.icon(
@@ -2148,8 +1881,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
     );
   }
 
-  /// التفاعل الدقيق باللمس: يحسب المسافة العمودية بين إصبع اللاعب وكل قطعة مستقيمة من السهم
-  /// بحيث يكون اختيار السهم دقيقاً وسلساً جداً في أي مكان على امتداد السهم
+  /// التفاعل الدقيق باللمس
   void _handleBoardTap(Offset localPos, double boardSize) {
     if (_animatingArrowId != null || _moveController.isAnimating) return;
 
@@ -2157,7 +1889,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
     final cellH = boardSize / _currentConfig.gridRows;
 
     ArrowItem? bestArrow;
-    double minDistance = cellW * 0.58; // نطاق لمس دقيق ومريح حول جسم السهم
+    double minDistance = cellW * 0.58;
 
     Offset centerOf(Point<int> p) =>
         Offset((p.x + 0.5) * cellW, (p.y + 0.5) * cellH);
@@ -2278,10 +2010,12 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
     );
   }
 
-  /// شاشة "اكتمل المستوى!" المحسنة مع نجوم التقييم (3 نجوم) والانتقال السلس
+  /// شاشة "اكتمل المستوى!" مع معالجة خاصة عند إنهاء المستوى الأخير (المستوى 20)
   Widget _buildVictoryScreen() {
-    final nextLevelIndex = (_currentLevelIndex + 1) % _allLevels.length;
+    final isLastLevel = _currentLevelIndex >= _allLevels.length - 1;
+    final nextLevelIndex = isLastLevel ? 0 : _currentLevelIndex + 1;
     final nextLevelNumber = _allLevels[nextLevelIndex].levelNumber;
+    final palette = StagePalette.of(_currentConfig.stageTheme);
 
     return Directionality(
       textDirection: TextDirection.rtl,
@@ -2305,8 +2039,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                 children: [
                   Column(
                     children: [
-                      const SizedBox(height: 32),
-                      // صف النجوم الثلاثة الاحتفالية
+                      const SizedBox(height: 28),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: List.generate(3, (i) {
@@ -2332,22 +2065,37 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                           );
                         }),
                       ),
-                      const SizedBox(height: 12),
-                      const Text(
-                        'اكتمل المستوى!',
-                        style: TextStyle(
-                          fontSize: 38,
+                      const SizedBox(height: 10),
+                      Text(
+                        isLastLevel
+                            ? 'أتممت جميع المستويات! 🏆'
+                            : 'اكتمل المستوى!',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: 34,
                           fontWeight: FontWeight.w900,
                           color: Colors.white,
                           letterSpacing: 0.3,
                         ),
                       ),
+                      if (isLastLevel)
+                        const Padding(
+                          padding: EdgeInsets.only(top: 6),
+                          child: Text(
+                            'أحسنت! نجحت في حل جميع المتاهات الـ 20 بنجاح',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
                     ],
                   ),
                   Container(
                     width: 225,
                     height: 225,
-                    padding: const EdgeInsets.all(30),
+                    padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(26),
@@ -2370,7 +2118,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                         isBlockedAnimation: false,
                         blockedMaxSteps: 0,
                         animationValue: 0,
-                        glowPulse: 0,
+                        palette: palette,
                         ignoreClearedState: true,
                       ),
                     ),
@@ -2395,14 +2143,22 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                                 borderRadius: BorderRadius.circular(36),
                               ),
                             ),
-                            onPressed: () => _loadLevel(nextLevelIndex),
+                            onPressed: () {
+                              if (isLastLevel) {
+                                _goToHomeScreen();
+                              } else {
+                                _loadLevel(nextLevelIndex);
+                              }
+                            },
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                const Text(
-                                  'اللعبة التالية',
-                                  style: TextStyle(
-                                    fontSize: 21,
+                                Text(
+                                  isLastLevel
+                                      ? 'العودة إلى القائمة الرئيسية'
+                                      : 'اللعبة التالية',
+                                  style: const TextStyle(
+                                    fontSize: 20,
                                     fontWeight: FontWeight.w800,
                                     color: Color(0xFF1976D2),
                                     height: 1.1,
@@ -2410,7 +2166,9 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                                 ),
                                 const SizedBox(height: 2),
                                 Text(
-                                  'المستوى $nextLevelNumber',
+                                  isLastLevel
+                                      ? 'اختر أي مستوى أو أعد التحدي'
+                                      : 'المستوى $nextLevelNumber',
                                   style: const TextStyle(
                                     fontSize: 14,
                                     color: Color(0xFF64B5F6),
@@ -2423,13 +2181,20 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                         ),
                         const SizedBox(height: 14),
                         TextButton(
-                          onPressed: () =>
-                              setState(() => _isInHomeScreen = true),
-                          child: const Text(
-                            'الرئيسية',
-                            style: TextStyle(
+                          onPressed: () {
+                            if (isLastLevel) {
+                              _loadLevel(0);
+                            } else {
+                              _goToHomeScreen();
+                            }
+                          },
+                          child: Text(
+                            isLastLevel
+                                ? 'إعادة اللعب من المستوى 1'
+                                : 'الرئيسية',
+                            style: const TextStyle(
                               color: Colors.white,
-                              fontSize: 20,
+                              fontSize: 19,
                               fontWeight: FontWeight.w800,
                             ),
                           ),
@@ -2447,7 +2212,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
   }
 }
 
-/// رسام شعار الصفحة الرئيسية (يرسم سهمين متداخلين بحركة انسيابية مع نجمة وقلب صغير)
+/// رسام شعار الصفحة الرئيسية
 class HomeLogoPainter extends CustomPainter {
   final double pulse;
   HomeLogoPainter({required this.pulse});
@@ -2458,7 +2223,6 @@ class HomeLogoPainter extends CustomPainter {
     final h = size.height;
     final strokeW = w * 0.115;
 
-    // 1. السهم الأزرق المنطلق للأعلى واليمين
     final bluePath = Path()
       ..moveTo(w * 0.22, h * 0.78)
       ..lineTo(w * 0.22, h * 0.36)
@@ -2473,7 +2237,6 @@ class HomeLogoPainter extends CustomPainter {
 
     canvas.drawPath(bluePath, bluePaint);
 
-    // رأس السهم الأزرق
     final headPaint1 = Paint()
       ..color = const Color(0xFF1E88E5)
       ..style = PaintingStyle.fill;
@@ -2484,7 +2247,6 @@ class HomeLogoPainter extends CustomPainter {
       ..close();
     canvas.drawPath(head1, headPaint1);
 
-    // 2. السهم الكحلي الملتف للأسفل واليسار
     final navyPath = Path()
       ..moveTo(w * 0.78, h * 0.44)
       ..lineTo(w * 0.78, h * 0.64)
@@ -2509,7 +2271,6 @@ class HomeLogoPainter extends CustomPainter {
       ..close();
     canvas.drawPath(head2, headPaint2);
 
-    // 3. نجمة ذهبية صغيرة في الوسط تعبر عن الألغاز والتميز
     final starCenter = Offset(w * 0.52, h * 0.50);
     final starRadius = w * (0.12 + pulse * 0.02);
     final starPaint = Paint()
@@ -2710,8 +2471,8 @@ class GlossyHeartPainter extends CustomPainter {
     }
 
     final glowPaint = Paint()
-      ..color = const Color(0xFFFF3366).withOpacity(0.18 + glowPulse * 0.12)
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 6);
+      ..color = const Color(0xFFFF3366).withOpacity(0.24)
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 5);
     canvas.drawPath(path.shift(const Offset(0, 2)), glowPaint);
 
     final rect = Offset.zero & size;
@@ -2740,13 +2501,10 @@ class GlossyHeartPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant GlossyHeartPainter oldDelegate) =>
-      oldDelegate.isActive != isActive || oldDelegate.glowPulse != glowPulse;
+      oldDelegate.isActive != isActive;
 }
 
-/// محرك رسم شبكة الأسهم المحسن:
-/// - حواف ناعمة ومستديرة وظلال خفيفة لكل سهم.
-/// - رسم أشكال ❤️ و ⭐ عند ذيل بعض الأسهم للتنويع البصري.
-/// - تأثير ارتداد وتذبذب واضح عند الاصطدام.
+/// محرك رسم شبكة الأسهم المحسن (يدعم الشبكات الكثيفة 10x10 و12x12 بكفاءة عالية)
 class ArrowBoardPainter extends CustomPainter {
   final int gridCols;
   final int gridRows;
@@ -2757,7 +2515,7 @@ class ArrowBoardPainter extends CustomPainter {
   final bool isBlockedAnimation;
   final double blockedMaxSteps;
   final double animationValue;
-  final double glowPulse;
+  final StagePalette palette;
   final bool ignoreClearedState;
 
   ArrowBoardPainter({
@@ -2770,7 +2528,7 @@ class ArrowBoardPainter extends CustomPainter {
     required this.isBlockedAnimation,
     required this.blockedMaxSteps,
     required this.animationValue,
-    required this.glowPulse,
+    required this.palette,
     this.ignoreClearedState = false,
   });
 
@@ -2778,18 +2536,18 @@ class ArrowBoardPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final cellW = size.width / gridCols;
     final cellH = size.height / gridRows;
-    final strokeW = math.min(cellW, cellH) * 0.145;
+    final strokeW = math.min(cellW, cellH) * 0.165;
 
     Offset centerOf(double col, double row) {
       return Offset((col + 0.5) * cellW, (row + 0.5) * cellH);
     }
 
-    // 1. رسم نقاط الشبكة الرمادية الهادئة (Grid Dots)
+    // 1. رسم نقاط الشبكة الهادئة
     if (!ignoreClearedState) {
       final dotPaint = Paint()
-        ..color = const Color(0xFFD0D7E2)
+        ..color = palette.gridDotColor
         ..style = PaintingStyle.fill;
-      final dotRadius = math.min(cellW, cellH) * 0.048;
+      final dotRadius = math.min(cellW, cellH) * 0.052;
       for (int r = 0; r < gridRows; r++) {
         for (int c = 0; c < gridCols; c++) {
           canvas.drawCircle(
@@ -2805,7 +2563,7 @@ class ArrowBoardPainter extends CustomPainter {
     if (rulerEnabled && !ignoreClearedState) {
       final guidePaint = Paint()
         ..color = const Color(0xFF64B5F6).withOpacity(0.65)
-        ..strokeWidth = 2.0
+        ..strokeWidth = 1.8
         ..style = PaintingStyle.stroke;
 
       for (final arrow in arrows) {
@@ -2823,14 +2581,14 @@ class ArrowBoardPainter extends CustomPainter {
       }
     }
 
-    // 3. رسم الأسهم مع الظلال الخفيفة وحلي ❤️ و ⭐
+    // 3. رسم الأسهم
     for (final arrow in arrows) {
       if (!ignoreClearedState && arrow.isCleared) continue;
 
       final isHinted = arrow.id == hintedArrowId;
       final isAnimating = arrow.id == animatingArrowId;
 
-      Color arrowColor = const Color(0xFF0A1D3B);
+      Color arrowColor = palette.arrowNormalColor;
       if (isAnimating && !isBlockedAnimation) {
         arrowColor = const Color(0xFF2196F3); // أزرق عند الخروج الصحيح
       } else if ((isAnimating && isBlockedAnimation) || arrow.isQueuedRed) {
@@ -2845,8 +2603,7 @@ class ArrowBoardPainter extends CustomPainter {
       if (isAnimating) {
         if (isBlockedAnimation) {
           shiftCells = math.sin(animationValue * math.pi) * blockedMaxSteps;
-          // اهتزاز خفيف جانبي عند الاصطدام لزيادة وضوح الخطأ
-          final shake = math.sin(animationValue * math.pi * 4) * 2.5;
+          final shake = math.sin(animationValue * math.pi * 4) * 2.2;
           shakeOffset = Offset(shake, 0);
         } else {
           final totalEscapeSteps =
@@ -2864,34 +2621,34 @@ class ArrowBoardPainter extends CustomPainter {
 
       if (polylinePoints.length < 2) continue;
 
-      final arrowPath = _buildRoundedCornerPath(polylinePoints, cellW * 0.20);
+      final arrowPath = _buildRoundedCornerPath(polylinePoints, cellW * 0.18);
 
-      // أ) ظل خفيف وناعم تحت كل سهم لجعله بارزاً وجذاباً
+      // أ) ظل ناعم تحت السهم
       if (!ignoreClearedState) {
         final shadowPaint = Paint()
-          ..color = const Color(0xFF0F172A).withOpacity(0.11)
+          ..color = const Color(0xFF0F172A).withOpacity(0.10)
           ..strokeWidth = strokeW
           ..style = PaintingStyle.stroke
           ..strokeCap = StrokeCap.round
           ..strokeJoin = StrokeJoin.round;
-        canvas.drawPath(arrowPath.shift(const Offset(0, 2.5)), shadowPaint);
+        canvas.drawPath(arrowPath.shift(const Offset(0, 2.0)), shadowPaint);
       }
 
       // ب) هالة ضوئية حول السهم المُلمّح أو السهم الأزرق المنطلق
       if (isHinted || (isAnimating && !isBlockedAnimation)) {
         final glowColor = (isAnimating && !isBlockedAnimation)
             ? const Color(0xFF2196F3).withOpacity(0.24)
-            : const Color(0xFFFFAB3D).withOpacity(0.38 + glowPulse * 0.18);
+            : const Color(0xFFFFAB3D).withOpacity(0.45);
         final glowPaint = Paint()
           ..color = glowColor
-          ..strokeWidth = strokeW * 2.35
+          ..strokeWidth = strokeW * 2.3
           ..style = PaintingStyle.stroke
           ..strokeCap = StrokeCap.round
           ..strokeJoin = StrokeJoin.round;
         canvas.drawPath(arrowPath, glowPaint);
       }
 
-      // ج) رسم جسم السهم الأساسي
+      // ج) رسم جسم السهم
       final linePaint = Paint()
         ..color = arrowColor
         ..strokeWidth = strokeW
@@ -2900,7 +2657,7 @@ class ArrowBoardPainter extends CustomPainter {
         ..strokeJoin = StrokeJoin.round;
       canvas.drawPath(arrowPath, linePaint);
 
-      // د) رسم شكل ❤️ أو ⭐ صغير عند ذيل السهم (التنويع البصري)
+      // د) رسم شكل ❤️ أو ⭐ صغير عند ذيل السهم المميز
       if (arrow.badge != ArrowBadgeStyle.none && !ignoreClearedState) {
         _drawTailBadge(
           canvas,
@@ -2910,26 +2667,24 @@ class ArrowBoardPainter extends CustomPainter {
         );
       }
 
-      // هـ) رسم رأس السهم بحواف ناعمة
+      // هـ) رسم رأس السهم
       _drawArrowHead(
         canvas,
         polylinePoints.last,
         arrow.headDir,
-        strokeW * 2.55,
+        strokeW * 2.45,
         arrowColor,
         hasShadow: !ignoreClearedState,
       );
     }
   }
 
-  /// رسم أيقونة قلب ❤️ أو نجمة ⭐ ناعمة عند بداية (ذيل) السهم
   void _drawTailBadge(
     Canvas canvas,
     Offset center,
     ArrowBadgeStyle badge,
     double radius,
   ) {
-    // خلفية دائرية بيضاء صغيرة لإبراز الشكل فوق ذيل السهم
     final bgPaint = Paint()
       ..color = Colors.white
       ..style = PaintingStyle.fill;
@@ -2937,7 +2692,7 @@ class ArrowBoardPainter extends CustomPainter {
       ..color = badge == ArrowBadgeStyle.heart
           ? const Color(0xFFFF5252)
           : const Color(0xFFFFB300)
-      ..strokeWidth = 1.5
+      ..strokeWidth = 1.3
       ..style = PaintingStyle.stroke;
 
     canvas.drawCircle(center, radius * 1.05, bgPaint);
@@ -2989,7 +2744,6 @@ class ArrowBoardPainter extends CustomPainter {
     }
   }
 
-  /// تحريك السهم المتني في نفس مساره الأصلي (Snake Path-Following)
   List<Offset> _computeSnakePolyline({
     required ArrowItem arrow,
     required double shiftCells,
@@ -3126,7 +2880,6 @@ class ArrowBoardPainter extends CustomPainter {
       ..style = PaintingStyle.fill;
     canvas.drawPath(path, paint);
 
-    // حافة دائرية ناعمة لرأس السهم
     final strokePaint = Paint()
       ..color = color
       ..strokeWidth = headSize * 0.14
@@ -3295,7 +3048,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   context,
                   'المساعدة',
                   'اضغط على الأسهم التي يكون طريقها مفتوحاً لإخراجها من الشبكة.\n\n'
-                      '• عند الضغط على سهم صحيح يتحول للأزرق وينطلق خارجاً.\n'
+                      '• كل مستوى يبدأ بسهم أو سهمين مفتوحين فقط، وإخراجهما يفتح الطريق لباقي الأسهم بالتتابع.\n'
                       '• عند الضغط على سهم مسدود يتحول للأحمر ويدخل في وضع الانتظار، وبمجرد فتح طريقه ينطلق تلقائياً لوحده!',
                 ),
               ),
@@ -3311,7 +3064,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 onTap: () => _showInfoDialog(
                   context,
                   'حول اللعبة',
-                  'لعبة مسار الأسهم (الإصدار 1.3.0)\nتضم 20 مستوى متدرج الصعوبة وتشكيلات ❤️ و ⭐ مع أداء سلس.',
+                  'لعبة مسار الأسهم (الإصدار 1.4.0)\nتضم 20 مستوى عالي الكثافة والعمق مع توفير كامل للبطارية وأيقونة خارجية مخصصة.',
                 ),
               ),
               const Divider(
