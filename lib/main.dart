@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'package:audioplayers/audioplayers.dart';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -35,8 +37,8 @@ class MasarArrowsApp extends StatelessWidget {
         fontFamily: 'Roboto',
         scaffoldBackgroundColor: Colors.white,
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF1976D2),
-          primary: const Color(0xFF1976D2),
+          seedColor: const Color(0xFF1E88E5),
+          primary: const Color(0xFF1E88E5),
         ),
       ),
       home: const GameScreen(),
@@ -75,122 +77,6 @@ extension ArrowDirOffset on ArrowDir {
   }
 }
 
-/// أشكال نهاية السهم (عادية أو مزخرفة بـ ❤️ أو ⭐)
-enum ArrowBadgeStyle { none, heart, star }
-
-/// المجموعات البصرية للمستويات (Visual Stage Themes):
-/// تغير الخلفية والإضاءة المحيطية ولون شريط التقدم والأسهم بهدوء دون تعقيد قواعد اللعب
-enum StageVisualTheme {
-  clean,    // المستويات 1-4: البداية النقية (أبيض ناصع وأزرق كلاسيكي)
-  ocean,    // المستويات المتوسطة الكثيفة: تدرج محيطي بارد وهادئ
-  heart,    // مستويات القلب ❤️: لمسة وردية/ياقوتية دافئة متناسقة مع شكل القلب
-  star,     // مستويات النجمة ⭐: لمسة ذهبية/كهرمانية مشرقة
-  diamond,  // مستوى الماسة 💎: طابع كريستالي سماوي
-  twilight, // المستويات المتقدمة 16-19: طابع الشفق البنفسجي الهادئ
-  crown,    // المستوى 20 الختامي 👑: طابع ملكي فاخر بلمسات ذهبية وبنفسجية
-}
-
-class StagePalette {
-  final Color bgTop;
-  final Color bgBottom;
-  final Color boardCardColor;
-  final Color boardGlowColor;
-  final Color arrowNormalColor;
-  final Color progressColor;
-  final Color gridDotColor;
-  final String? badgeEmoji;
-
-  const StagePalette({
-    required this.bgTop,
-    required this.bgBottom,
-    required this.boardCardColor,
-    required this.boardGlowColor,
-    required this.arrowNormalColor,
-    required this.progressColor,
-    required this.gridDotColor,
-    this.badgeEmoji,
-  });
-
-  static StagePalette of(StageVisualTheme theme) {
-    switch (theme) {
-      case StageVisualTheme.clean:
-        return const StagePalette(
-          bgTop: Color(0xFFFFFFFF),
-          bgBottom: Color(0xFFF8FAFC),
-          boardCardColor: Color(0xFFFFFFFF),
-          boardGlowColor: Color(0x081976D2),
-          arrowNormalColor: Color(0xFF0A1D3B),
-          progressColor: Color(0xFF2196F3),
-          gridDotColor: Color(0xFFD0D7E2),
-        );
-      case StageVisualTheme.ocean:
-        return const StagePalette(
-          bgTop: Color(0xFFF4F9FF),
-          bgBottom: Color(0xFFEBF3FE),
-          boardCardColor: Color(0xFFFAFCFF),
-          boardGlowColor: Color(0x181E88E5),
-          arrowNormalColor: Color(0xFF0C2244),
-          progressColor: Color(0xFF1976D2),
-          gridDotColor: Color(0xFFC5D4E8),
-        );
-      case StageVisualTheme.heart:
-        return const StagePalette(
-          bgTop: Color(0xFFFFF5F7),
-          bgBottom: Color(0xFFFFEBEF),
-          boardCardColor: Color(0xFFFFFBFC),
-          boardGlowColor: Color(0x22E91E63),
-          arrowNormalColor: Color(0xFF2C1024),
-          progressColor: Color(0xFFE91E63),
-          gridDotColor: Color(0xFFEBC5D0),
-          badgeEmoji: '❤️',
-        );
-      case StageVisualTheme.star:
-        return const StagePalette(
-          bgTop: Color(0xFFFFFBF0),
-          bgBottom: Color(0xFFFFF3D6),
-          boardCardColor: Color(0xFFFFFEFA),
-          boardGlowColor: Color(0x26FFA000),
-          arrowNormalColor: Color(0xFF1F2438),
-          progressColor: Color(0xFFFF9800),
-          gridDotColor: Color(0xFFE5D5B5),
-          badgeEmoji: '⭐',
-        );
-      case StageVisualTheme.diamond:
-        return const StagePalette(
-          bgTop: Color(0xFFF0FDFA),
-          bgBottom: Color(0xFFE0F7FA),
-          boardCardColor: Color(0xFFFAFFFF),
-          boardGlowColor: Color(0x2400ACC1),
-          arrowNormalColor: Color(0xFF0A2E36),
-          progressColor: Color(0xFF00ACC1),
-          gridDotColor: Color(0xFFB8DCE0),
-          badgeEmoji: '💎',
-        );
-      case StageVisualTheme.twilight:
-        return const StagePalette(
-          bgTop: Color(0xFFF6F4FF),
-          bgBottom: Color(0xFFEDE9FE),
-          boardCardColor: Color(0xFFFCFAFF),
-          boardGlowColor: Color(0x205E35B1),
-          arrowNormalColor: Color(0xFF1A1438),
-          progressColor: Color(0xFF5E35B1),
-          gridDotColor: Color(0xFFD0C8E8),
-        );
-      case StageVisualTheme.crown:
-        return const StagePalette(
-          bgTop: Color(0xFFFAF5FF),
-          bgBottom: Color(0xFFFFF7E6),
-          boardCardColor: Color(0xFFFFFDF9),
-          boardGlowColor: Color(0x28D97706),
-          arrowNormalColor: Color(0xFF241538),
-          progressColor: Color(0xFFD97706),
-          gridDotColor: Color(0xFFDECFE8),
-          badgeEmoji: '👑',
-        );
-    }
-  }
-}
-
 /// نقطة على الشبكة (عمود، صف)
 class Point<T extends num> {
   final T x;
@@ -206,18 +92,16 @@ class Point<T extends num> {
 }
 
 /// نموذج السهم الواحد:
-/// يستنتج اتجاه الرأس والخروج تلقائياً 100% من اتجاه آخر قطعة في السهم
+/// اتجاه الرأس والخروج مستنتج تلقائياً 100% من اتجاه آخر مفصل في السهم
 class ArrowItem {
   final String id;
   final List<Point<int>> cells; // من الذيل [0] إلى الرأس [last]
-  final ArrowBadgeStyle badge;
   bool isCleared;
   bool isQueuedRed;
 
   ArrowItem({
     required this.id,
     required this.cells,
-    this.badge = ArrowBadgeStyle.none,
     this.isCleared = false,
     this.isQueuedRed = false,
   }) : assert(cells.length >= 2, 'Arrow must have at least 2 cells');
@@ -238,7 +122,6 @@ class ArrowItem {
   ArrowItem copy() => ArrowItem(
         id: id,
         cells: List<Point<int>>.from(cells),
-        badge: badge,
         isCleared: isCleared,
         isQueuedRed: isQueuedRed,
       );
@@ -250,7 +133,6 @@ class LevelConfig {
   final String difficultyLabel;
   final int gridCols;
   final int gridRows;
-  final StageVisualTheme stageTheme;
   final List<ArrowItem> arrows;
 
   const LevelConfig({
@@ -258,606 +140,620 @@ class LevelConfig {
     required this.difficultyLabel,
     required this.gridCols,
     required this.gridRows,
-    this.stageTheme = StageVisualTheme.clean,
     required this.arrows,
   });
 }
 
-/// مستودع الـ 20 مستوى عالية الكثافة والعمق (مفحوصة بخوارزمية free0=1..2 وعمق متسلسل 11..25)
+/// مستودع المستويات الـ 20 النظيفة المطابقة 100% للعبة الأصلية
+
+/// محرك الصوتيات التفاعلي للعبة:
+/// يدعم تشغيل المؤثرات الصوتية (انزلاق السهم، الارتداد الخشبي، جرس التلميح، وموسيقى الفوز)
+/// باستخدام بيانات صوتية مدمجة (Embedded Base64 PCM-WAV) لضمان التشغيل الفوري والسلس وبدون تأخير
+class GameAudioService {
+  static final GameAudioService instance = GameAudioService._internal();
+  GameAudioService._internal();
+
+  // مسبح مشغلات صوتية (Audio Pool) بوضع lowLatency لضمان عدم تقطع الصوت عند خروج عدة أسهم متتالية بسرعة
+  final List<AudioPlayer> _sfxPool = List.generate(
+    3,
+    (_) => AudioPlayer()
+      ..setReleaseMode(ReleaseMode.stop)
+      ..setPlayerMode(PlayerMode.lowLatency),
+  );
+  int _poolIndex = 0;
+
+  final AudioPlayer _victoryPlayer = AudioPlayer()
+    ..setReleaseMode(ReleaseMode.stop);
+
+  // الأصوات الـ 4 مدمجة بالكامل داخل الكود (WAV PCM 16-bit) فلا تحتاج لرفع أي ملفات صوتية خارجية!
+  static const String _slideB64 = "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";
+  static const String _bumpB64 = "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";
+  static const String _hintB64 = "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";
+  static const String _winB64 = "UklGRpCSAABXQVZFZm10IBAAAAABAAEAIlYAAESsAAACABAAZGF0YWySAAAAAJkKsxTWHZ4lvCv/L1IywzJ4Ma8uuirxJbIgUhsZFkAR6AwaCc4F4wIvAIH9ovpm96/zbu+q6oPlLODt2hjWCtIbz57N083kz9/Tt9k74SPqDfSE/gsJJRNbHEUkkyoPL6IxUzJGMbQu7SpJJiEhzhuZFrwRWw2ECS4GPwOOAOj9Gvv191r0NvCP63/mOOH92yDX+9LmzzXOKs7yz6DTKdlj4AnpvfIP/YEHmhHfGuoiZikaLusw3DEMMbMuGyubJo0hSBwXFzcSzg3tCY8GmwPqAE3+jvt/+P70+PBt7HbnQOIM3SjY7tO20NLOic4K0GzTp9iX3/vnePGi+/4FERBkGY0hNCgfLS0wXTHLMKkuQivnJvQhvxyUF7ISQQ5XCvAG9wNGAa/+/vsF+Z71tPFG7WjoROMX3i/Z4tSJ0XbP8c4t0EPTMdjX3vfmPPA8+n8EjA7qFy4g/yYeLGgv1jCBMJkuYisvJ1giMx0QGCwTtQ7BClEHUgSgAQ//a/yF+Tj2avIZ7lTpQ+Qg3zXa2NVf0iDQYc9Z0CbTx9ci3v/lC+/f+AcDCw1xFs4exiUYK5wuSDAxMIEufCtxJ7cipR2JGKYTKQ8sC7IHrAT5AW3/1fwC+sz2G/Pm7jvqPuUm4DrbztY508/Q2c+P0BPTadd63RLl5O2L95YBjQv5FGwdiiQMKsktsy/YL2IujyutJxIjFB4CGR8UnA+WCxQIBwVRAsn/O/16+lz3xvOt7xzrNOYo4T3cxdcW1IPRWNDO0AvTFtfd3DDkxuw/9ioAFAqDEwocSyP8KPEsFi94LzwunCvkJ2kjfx54GZcUEBACDHYIYQWoAiIAn/3u+uf3a/Ru8PjrJecm4j7dvNj11DzS3tAW0Q3TztZM3Frjs+v89Mf+nwgPEqgaCSLoJxIscy4RLw4uoisVKLsj5x7sGQ4VgxBtDNgIuwX+AnoAAP5f+234C/Uq8c7sEegh4z7es9nW1fnSatFn0RnTkdbG24/iq+rC82r9LwedEEUZxSDPJi0ryC2iLtktoStAKAgkTB9eGoQV9xDZDDoJFgZUA9EAXv7M++/4pvXg8Z/t+OgY5Drfqtq51rvT/dG/0S/TYNZL28/hremQ8hP8wwUuD+MXfx+yJUMqFy0sLp0tmStlKFAkrR/OGvkVaRFFDZ0JcAaqAyYBu/41/Gz5O/aQ8mru2+kL5TXgoNud13/UldIf0k7TONbc2hrhuehp8cX6XgTCDYIWNx6RJFQpYCyvLVktiyuEKJQkCyA7G20W3BGxDQAKywb/A3sBFP+b/OT5zPY78y/vuOr65SzhldyC2EjVM9OH0nbTG9Z42nDg0OdK8H75/gJaDCEV7hxtI2AooissLQ8tdSudKNIkZCClG98WThIdDmQKJgdTBM4BbP///Fn6V/fh8+/vkOvl5iHiiN1o2RPW1tP20qjTCdYe2tHf8eY17z/4pAH1CsITpBtGImYn3iqhLL0sWSuwKAsluiANHE8XvxKJDscKgQeoBCACwv9f/cr63veB9KrwY+zL5xLje95P2uHWftRs0+LTANbP2T3fHeYp7gj3UACUCWQSWRocIWkmFCoPLGQsNiu9KD8lCyFyHL4XLxP1DiwL3Af8BHICFQC8/Tf7YPgc9V/xMe2t6AHka98227HXKtXo0yTUAdaL2bTeVOUn7dn1A/83CAgRDhnwH2clRSl3KwQsDCvDKG0lWCHUHCsYnxNhD5ALOAhRBcICaAAX/qH73viy9Q/y+u2K6evkWuAd3IPY2tVr1G7UC9ZR2TbeleQv7LL0vP3eBq4PwxfBHmEkcCjZKp4r2yrDKJYloSEyHZUYDRTMD/QLlAilBRMDuQBw/gf8V/lD9rryve5j6tPlRuED3VbZjtbz1MDUHtYh2cLd4ONA65Tze/yLBVcOeBaRHVcjlic0KjArpCq8KLkl5SGNHf4YehQ3EFkM8Aj6BWMDCQHG/mr8zfnP9l/ze+8367bmMOLp3SvaRteA1RnVOtb82FndNuNc6n/yQvs8BAMNLhVfHEoityaJKb0qZiqwKNclJCLlHWQZ5hSiEL4MTQlOBrIDWAEa/8n8PvpX9//zNfAG7JbnGOPO3gLbANgT1nnVX9bf2PrcluKB6XLxD/ryArIL5BMsGzkh0yXZKEIqISqcKO8lXyI5HsgZURUNESMNqgmjBgEEpgFs/yb9rPra95v06fDQ7HHo/eOy39nbvtir1uDVjNbN2KXcAOKv6G7w5PiuAWQKnBL3GSYg6yQiKMEp1SmDKAEmlSKJHikauhV3EYgNBwr4BlAE8wG9/4D9FftY+DH1mPGW7Unp3+SU4LDcftlH103WwtbE2FvcdeHo53PvwfdwABkJVRHDGBAf/iNnJzopgyljKA4mxiLWHogaIhbgEe0NZApOB58EPwILANj9fPvS+ML1QvJX7h3qvuV14YjdQNro18DW/tbD2Brc9OAr54HupfY4/9MHEBCNF/gdDiOmJq0oKik8KBQm8iIeH+MaiBZIElIOwgqjB+4EiwJYAC3+3/tI+U/25vIT7+zqmeZU4l/eBNuM2DrXQ9fM2OLbfOB35pjtkfUG/pEGzQ5YFt0cGiLfJRkoyygQKBUmGSNjHzwb7BavErYOIAv5Bz0F1gKkAID+Pvy6+df2hvPK77frcucx4zffyts02bjXjtfd2LXbD+DN5bjshfTa/FMFjA0jFcEbIiEUJYAnZijcJxAmOyOjH5IbThcVExoPfgtPCIwFIQPvANH+m/wo+lv3IvR98H3sR+gM5A3gkdzf2TzY4df22JDbrN8t5eHrgfO0+xkETgzuE6MaJiBEJOEm+iejJwQmVyPfH+Qbrhd7E34P3AumCNsFawM5ASD/9fyT+tr3uPQq8T/tGOnl5OPgWd2N2sXYOtgY2XXbUt+W5BPrhPKV+uUCEgu6EoQZKB9wIz0miSdjJ/MlbiMWIDMcCxjeE+IPOwz9CCoGtQOCAW3/TP35+lX4SfXT8f3t5um75bjhId4+21LZmdhB2WLbAt8K5E/qkfF9+bYB2gmHEWUYJx6YIpMlEScdJ9wlgCNJIH4cZhhBFEUQmQxUCXkG/wPKAbj/of1d+8v41vV38rbusOqP5ozi697x2+PZ/9hy2Vnbu96G45TppfBs+IwApQhVEEQXJB27IeQkkybRJr8ljCN3IMYcvxiiFKcQ9wyrCckGSAQRAgEA8/29+z75X/YW82vvdutf517jtN+m3Hnaatmq2Vfbfd4M4+Howu9i92j/cwclDyMWHhzbIDEkECZ/JpslkyOhIAsdFRkBFQgRVQ0CChkHkgRYAkoAQ/4Z/Kz54/ax8xvwOOwt6C/kfeBd3RLb2tnp2V7bSN6c4jjo5+5f9kn+Rgb3DQIVFxv3H3gjhyUnJnIllCPGIEsdaBlfFWkRsw1aCmkH3ASeApEAkP5z/Bf6YvdH9Mfw9uz36P7kR+EV3q7bUNov2m3bHN414pnnFe5j9TD9HAXLDOETDRoQH7si+CTJJUMlkCPmIIcduBm7FckREQ6yCroHJgXkAtcA3P7K/H/63vfY9G7xsO2/6cvlD+LP3k7cy9p72oTb+d3X4QLnS+1v9B389wOiC8ESAxklHvkhZSRlJQ4lhiMBIcAdBRoUFicSbg4KCwsIbwUpAxwBJv8e/eL6Vfhl9RHyZu6D6pXm1+KK3/DcStvN2qPb392C4XTmiuyD8xD71gJ7CqER9xc4HTMhzCP8JNQkdiMXIfQdUBpsFoUSyw5iC1wIuQVuA2ABbv9w/UP7yPju9a/yGO9D617nnuNF4JXdzdsm28jbzd014fDl0eue8gn6ugFWCYIQ6hZIHGkgLiONJJMkYSMoISQelhrBFuESKA+6C60IBAazA6QBtf+//aD7OPly9knzxe8A7CToZOQB4TzeVdyE2/Xbw93y4HTlIevB8Qn5owA1CGQP3BVWG5wfiyIYJE0kRyM0IVAe2hoUFzwThA8SDP4ITgb4A+YB+v8M/vr7o/ny9t7zbvC67OfoKeW94eXe4Nzn2yncwN234AHleurs8BD4kv8YB0gOzxRiGsse5CGeIwEkJiM7IXceGhtlF5UT3w9qDFAJmQY9BCgCPQBX/lH8C/pu92/0FPFw7afp7OV64pDfbt1Q3GPcxt2F4Jfk2+kf8B73hv79BS4NwRNsGfYdOCEfI68jASM9IZoeVxuzF+0TORDCDKIJ5AaCBGoCgACg/qX8b/rm9/z0tfEi7mXqruY24zzgAN693KPc091b4DXkRela7zL2fv3nBBUMsxJ0GB4dhyCaIlgj1SI6IbkekBv+F0MUkxAaDfQJLwfHBKsCwQDn/vf80PpZ+IT1UfLQ7h/rbefx4+ngld4v3erc6N064Nzjt+ic7k31ffzVA/8KpRF7F0Qc0x8RIvsipSIxIdMexRtHGJcU6xBxDUYKegcMBewCAgEs/0b9LvvJ+Aj26vJ679frK+is5JjhLN+l3TbdA94g4IzjMujn7W/0gfvGAusJmBCBFmcbGh+CIZkibiIjIege9huMGOkUQxHIDZkKxgdRBS0DQgFw/5L9iPs1+Yn2fvMh8Ivs5uhm5Ufixt8g3ojdJt4O4ETjtec57Znzi/q9AdoIjA+GFYcaXh7vIDIiMyIQIfgeIxzPGDkVmREeDusKEgiWBW0DgQGy/9393/ue+QX3DvTD8Dztn+kf5vbiYuCe3t/dT94E4ATjQOeU7Mnym/m3AMsHgQ6KFKUZnx1YIMYh8iH4IAQfTRwPGYcV7hF0Dj0LXgjcBa4DvwHz/yX+NPwC+n33mvRi8ertVurX5qbj/+Af3zzeft4B4Mzi1Ob36wHysfi4/8AGdw2OE8EY3By8H1QhqyHaIAsfchxLGdIVQRLKDpALqgghBu4D/QExAGv+hfxk+vH3IvX98ZTuCuuO51bkn+Gk353etN4F4JzicOZh60Hxzve8/rgFbwySEtsXFRwcH94gYCG4IA0fkxyEGRsWlBIeD+IL9whnBi4EOgJwAK/+1PzC+mH4pvWU8jvvvOtD6AXlP+Is4ALf794R4HTiFObU6ojw8fbG/bMEaQuWEfQWTBt3HmIgDyGQIAsfsBy5GWIW5BJyDzMMQwmtBm8EdwKtAPL+If0d+834JvYm897vauz26LXl4eK34GzfMN8j4FTiwOVO6tbvGvbU/LIDZAqaEAwWgBrPHeMfuSBjIAMfyRzsGaYWMxPFD4UMkAn0Bq8EtALqADP/a/11+zb5ova1837wFu2n6WPmhONE4dvfd9884DvidOXR6SvvSvXo+7UCYgmfDyIVshkjHV4fXiAxIPce3RwaGugWgBMWENYM3Qk6B/AE8AIlAXL/s/3J+5z5GvdA9Brxv+1X6hHnKOTT4Uzgw99b4CriL+Vb6YjugfQC+70BYwikDjgU4Rh0HNUe/h/6H+Ye7RxFGiYXyxNnECcNKgqBBzAFLANgAbD/+P0b/P75jvfH9LLxZe4E677ny+Rl4sLgFOCB4B/i8+Tt6O3tv/Mh+sgAZgeqDU0TDxjBG0gemR++H9Ae+RxsGmIXFBS3EHcNdwrIB3EFaAObAe3/PP5r/Fz6//dL9UfyB++v62rocOX44jrhauCt4BzivuSH6FntA/NG+dn/bAayDGESOhcMG7cdMB98H7UeAB2PGpoXWxQFEccNxAoQCLIFpQPUAScAfv63/Lj6bPjK9djyp+9X7BXpFOaM47bhxODe4B/ikOQp6M3sTvJx+O3+dQW7C3URYxZTGiIdwh42H5UeAx2vGtAXnxRSERYOEAtXCPQF4QMOAmEAvv4B/RD71fhG9mXzQ/D97L7puOYi5DXiIuEV4SniauTS50jsoPGi9wb+gQTGCooQjBWXGYkcTx7rHnAeAR3KGgMY4hSdEbAb9ySrLCkyBjUXNXIyai17Jj8eUhVBDHwDSfvB89rsbuZO4FDaY9SZzi/JisQuwa6/mMBexEPLSNUk4kbx2gHjEkgj+TEGPrxGskvWTGxK/URLPTI0jSoeIXQY3RBkCtUEyv/C+jr1ye4y53ve7dQUy7DBprnZsxqxA7Lmtr6/LMx827vsyv58ELogly5lOcdAr0RbRUJD/z4/OaIyriu+JP4dbRfrEEEKOwO1+6nzPOu+4qTae9PWzT3KF8mYyrvOO9Wb3TPnQfEA+74D9wpWEMkTdxW7FRIVBBQRE5sS1xLAEyAVkBaMF4oXDhbEEo0NkgY9/jP1SOxj5GDe+9qv2qvdxeN97Av3cQKbDXsXKB/2I4ol4iNPH2kY/w/yBib+WvYc8LrrPOlt6OXoIOqV68vsb+1f7bHsrevB6nPqR+us7eXxA/jV//MIxRKQHJIlFS2DMnk1zzWYMyIv4ChgITMZ2hC7CBAB7Pk789Dsdeb831HZg9LUy6zFnsBKvVa8TL6JwyrMAdiQ5hL3igjfGe0przdPQkNJU0yhS55H90CDOCIvpSWyHLgU3w0QCP0CNP4z+Ybz3uwi5XfcRNMqyu7BZrtdt3i2HrluvzHJ4tW75Mb09wRNFOIhCC1RNZc6+TzMPIs6wTb4MaIsDidmIasbwhV+D7UITAFJ+dTwQegI4LbY4NINz6TN2c6o0s3YyeDz6YXztvzRBEoLzA9BEtUS6REHEMgNwAtqCg4KvwpTDGoOgRD+EVESCBHgDdsIPAKM+oPy/erV5NTgjd9R4Rvmle0b980BqwytFuMekCQ8J78mRCNAHWAVcgxMA7H6PPNT7R7pi+ZW5RvlbOXh5S/mMObu5Z/lneVS5izoh+uX8GT3uv8zCT4TKR0+Js4tTzNjNuc28jTQMPQq6iM/HHMU5AzKBTH/+/jx8tHsYeZ/3zDYrdBeydXCwb3Wurq66L2exNDOH9zg6yb92g7XHwIvbDtmRJJJ6Eq2SI5DMzyAM0sqSyEIGckRlwtABmgBnPxp93bxlOrP4mva5tHoyS/Ddr5hvGC9p8EeyWbT39+87RT8/wmsFnMh5ynUL0gzfzTaM8wxxC4hKyMn5yJmHoIZDxTiDeQGHf+69hPupOUC3sfXgtOh0WTSy9WY20/jROyv9bz+qgbiDP8Q5BKzEs4QxA08CuAGQQTHAp4CtwPFBU0ItgplDM8MlAuNCNkD1/0g93fwrOqI5qzkgeUl6WfvyfePAdULoxUPHlMk5ieCKDImRyFLGvAR+AgeAP73CvF+62LnkuTI4q/h9uBh4NLfU98V32PfnOAe4zTnCO2U9KH9wQdjEtQcXyZYLjQ0mTdkOK42xTIhLVAm5h5mFzMQhwlrA8H9R/iv8qzsDObB3vDW9c5dx9fAIrz3ue66ab+Ax/zSVOG48SEDcRSFJFsyJT1fRNtHu0duRJo+CjeMLt4lmR0dFpAP3gnHBOv/5PpZ9RTvCuhq4JPYDtGAypHF2MLGwpbFRMuK0+fdr+ka9loCtw2XF5IfeCVOKUQrrCvnKlIpOyfQJB8iFx+OG04XJRL1C8EEtfwn9JjroOPn3AXYe9WU1WLYs90U5d7tQ/dpAIMI4w4UE+EUYBTnEQAOWwmtBKAAuf1D/E/8rv35/6MCEQWtBv8GwgXuArv+m/kz9Dzvc+t86c7pnuza8Sv59QF1C8wUHB2lI9InUCkOKD0kSh7KFmYOyAWE/Qz2p+9s6kzmGOOS4IDettwl297ZFdkX2T3a4NxF4Y7nsO9q+UoEtw/6GlUlFS6pNLA4ATq0OBY1oS/rKJEhIRoKE5AMxAaIAZz8pfdI8j7sYeXB3aHVfc38xd2/5bvAuvC8ssL5y2TYR+e7964IBxm6J+Uz5jxoQmVEJEMnPx45xzHbKfghjxrbE+UNhgh2A2P++/gI83rsbuUu3izX9NAZzCPJe8hdyszOkNU/3kLo6vKE/WcHERAkF3YcDyAgIvQi5CJFIlghQiAEH38dexuyGOUU5Q+pCVECL/q88ZfpbOLl3JDZ0tjR2m7fSebE7hj4ZQHSCaAQQBVmFw4XeRQlEL0K/QSd/zr7QPjh9hD3hPjI+kv9ef/NAO4Atf8z/br5x/X48fbuXO2h7QnwmfQU+wADtwt0FHAc9CJuJ4EpDikxJj4hrhoTEwMLBQOF+8j06u7o6aDl5uGP3n/btNhN1oXUstMz1GTWjtrU4CrpUPPQ/ggLOxedInEsFDQYOUc7rTqSN28y3yuHJAQd1BVOD5IJjQQDAJr76vab8XHrX+SP3GLUbMxkxQzAH70yvabAk8fB0bDemu2N/X4NZhxcKakz2TrDPoY/gD0/OWgzpyySJaEeHBggEpwMXgcnArf83faJ8NLp9+JY3HHWw9HIzt7NO8/j0qbYIeDN6AvyOPu7AyALFhF9FWYYBRqsGrYadxowGgEa5RmzGSYZ6RepFSUSPA39Bqn/r/en70LoM+Ia3nHceN0t4UbnOu9N+KMBXQquEfEWvRnyGbUXcBO7DU8H6gA7+8T22vOQ8sDyE/QO9ij44PnO+rj6l/mW9xX1kfKa8LjvXfDO8hz3HP1tBIIMsBREHJYiHieAKZQpbCdJI5IdxxZpD/IHwgAY+g/0o+646Snl1OCm3KnYBNUA0vvPYc+c0P3TtNm/4eLrq/d3BIER8x3+KO4xPjijOxc80zlINQ8v0yc+IOAYIxI9DC8HyQK5/pT6+PWV8EXqFeNJ21vT7su7xXzB1L85weTFxc2D2IHl8PPeAlYRcB5uKcgxOTfBOZk5LTcHM7ot0Se+Ic0bIxbAEIMLPQa9AN/6l/T97Uzn3uAj25LWmtOR0qnT4NYJ3MPijerO8uz6VgKfCIAN4hDdEq8TshNME9sSpRLSEl0THRTEFPEUPxRVEv0OKQoCBOj8YfUY7sbnFeOU4JzgSONu6J3vL/hUATEK7xHYF24bbxzkGhgXjxHxCvcDVv2j90fzePAx7znvM/Cq8SjzSPTF9Ib0oPNV8gfxKvAz8IPxXPTO+Ln+yQWFDVQVlRyxIiknpykFKlAovySvH5MZ3xICDFAFAP8m+bnzne6p6bvkxN/P2grWxNFpznHMU8x2zhrTTtro44DvevwPCmIXlyPlLa01jTpiPFA7tjckMkQrxSNIHEsVGw/RCVEFVwGD/W35uvQy78bonuEX2rnSLMwexzbE9cOrxmfM9dTf33rs9PltBw4UGx8FKHUuUjK6M/sygTDHLEUoXyNdHmUZfBSLD28KAQUo/974QfKO6x3lXN+/2rLXhdZo11raKd935cLscfTq+5wCHAgiDJsOpQ+FD6EOag1MDKALmAs9DGwN2A4aEMAQXxClDmoLugbYADf6cvM77UHoIeVJ5PHlDOpK8CD40gCQCYUR8xdHHCgegB17GoAVIQ8LCOsAXvre9Lbw/e2b7E7svOyC7UTuv+7U7oruDu6t7cTts+7N8Eb0Kvla/4gGQg79FSQdKyOcJykqryo6KQEmXiG7G4sVMg8ACSQDrf2L+JnzqO6P6Tfkp94N2bjTGs+1yxLKqcrTzbfTQdwf58PzbwFHD2Qc7ScuMaU3FDuBOzE5ojRzLlQn7R/MGFUSuAz0B9cDEgBE/A/4LfN+7RDnJOAn2afSRc2byTDIX8lNzeLTydx450DzXP8HC5QVdB5NJfUpdywLLQUsxym2JicjVB9eG0cX+hJXDjwJkwNi/cX2/+9r6XvjpN5V2+TZgNos3bnhyOfW7kb2ef3YA/AIdQxNDpUOlw2+C4gJcwfoBTAFZgV2Bh8I/AmYC3gMOAyVCnoHDQOl/cX3EPIx7cfpUege6T3sffFx+HkA1gi/EHUXWxwGH0YfKx39GDYTbQxBBU7+Efjk8vPuPuyf6tTpkOmH6YHpYeko6fzoGunS6XLrP+5i8t73j/4lBjIOLRaHHbcjTSgAK64rZiphJ/oinB25F7gR5gtzBmgBs/wk+IPzm+5K6Yvjf91y19PRKs0Kyv7Idsqzzr7VYt8n62P4QAbZE00g0irPMuY3/Tk6OQI24DB7KnojdBzdFfwP6AqIBp8C2/7k+nL2WPGT60zl1d6n2EvTT88zzVPN4s/Z1P3b4OTx7oX57wORDekVnBx/IZMkASYLJgQlPSP8IG4eqhunGE0VdRH9DM4H6wF2+6/0+O3F55Ti3N763Cndc9+v44PpbfDO9/3+XQVrCs8NZA8+D6AN+QrNB6gEBwJJAKL/EgBuAV0DbgUjBwkIyAcyBkkDSf+X+r/1XvEP7lbskezm7kDzT/mPAFsI+Q+0Fu0bLh83IP8etRu3FoUQrQm+AjT8a/ad8dntDusQ6abnlua35fLkT+Ty4xPk+uTv5izq0O7Z9Bv8QwTfDGIVOx3gI+Ao7SvnLN0rCSnGJIgfxBnnE0YOEwlcBAwA8fvJ91HzWe7K6LXiWdwZ1nzQGcyGyUfJt8v/0AbZdeO67xT9pQqNF/ciOCzUMpQ2fTfUNQwyuSx4JuAfbxl8EzEOjAloBYQBlf1X+Zv0Uu+W6aXj4t3B2MDUU9LU0XTTOtf63Fvk4Oz39Qr/iAcBDyEVwRnhHKMeQx8IHzgeDh2sGxsaSxgWFk8TyA9jCxsGDQB6+cDyWezJ5pHiHOC033DhNeW06m/xyPgRAKQG7wuHDzcRAhEfD/ULCgjxAzYAT/2F+/j6kvsQ/Q3/EwGqAm0DGAOVAf3+mvvc90v0dfHc7+DvuPFl9a/6LQFVCIAPBxZTG+wehyAMIJYdahnzE6wNEwecAKH6XPXn8DvtPurE56blxuMZ4rHgtt9k3wPg2uEi5fjpVfAM+MIAAQo4E8wbKyPdKIssDy5xLesq2SayIfMbExZyEE8LvgawAvb+R/tY9+jyz+0L6MPhTdsi1dbPBMw7yu3KXM6R1FbdN+iN9I4BYw43GlEkJCxcMeIz2TOXMZgtaSiXIqEc5BaaEdUMgQhxBGkAMfyc95ryO+2x507idt2X2RjXStZe11zaIN9c5aPsdPRI/J8DFAphD2MTIBa8F3MYihhDGNMXVxfPFiEWHhWLEywR1w15CSIEC/6M9x7xSuub5onjbeJ145fmlOv58TL5jgBhBwwNEhEoEz0TdBEmDtEJCAVfAFz8X/mh9yj3zPc8+RD71vwk/qz+QP7j/ML6Mvih9YrzZPKP8kT0kvdV/DoCywh6D68V3hqWHocgkiDDHlIblBb0EOEKwQTo/oz5x/SZ8Ozsoumb5sTjHuHC3uHcv9ut2/bc2d935M7qsfLH+5MFfw/oGDAh0CdkLLkuyy7MLBQpHCRnHncYuBJ4DdwI4ARZAQf+lPq49jfy/OwY58rgedqu1P7P/cwrzN/NP9I02WviXO1Y+ZYFTRHBG1sksyqYLhIwWS/NLOcoJCT5HsYZyRQgEMcLoQeAAzr/qPq/9YzwPOsW5nThud1A21PaHdum3crhQeen7YP0VvutASwHkwvLDt4Q+BFZEkwSFxLwEfURJBJeEmwSBxLmEMsOlAs+B/EB/PvO9fDv8OpU54blxuUi6G/sUPI5+YUAgweMDRUSvxReFQIU7RCODG8HJgI//S35PfaR9Br0ovTV9U33qPiS+dX5X/lI+Mr2PvUI9I/zKvQQ9lT53v1pA5MJ3Q/BFcEacR6HIOEghh+hHH4YeRP1DUwIyQKe/d74iPSJ8MLsGOl+5fnhqt7K26bZl9j12ArbBN/p5Jbst/XR/0oKeBSyHWAlDStyLnsvSS4tK5gmESEhG0EV0A8EC+oGZgM9ACL9wfnX9Tvx6OsH5unfAtrd1AnRDM9Kz/7RLtek3vrnnPLZ/fcIQxMlHCkjDijDKmorRyq6Jy8kDiCtG0wXChPtDuIKyAZ9Auj9//jU85PugOnw5D/hxN7D3WPeqeBx5C/5IA1uHrArGjSON5A2ITKEKwEkqBwtFs4QXQxbCCYEK/8Q+dnx7ekN4jDbWNZh1NTVydri4lrtHvkDBfQPFhnpH08kgCbtJhsmeiRKIoYf6hsKF3EQ0Qcq/drws+Pf1r/LtsPtvxvBYMc00nbgkvC7ADYPlhr4IR8lcyTpIMkbcBYOEmoPwg7GD60RZhPTEw8SnQ2SBpT9xfOS6nLjn9/Z30HkSezM9jYC0Qz/FIsZ0RneFWAOiQTX+cvvsudp4kbgFeEt5KLoc+3J8Rz1Tfel+MD5Y/tO/goDxwlIEugbsCWGLlQ1PTnAOcM2mTDkJ3kdMRLEBrD7K/Eu54/dHtTQytnBvLlFs3OvSa+gs/O8N8vK3Xfzkgo1IXc1tUXJUDBWFFY5UdNISz77Mvgn5h3qFLUMpwQI/D/yDOen2szNqsGyt2Gx8q8ntBq+KM0G4OT0sgltHGQrdzU3Ouw5eTUqLnQlsRznFKMO7wlhBkEDwf8x+zL10+2U5VvdRtZ70e7PN9Jw2C/ilO5t/GYKPxf2IeUp0C7bMHEwHS5nKrElKiDJGV0SsAmk/1T0Lejw26DQZcdawV+/68HwyNPTfOF/8E7/eQzlFvIdjCErIqggFR58G60ZEBmWGbwarht0GzAZVBTLDAoDCfgZ7bXjON2i2mLcP+Jc61T2ewEdC8kRjxQhE+INzwVN/OvyHOv75Rrkd+WA6Trve/Uh+03/jQHxAfsAiv+d/ir/3QH8BksOHBdlIPAokC9QM5szUDC/KZMgrRX7CVP+S/M56S3gDNiu0PzJEMRAvx+8ZrvPvfHDEM4C3CDtTAAXFOMmJDeWQ2VLT06eTBhH0T77NKgqpSBVF7UObAbu/bT0aeoY3z3Tw8fmvQS3XrTats2+5ssh3e7wXgVuGEwonzOxOYI6vzaaL4smEB1nFGANQAjEBD8Cyv99/K/3H/EM6THgqdfD0L7MlczP0GDZqOWM9JwEUxRFIlYt2zSiOOc4OjZTMe0qnCO9G28Towo0AQv3OewU4TfWeszSxCvAP79qwpfJOdRW4bLv9P3fCoUVWx1QIr0kTCXIJPEjTCMLI/8ipyJQIUQe+hhAEVkH/vtK8JTlNN1F2HLX0dra4XXrJvZKAGEIQw1cDrkLDAaC/o32pe8C62Xp/upk77D1rPwTA80HKArzCYwHygPR/9f87fvB/YMC1QnXElMc7CRZK5wuKi73KXUidBj/DCcB2/XB6zDjMNyO1gDSRc5HyyrJTMg4yYbMtNL+20foBvdPB+wXhCfNNLk+n0RORg5Ehz6lNmItniP5GcAQ7wdD/1328ezp4oLYWs5fxbC+bruDvG7CIs3126rtmQDqEtMi3i4fNk841DWmLxonqh2uFCINhAfFA1sBaP/y/CT5f/MA7C/jCdrg0RnM8slFzF3T5d7t7Q3/mhDoIH4uTjjQPQg/cjzcNjsveCZMHSUUKAs9Aiz5we/x5fLbQdKayeDC8b6BvvXBRcn50zTh0e+S/kgMBBgyIaMnhitULaUtCy3uK3Yqgii4JaQh2BsXFHcKbf/I86DoI99s2EbVC9aK2griX+sg9dv9VwTHB+wHGwUwAF/6/fQ/8QLwoPHk9RP8DgOVCXUO0RBFEAANuweXAe37BPjg9gr5d/6FBhkQyxkjItknBSpGKMciNBqVDxwE8vgF7+3m3OCq3O/ZKtjo1ujVLdUF1fXVmdiC3QflLO+R+3AJvBc/JcowYDlcPoQ/DD2DN7QvfyawHOISaQlbAJn38e4+5ozdJ9WizcjHe8SMxI3IqtCM3F7r2vtxDIkbsSfbL4IzuzItLuwmSR6RFdcNxQeGA8QAy/6x/JP5zvQq7vTl+dxs1LLNJsrZyl3Qpdr96CL6bQwTHmMtBTkkQINCd0DKOowy3Si+HuUUrwseA/L6yfJP6l7hHNgDz9XGgMD0vPW89sD7yJHU2+Ku8r0CyRHJHgspRDCHNDU21jX7MxcxbC0EKbsjVB2bFYEMOwJG92PsgeKZ2oHVw9OB1WTaquE76tryWvrM/60C9wIiAQr+vfpQ+KH3K/nu/GoCugi7DkkTdRW3FA0RBAudAyn8BvZo8h7yavXx+8wErg4TGIsf7iOPJFIhqhqCEQwHjfwi85jrT+Y34+HhpuHT4dThXOF24IXfL9844FfjB+lp8TD8pQjAFUciBS30NGQ5ETokNycx5Cg/HxEVBQuJAcv4xPBW6Wfi+dtE1rDR0M5EzpjQHNbL3jXqh/eYBRoTvh5uJ3QsmC0iK80loh7FFkQP5ggKBJ0AKP7v+yT5GfVz70XoH+D91yHR38xbzFrQDNkE5jr2KwgZGj0qFTeOPy9DF0LwPMU0zyo5IPIVigwpBJv8avUS7ivmj9101HDLZ8NnvXm6cbvBwF7Kvtfe53D5/gooG8ooIjPdORM9ND3gOsg2hjGFK/ok5R0sFq8NaQSH+m/wvuY53qTXp9Oo0rPUctk14A3o8+/y9lP8u/83ATYBbgC2/9H/SwFUBLIIyA2zEncWMhhLF5YTag2TBTr9r/U08MPt3e5y8+P6EwSgDRMWIhzpHgcerRmREsUJiQAO+EDxqOxV6ujpserY65TsWOzx6pno6uXA4xHjteQ86cfw/voSB94TESBgKrcxZjUvNVAxaCpfITQX2AwNA036y/J87DLnuOLu3t3bvtnv2OLZ+txy4jvq9fPw/jgKvxR/HaUjsiaQJpMjZh7sFxIRpwo3BfEArP3v+hv4lPTt7wvqPOMz3PTVqNFs0BXTCdoe5ZXzMARcFWglwzI3PBVBP0EtPcg1PCzCIWkX6w2aBVz+xPc88TLqSOJ62SvQI8dyv0W6sbiAuwPDAs+23uXwBgSAFtcm4zPxPMtBtUJMQGY74TR9LcUl/x01FkgODAZn/Wf0Vuux4hzbRtXG0f7QA9OT1xze1OXX7VD1nPtjAKEDogXnBgsIkgnTC9UOUBK0FUgYThkwGKgU0g46B8r+o/b178fryuoy7a3yb/pKA+sLBxOWFwIZNBebEhIMsASb/cr33/MM8hLyTfPl9Pj1z/UJ9LTwTuy05/njMOI9457nVu/d+TUGERP/HqgoAC9vMd0vtSrGIiAZ4g4PBWj8WfX67xrsXuli59nlo+TW47vjteQp513rXvHw+I0BdQrJEq0ZbR6dICcgTh2fGNQSrwzXBrgBef3z+cz2jfPO71PrK+a64LLb+teE1iPYWd065ljyywBLEFoffix3Nms8BT56O3g1Ai0+I0AZ3g+NB1wA/fng82rtH+bM3aPURMupwgO8iLg3ua++AMmn15PpSv0XEUwjdDKJPQlEAEb1Q8Y+fDcYL20mBx4cFp4OSwfY/wn41e9z51bfIdiJ0jDPis6+0J3Vp9wf5Sju6/a2/hgF8AlgDcEPgxEQE6sUYBb6FxMZJxm5F3EUQA9oCIYAd/g88dDr+ugo6VrsGvKP+Z8BHwkCD4YSVROPEb8NvAiAA/b+yPtI+ln6gfv+/PT9n/2C+4P3/vG468TlT+Fv3+ngDeae7tr5iwZAE34e/CbSK50shSkxI6MaDRGbB0b/rfgP9Erx9O9670vv++5Z7nztuOyI7HHt3O/586/5lQAGCDAPQRWFGYcbIhuCGB4UmA6gCNQCov05+Y31YvJj70bs5ehW5fDhRt8L3vTejuIe6YXyOP5NC5oY1CTNLpQ1ojjmN8Iz9yx6JEwbSBICCrECNfwi9uzvE+lK4ZvYdc+rxlW/prq6uVu92sX10tbjKPdDC2Ue7y6bO6ZD3kahRb1ARzlnMCYnSB41FvoOVgjgASn75fMF7MnjuNuM1BbPDsz4ywTPAtVn3WTnBfJV/IYFDQ2pEmsWmxioGQAa+Rm5GTIZKhhKFj8T0w4JCSkCwPqM82PtEOko5/PnWOve8L73A/+zBfoKSg5yD6UOYwxkCWoGGATTAqgCTgMxBJkEzwNMAd/8uvZ+7yTo0eGt3afcTd+o5Tbv+vqbB54Tmx13JIkntyZtIoobNBOjCu4C4vzj+Of2ivYj9/j3Y/j295X2evQj8jrwbe9H8BHzvPfi/dMEsgudEc4VwhdIF4kU+Q8/ChQEJP7r+K70cfEF7yHteeve6U/oAude5ufmIuly7f3zmPzCBrARZBzVJRQtczGfMqUw8is4JUgd8RTVDFUFg/4o+OPxRusA5PzbftMjy9XDqb6yvM++fcW30Off9PFeBXgYlSlON6lAPEUtRSVBKDpmMQMo7h67FpkPXQmVA7r9T/cP8AXolN9r12nQeMtfyZ/KVc8x14PhUO18+e8Exw5oFpUbZR44H5YeDh0VG/YYwRZTFGwRwQ0fCYEDHv1m9vzvlerg5l3lSeaR6cruTPVE/N4CZghkDKwOYQ/jDrkNbAxkC9YKrQqWChAKiQiHBcoAaPrQ8s3qZOOv3azaDdsZ35PmwfCD/HkIQBOgG8IgRyJdIKgbJRX8DUsH9AGA/gL9LP1a/sP/nABRAJn+iPuT92/z9u/07QDuX/Dv9Cz7RgJECSwPLRPDFMgTeBBfCz8F7P4h+Wn0DfEL7ynuB+5A7oXute7k7lnvffDE8oj29fvwAhkLyxM4HIUj7yjpKzEs1yk3JeUeixfODywI7AAY+obz8OwV5tLeRdfSzyXJHsStwavCqsfV0Nvd6e3D/+kRyCLwMEg7MUGWQug/ATr6MfkoASDIF6QQiAoXBcT//vlb87vrWOPE2trSlszqyJDI6cvg0u/cLelv9nEDEQ9mGOoefyJnIy4ihx8lHJ0YRxU8ElcPSwzACG8EQf9X+RPzCu3r52Lk8+Ln4zbni+xN8776EwKaCNMNfxGgE3EUUBSdE6YSjBFCEIoOCwxsCG4DDv2P9YHttOUb36XaGNnj2g7gKuhf8on9Ygi3EZAYWxwAHdoaqhZrESUMvQfQBJYD3wMjBaMGkQc9B0AFjgGC/Mr2S/H57KLqzOqX7bbyePnkAOgHfw3kEKkRzg+3CxoG2v/c+eP0dPG9757vtPB58mH0/vUV9633CviZ+Nr5PvwJAEAFngueEooZnh8iJI0mliY/JM8fvhmhEgkLaQMN/Ar1Ve7I50bhztqQ1PPOk8opyG/I+MsQ06HdKeu9+iQL/xr0KN8z+jr2PQI9tzj+MeUpaSFYGSgS9QuEBl4B+fvZ9cDuwOZI3hjWJc9tys7I18qs0PfZ8OV48z8B/A2SGD0gqCTuJY0kRCHsHE8YBRRdEFkNuQoQCOwE8gD++y/27+/d6bnkPeEA4FThO+Vf6yXzwvtcBCwMmhJKFyYaURsXG9AZzhdCFTsSoQ5KCgoF0P629xDwbOiG4SncE9nQ2J/bXeGG6UPziP06B1wPNxVvGBQZlRerFDAR+A2jC4cKnQqHC6gMRA2vDG4KXAaxAAb6M/My7fDoIecd6M7rr/Hj+FYA8QbACyAO1A0RC20GwgAI+yT2x/JM8bTxqPOV9sb5lvyH/mL/Pf92/pz9T/0i/nIAWgSfCcMPDha0G/MfNyIoIr0fMhv8FK8N4QUU/qL2ue9k6ZHjMt5J2f3UndGgz4zP5dEF1wrfu+mI9pEEvxLlH+wq+TKJN4M4NjZGMY4q9CJGGxcUqw33B68CYf2Z9wvxqem74djZ1NKjzSjLDsyj0MTY1uPe8Jv+uAsBF4cfwySkJoglIyJcHRoYIhP0DrkLSgk6BwAFFAIZ/vH41PJI7Avm+ODe3Vndud/w5JLs5fX8/90JpxKqGX4eByFuIQogSx2bGU4VlBB4C+8F5f9V+V3yR+uL5MLekNqL2BvZY9w14hHqNPO2/KgFPA3hEloWvhd0FxQWSBSpEqARTRGHEeUR1BG/ECwO4wn/A/D8b/Vn7sXoVeWW5KfmOOuZ8dP40v+PBUUJhQpPCQsGeAGD/Br4CPXN8z4JohynKnkxEDHuKm8h7xYMDVcEcvyV9D/sx+OI3JzYNdrB4jzy3wZiHbcxEUDhRXxCKjeyJmgUNAPD9DrpfN/k1SnLKr9Bswmqp6bCq5a6XNJS8FAQyy3rRGVT3ViqVixP5kS0OVwuoiK/FRIHyPYb5jTXjMwmyM7KtNON4CnuYfkBAGwBtf4t+pD2BfZf+dH/NAfUDGAO2Ar3Ah75mvCo7GjvKvlBCHsZAilqM5g2MDJ/J+IY9QjJ+W3s7+DE1m3NDcW5vk68578Ky+/dE/dVE5UurUR0UodWhFG4RU42TibCFz0L9/9l9B7nrtcPx6K3kazjqH6udb3a0ynuKwgEHh0tpjSENccxzit5JaIfDhrSE/oLNwJH9+nsaeXc4lrmeu9M/M0JyBS7GpoaEBU5DOMCmPvE90z3n/hh+VH3OPF55x/cU9JpzdTPXNrE6xsBfxYoKF4zDTfZM6cr3iCUFQULbAFU+Cbv1OU03f7WVNUL2t3l6vepDWgjJzWjPy9BETpcLDcb5AnV+gnvCOZV3kLW0cxOwnK4+LHAsdu5wsr94mX/4BttNBFGe08cUblMp0T6OuMwhyZDG0UOPP/Q7rreadFEyejHf82e2I7mEfRP/qcDHgQ7AXD9MfsU/D4AWwYWDPkOWQ0HB4j9qfO47HPrKvFE/V4N8h1PK5cycTJBK9AeoQ8aAOfxqeUx2/fRwskaw2C/gMBCyIPXo+1UCPgjZDznTTRW6VSKS/A8XSyHHN0OVgO7+GrtOOAj0ZzBQbQjrNKrgbSHxXPcofUtDekfGCynMesx8i6zKmMmLyJiHfIWKg49A3n3Au095vvky+mt8z0AWQwFFUwYzRXCDo8F4/zU9jH0TfRO9fP0ePFe6sDgHdeh0CvQWtf85f/58w/3I7gyODoyOugzjCl2HXARVAYb/Ebygegf31jXDdM21CDcxuqB/jwUICiENuQ8gzqLMKMhFBHNAZz1xuw95kHgPdmR0APHo740uku8ZMZK2P7vJwrrIuQ270OJSbFIUkN+O7kylCm0H0oUswYV96fmlddtzF7Hdckw0oXfau6p+84Ezgg9CP4EhAHx/0wBNAX/CWUNXw33CMQA2fY17tjp0euF9IMC4BL7IYMsUDDZLDAjgxVUBsH3/epL4EfXe8/wyHvEqcNHyKnT++Xa/WMYwDEJRkBSClX8TlJCLzKsIfQSyQaF/J3ye+dO2pXLLb3jsZisWq+wulDNbuRs/M8RGCJALL8wGDEkL1UsPymIJT4gehj7DY4BC/Xe6lXl0uVF7BL3bgMvDq4UihUDEc4Idf9y92bylPDl8GbxGPDH66DkRtxr1fvSKNen4l30jAmRHs0vkjq/PdQ5nDBxJH8XMAv+/6X1r+sF4lLZDdMa0SPV39+R8PYEqhnzKrc1STjTMjgnbhiZCSL9EvT67VTpRuR/3d3UpMsxxEPBEsWG0NLij/lWEaUmtzYmQA9Dw0AeO84zxisQIwwZ9gyP/onupt5e0S/J2se/zZ7Z4OhA+LQERAyADoUMfQjMBDcDTwRHB1AKVgvWCIgCofmH8CPq8ugv7mL5ZwgEGMgk8ystLL0lSBowDNP94fAU5k7dBtbgzybL6MjFylDSXOBx9I4MeCVkO+VK0FG7TwtGcjcYJ60XsgozAAj3f+054tvUcsY/uSOwua2As1TBY9We7IgDHRd5JSwuBzKPMkoxJi80LMgn9iAtF8EKGv148GDn0eOV5urumvqTBsQP9RNpEvwLygJr+Rfy+e3a7FvtkO3S63rnPeEV26XXY9m64XrwxAN6GAcrUDh4Pjk9xzVIKhIdABAMBEn5SO+l5Yjc6tRq0NbQdNdn5Fb2jQqSHf4rYTPnMn0rfx/wEZMFH/zb9bvx9e3L6F3hHNjMzgfIbMbDy17Y4eqWACQWaihANeE74TyzOQU0FS1cJYkc6hH9BP71MOa81zPNysijy1bV7+Ni9FwDKg5oE08TfQ9PCgsGGQScBHcG1gftBr0ClvsW88DrLegy6jnyBv8BDucbriVVKVcmsR1tEe0DOveB7PvjNd2U1+XSts9Kz0DT49yM7C0BWRisLp1AX0uaTbpHuzuDLPwcRQ8lBAr7d/LH6P7cVc9iwba1Ja/lr9O4JMmL3tL1rguUHTIqkTG3NBA1yzNjMY8tiyeiHsASzwS39vLq3OP14k7ob/Kl/roJ5RB/EnwOTQZd/Dvzz+zI6Yjpe+rR6j7pl+X34HfdgN3w4mnu9/40EuYkzjOFPAk+4TjGLgMithRICDb9OPPE6ZvgLti70f7Om9Fu2gzpnfsmD0QgASygMAouxCVgGrIO7wQX/sD5d/Zl8iTsZuM82dfP7cncyeXQt9508S8Grhk9KUoznDcaNz8zeS2jJtQejxU+Cr78zO0g3x3TLswIzA7TDOBy8PAAXQ6GFrsY4BUFEKUJ0QSPApcCkQOyA4ABefxe9RHu/OhG6BbtFfd5BHIS9R2NJAQlmR/PFdgJ4/168zjr3uS930bbhddR1R/Wgdt35t/2NAu5IBI0E0KbSBdHmz6BMaMighSVCP3+r/YU7sjjVteVyZK8CbOWr+OzHsDW0lfpXADoFOoknC9pNXk3FDcVNaMxRSxKJFQZ1Qs9/cLv3eWM4aLjc+vh9uUCYgz/EMkPZQnO/5z1Ou0m6JPmgOc46Q7qE+mD5r3j1eLZ5QruVvsyDPYdii05OGQ82znGMSgmNhmqDGcBbfcy7jHlZdyX1EbPPc7l0qzdo+2HAD0TjiIHLJIuuCpaIhEYVQ6+Bp8BEf5t+hH1Ge3d4v/X/c58ym3McNWQ5H73KQuUHIQp+zA5M2Ex5izxJgYg/BdNDpgCIvUb54XaxNHnzv3SnN3c7L396gydF04cDxtnFbsNhAaGAVP/PP+7/xz/OPz69oHwx+oB6NbpxPDd+/kIUBU6Hu4h9B8oGVkPpwTZ+uXy2ewa6OLj099O3IDaBdxX4iHuzf5rEg4meDbxQPpDqz+WNTkoOBqUDSIDf/pd8j/pL95R0QzEwLggsl+yf7rxya3etvXbC4EeJCyDNF047ThTNyI0RC8xKGYe6xGqA3D1lOlS4h7hEebK77D7pAbVDYkPjgs2A934KO806ADlPOWP5y/qoutT69Xptejp6Rjv8fjLBr0WEiYIMo04xTgvM1spXB0aEc8F1PvH8gHqI+GB2EPRIs3gzZ/UUuGM8rIFmxdWJe8s6i1KKSYh8xe7D38JCgUnATz8CfVE6+bfANUtzcfKMc9W2qbqev3ED90eGSkILlcuUytWJkQgVxk8EXcH7vtA7/PiJtkK1CzV4twH6ib6DgqnFr0djh7uGekREgm0ASb9e/uk+/r77Pqv95Hy9uzd6DHoGOx99AAAUQzTFl8d1R5dGzkUSgtpAtr6//Rx8GTsLOi+4+ffJN4t4E3nzPOcBHIXQSn+Nmg+nT5DOD4tDyAHE6UHN/759ZXt0+NB2JXLpr/0tvCzO7gXxEDWNezaAj0XQCf4MaM3SDkoODE1uDB7Kvch5RarCZT7n+4T5cngkOLR6Zf0BQAgCZUNYgwVBo38XPL/6SPlM+Rd5gLqWe0q70DvfO6I7i/xsvc7ArMP+R15KuMyyjX9Mnkr/CByFVYKWwBj99HuD+YK3YHU+M1PyybOOdf45Xf41gvwHCYpCC+hLlMpTSHMGGcRogvnBucBRPs78h3nZttm0ZnL5Mv60hbgJfFOA7UTJyCUJxoqvSjgJLIfzxktE10L/AEv9+br1eET23rZ/91J6Jr2KQbVE/YcDiAoHb4VNAwYA1z80PgD+Jf41fhp9+nzBO9S6sTn8+iJ7vT3gwPgDrcXZRxgHEUYiRHtCeMCJf2X+Iv0M/As69zlf+HU34/is+oP+BoJNxtMK5E2RzsbOSkxjSWtGIQMFAJE+R3xZehD3snSKMd1vRe4D7lNwVPQQ+RP+nAPHiHULUU1ITiiN/k02zBfKyEkrBr4Dr4BjPRz6X/iD+FS5RXuAfkvA/cJqQsACC8Ac/Zf7RrnveQb5vHpc+768aTzo/Mj89zzZ/ee/jcJyBUeIt0rMDFCMWcs6SOFGdoO6gTv+3rz4+rO4ZLYXdD6ylDKuM9u20/s+/9cE2oj6C3tMQEw0imRITwZAxIDDG4GBAC/913ttuGd1mnORMt8zg3Yluaq93IIbxYAILQkKCWgInQelxlSFF0ONQeW/uD0QeuE45ff6uDg54bzsQGCDxwabh+9HskYiQ+CBQn9kPdV9XH1S/ZD9lb0hvDh6yLoHOcM6iLxYvvlBmUR5Bg6HFYbIxceEccKHwVlACr8pfc78vTrseUM4erf0+Ne7dH7KA2CHtMsqjXON3ozLiolHqERPAaR/Dj0K+xj42zZzs4JxT++jrxkwfnMJN6Z8ncHAho+KFExgDXXNaIz6S8bKw4lQx1cE48H3fr77vPlg+GH4pzoGfJ1/O8EWQmsCFID9/r/8czqAucd52LqPO/a89n2xvc896v2yffv+44D+Q2CGfkjTSseLhks9iUeHS4TZQlXAOL3dO+F5hTd6dOTzATJ/Mpm0+XhwvQ2CRUcjyrgMqo07jCUKcUgORjDEDUKpAP7+47yludO3K/S58ypzJvSFd4+7YP9RgyEF0IeoyCoH6wc3hjcFJgQkAs3BXH92PTK7BjnduXn6EbxKv0uCocVxRx/Hq0apBKdCA3/3Pfx8/rytfN19NbzPvEi7eHoSObz5rjrT/Re/9oKnRQDG1Md3Bu0F0USwAy+ByUDWf6p+NTxV+qG4zvfT9/25D7w2v9WEash9i05NMwzcS39IrgWrgodAEP3f+/R523fP9YlzcnFLMICxBjM/tkH7LH/QRJyIewrezHdMlQxGi7wKfQkvB65FrAMFQEo9bvquOOH4Ybk1et79eT+mgX3B5YFbP9s9+/v9uqT6ajrDPAB9eH4sPp0+jL5h/gT+t3+5wYkEbcbgyTFKZEq/yYJICEXqg2NBAD8qvP+6rfhO9i6zwPKAckgzrvZ0uok/6ITMSVcMe42HjZWMK4nNR5aFZkNiAY2/7720ewK4uDXStAozaPPxNdc5EzzDwJrDvIWSBsLHHUazxf8FDUSFQ/uCjwFFP5P9nfvUutY6x7wDflmBK8PVxhrHCYbGhX8CxoCovkA9InxdvFR8onyEvHP7aLpJOYW5cXnje6v+IAE5A/hGDEegR9qHRoZ1xOHDm8JPARR/jr3Gu/l5kDgGN0P397m9vN+BLIVhSRmLuIx6i6/JnUbTA8KBI76v/LT69rkR91V1RzOT8mtyHHN0NfQ5nT4OwrAGU4lNizSLjIunysbKAwkOR8FGeQQygZz+1nwXudC4g3iqubS7ln4vgDqBb0GXAMg/RX2XPB97fjtMvG89eT5VvyT/CD7VPnf+Cn70gBqCYsTOB13JN0n6iYTIoAalxGACNL/gfcf70Tm+twK1PPMlsmryyHUsuLC9aEKKh53LZo2+jhhNZgtyiPaGeYQFQnKARn6U/F+53vd4dSFz+TOodM73SjqMPgPBQUPPRXhF+QXiBbcFF0T2xGnD/4LfwaB/yX4FfIL7zbwxvXA/ikJjxKtGBYakhYpD8cFn/x/9VHx6O8y8LHwFvDH7SLqY+Y75DnlPuoj87X+CgsIFvYd8CEDIgcfNBqnFAUPVAknA//7s/PQ6qLi+9yu2/jfAeqj+I0J0hmPJqotTS4CKXQf3BNVCE3+O/a4793p0eNC3bHWWdHZzqbQfdcU4w7yTwKFEcEd5SXYKVwqoijPJZAi5h5KGgMUowtiAUr2CuyH5Enh9OIF6d7xNvu3AqoGbQaUArT8zfau8mTx7/Jb9if62PyJ/T/87Pka+GP42fugAtcLyxV5Hh0kriUXIxwdBRUgDFoDBPvo8prq4+Eh2WnRZczgyzPRv9yb7aYB9RV1J6wzRjlTOCAytyg6HkcUnQsSBOD8KPV27BjjJ9pA0wTQiNH112DiCu/R+8gGsw5EEwsVHRWYFDMU/BNjE40Rww3iB5YAR/m884/xovO++Y8C9guWE4MXyxa0EZcJcAA8+F/ySu907qPufe4P7TrqxOYf5OzjZOfk7r75WwatErYcFSNQJdMjqB8JGucTrg04BxUA8vf17gLmot6m2qHbU+JN7uD9cw4ZHUgneCt1KVYiEBjcDI8CLvrH86ru4+m35Bffu9n11UTVydjW4Lns2vonCZsVxh4ZJO4lPyU2I64g8B2gGgMWZQ+PBhP8SfEL6C3i7uCG5ATshfWy/moFXAhSBzwDyP3U+Nf1afUs9/75dfxu/Xz8HfqQ92f2/ffx/OcElA4VGHofTyP5Isse0BdcD58GRf5m9q/uxeam3vXW/9BxztzQJtkZ50L5Iw3DH1gu8zbtOPA0sCxRIsoXXA5eBlv/cPja8GToot/W15XSPtGG1Cnc8+YQ84/+5gdVDvgRmBNDFNMUlhUzFtoVpRMQD08IbQAT+Q/0zPLN9XX8HwWSDZsTqRVAEwsNmwTj+5r0wO9j7bvsk+zN6+DpF+eG5Knj5uX/68j1FAIID5Aa8SI0J1EnCySVHhsYYhGcCoYDuvsQ8/7ppeGp27zZEt3l5T3zBwOKEgsfeSbsJ8ojlBtkEUgHtf43+Hjzle+Z6//m+eF13dLaZ9sF4JvoLfQGATsNIRfBHQMhjSFoII4ehBwuGu0W8RGwCkYBpfZt7Izkq+Cq4UrnMvBD+isDDQn6CiUJvgSA/xv7q/ht+MP5g/t5/OT7zvkP9wf1J/Vq+O3+2QeSESga4R+vIW8f1hkhEqMJWQGx+Yvyg+tR5Cnd5dbt0tjS59eC4u7xSQTsFv8mKDIWN8c1Zy/lJVkbaBHpCMoBWfus9C/t9OTR3CfWdNLW0p/XMuAm66/2FgE3CbcO+xHgE0wVwhYvGO0YDBjHFOsOFQer/n33TfM581b3nf4kB6sOMhOPE7MPnggGAMb3SvE47VLrs+pB6irpR+c45THklOVl6ufyZP5QC68XlCGjJ2IpOyc5IqQbihR3DWoGBv/y9j3uleVM3gPaM9qo3x7qKvh9B2sVjh9hJJcjFR6gFUYMxwMl/XP4CPXm8Tbutunh5Nng/d534Mblhu6B+f4EQw8EF7Yblx12HUocyBodGd8WRxOaDZUFtvtG8R3oGuKe4BLkvOvf9TUAighNDfsNJAsyBtsAnfxF+sf5YPr4+qL6/vh09hL0MvP+9Pz5ywEwC2EUiBtCH/ke/xpbFGUMUwTm/EH2E/Du6aPjmd3S2MLW1Njw3wrs9vuNDSceNivlMoI0mDCvKMUeuhTPC2UEFv4F+GPx2enM4U7a09S10sXU99pi5HvvhvoRBFILPxBoE6EVlhd3Gd8a+xrpGCQU3wweBIz7CfUj8pDz7vjOABcJkA+FEjcRAgwxBIz7yfMP7rDqOOm66EToUucN5kblMubv6RXxYvuyB0IUHh+nJvwpICniJIEeOhftD+EI4QF++nXyBuoW4hDchdmn29niaO6W/PwKHRf9HqYhTx87GUERPwmOArT9X/qu96n0svDb6+7mL+P44TXkE+rh8j/9fAcZECIWZhlhGuwZ2hiYFwMWgBNGD8sIJAAy9obsBuVl4Znih+j68ej8/AY2DmkRgRBpDLUGEAG//Ej6ZvlH+fP4w/eu9Vvz6vGO8hX2jPwkBWAOdBbIG2gdOhv4Fd0OPgccAOj5evRa7xXqo+SY3xvcnNtV39Pno/RDBG4UmSKZLCMxFTBnKsshKhgOD0gH0QAF+wP1Le5/5q/eAdjn04nTXtf+3jrpdPQN/9gHWw7KEswVHBgoGtcbkBx4G9cXghESCeT/yPeH8lnxevQO+08DCQssEGMRYg7sB4n/BPfk7wXrcuiN52znTeft5rDmfOdm6jjwF/lRBHkQvBtbJCMpsimDJq4ghBkdEhELYgSq/XH2le6N5m7fstrK2aHdMuZu8mEAqQ0MGAIeFB/jG+IV2Q5VCD8DsP8J/Vr60PYh8rrsqOdJ5NLj6eZj7Uj2FgA1CWIQ/xQlF3gXzBbFFY0UyRLGD9YKtQPV+mXxIunc4/Hi2+b47qX5qATCDUMTdBSxETsMvQXM/2775fjA9yX3Rfa69L3yHPHs8CHzJPiY/18I3RBrF8wagxroFv8QGgplA5f9xPiG9ETwnuu65l/i1d9/4GDlsO6i+3gK5hibJNUryi3OKh8keBuIEnYKqwPR/SX45fG76v/irtsp1snTatUg2yjkG+9R+lYESAzzEb0VWBhdGgMc+xyTHAIa1RQ7DSoEOvs89LzwgvFJ9sf9+AWwDCgQeg/TClMDrfqb8mbsnOgG5+XmW+fT50PoMumI6yXwevdGAYYMpRfsIPAm9CgVJyciaxsfFBsNpgZ5AA76+PJC65/jUN3X2Xza2N+N6Tr2zQP9D90YVB1XHc4ZPRQ8Dv8IBQUPAlz/CvyP9wDyHuwp53jkCuUs6VfwU/mQApYKaBC7E+YUqBTFE7ASXBFID8MLSwbn/lr2DO695wbl1+Yi7cz24gEiDIMTxBarFQURUApCA0P9E/mx9ob1u/So8yPyl/Di7/zwj/Sn+pICAAtfEkUX4BghF70S3wzGBl4BAP1u+Qv2PPLF7QjpBuUf46PkWeoj9OcAwQ5uG+Ekwym7KXYlVx4CFtwNrwaKAOn6DvVv7g7nlt822VLVCNXY2GzgquoE9t4A/gnNEF8VQxgrGpAbeBxxHMMazRZkEA4ICP/99p/xHvDJ8uL4xQBaCJwNKg+aDI0Gbf779cru2elh5+3mqOfH6OHpG+sW7ajwdvah/pIIFBOSHIsj+SaWJuIi7hz8FRcPxwj+AkD99vbY7y/o7OB520/ZhNtb4hztJvpVB4cSHxpqHbIcDhn1E8UOWArWBssDcgAe/Jr2V/Bb6vjlZORM5pjravNb/N0ErAsZECoSbBKuEZwQeA8JDrcL4Qc5Ag77XfOs7Jzocuim7K70Cf+gCUsSXxcYGLwUdA7nBrf/DPpZ9lz0XfOU8oPxN/A/73vvu/Fh9if9HAXgDAATZRagFgIUeQ80CkIFOQEX/lf7Rvhe9J/vtOrU5m/ls+ci7kr4zASnEbIcKyQdJ5IldCAzGUwR1glIA3X9xveg8cPqhOPO3OnXFNYe2BfeRedK8oX9fwdHD5sU0xeeGakaRxtXG04afRdzEkwL1AJv+sTzQ/C38PP01PuFA/kJeQ0XDegI7AG9+QzyLezG6LrnYejc6XzrCe3U7orx6vVh/MQERA6OFyof4CMPJdciAB6xFxAR3QpMBQgAdPoK9LnsFeVM3uHZONkf3YDlSPGj/mcLoxUMHEwe7xwmGVEUjA9mC8kHKQTe/376LvSp7SDo1eS75B/ohO7D9lr/1wY+DDcPExCOD3gOXA1PDOwKkQi1BD3/sfg78lztgOuN7YXzcvyWBtwPXRbfGCAX2BF0CqACz/vZ9uDzZvKi8eTw4O/V7nLuje/I8kD4bP8yBzQOMxNoFb8UzhGbDToJdQWKAicAoP1F+sX1bvA1633ntObV6RHxnvvfB8QTSx3/IkkkhiHNG4gUAw0SBuj/Mvpl9BnuV+e54FHbW9jV2Cvd/+Q97176zwRYDWAT+ha+GG4ZpRmSGekYEBdpE7UNTQYx/tX2wPEU8DHygfeZ/pMFkwpEDDEK3QSS/fD1f+88623prekr6xPt4O6P8JnytPWD+jcBbQkmEg4a1h+SIgEikB4wGQIT8wx4B3YCaP2u9/DwY+no4eHb09j02b3fs+lw9vYDKBBNGXIekh91HVYZdxS5D2wLVgftArb9kPfr8LrqL+Zi5O7luOrr8Sz6/wEqCAQMkg1oDWEMPgtgCqUJhghcBrcCr/3799ryt++972/zaPpkA5AM9hMLGBEYPhSgDcYFQf47+DX0AvL58FTwiO+E7rjt5+3Y7/fzIfqTAR0JcQ+GE+UUwBPYEDANrgnPBoMEQwJY/zb71/Xb73rqL+dM54frr/Oo/p8KhhWKHY0hVCGCHUsXDRDfCFcCefzi9h7x/urK5E3fn9vT2pHd2+Px7IL3/QH+CqARrBWIF/kXxhdqF+QWwhVeEzMPLwnhAW76R/TF8LTwEvT2+cwAwAY7ClMKBAcoASz6mvOy7hLsp+vP7LDukfAn8qjzsvX7+AL+wgSeDHsUDxs7H2Egix5fGt4UCg+RCZ4E3v+2+qL0h+3s5fPeGtrQ2APcx+M776/8DQpWFRkdvyCSIIgd4hi9E8YOHgp3BVkAfPoE9JjtQega5fbkD+jt7XX1Pf3pA40I4Ao8C2kKSQl8CCkI+gdGB2cFDwKE/aT4tPQA8230IflmAMsIfxDLFY0XeRUpEOIILQFo+mb1UvK98O3vMu847iztrOyE7VzwaPVD/PsDUAsQEWwULxXFEwER0g3oCnkIOwaNA8v/pvpr9Anu4+hz5tLnXO199scBSQ0FF20dvB8THlAZvBKaC88Eu/47+evzd+7i6Kbjot/d3SbfzeNv6wT1Hf9CCFgP3hP6FVcW0hUfFYoU2xN9EsUPSgsrBSn+ffeN8nfwt/H19Q38XAI3B1gJPAg+BG/+Ofj68prvWu7d7mLwHPKH85n0w/W89y/7bAA0B7cOyBUsG/wd3h0fG4cWFBGfC5gG7QEq/br3R/EB6rjiutyI2Vrawt9m6QT2uANtEFUaWSA/Ip8gkhxTF9gRnwyjB40CAP3j9pHw1Oqx5hXlgubY6lDxrfiP/9gE+AcCCZYIlwfUBrgGKgebB00HpgV+Akv+DfoJ92P2uvjn/fUEXQxrErQVexXaEa8LVQQ2/WX3YfMJ8cnv6u7r7bvswuu+63TtYPFz9wn/AwciDlITABY0FoEUxRHODhcMngn0BnkDtP6f+NTxgOsW5/Dl1ui+77T5CgXGDxQYuhxVHVoa2hQeDkoHDQGT+5z2zPHu7C3oI+Sz4bnhvuS56vjyRfw4BZEMjhEPFI8U4xPlEiASoxH/EIMPiAzMB6UB/foe9VXxhPDb8rn30v2JA2cHewicBmgCCv3U9+DzvvFh8T3yjPOs9Fr10/W39sX4i/weAgQJPRCRFuEafhxRG9sX+xKfDXQItAMi/zr6hvTp7dfmWeDS26Latt015Vnwlf3nClcWZR5bImEiTh9UGpsU7g6YCXYEMf+E+YXztu3w6CDm++Wx6Nbtb/Q1+/MA2wS0BuQGNQaLBYcFUgaNB30IWwinBm0DVf97+x75Nvke/GsB/QdHDsESTxSQEuwNbAdlAAz6KfXs8QHwxu6m7VzsGOt16j7rHe5O83v6vgLeCqARHRb9F4MXYBVxEmYPhwyrCVIG8AFE/I/1r+7v6LrlKuaq6sfyO/01CMkRaRg6Gz0aMRZEELUJeAMD/k/5C/Xh8Lvs6OgS5g7liebF6mvxlPn8AV0Jwg7EEZ4SBBLbEN4PXA8iD5IO6QyaCZUEZv4g+BXzb/DT8CP0hPmQ/70EzgcgCNUFtgHw/Kr4t/Va9E709PSf9ej11fXg9cP2MvmK/ZsDrAqYEScXYxrZGrIYnRSDDz8KUAXBADz8P/d58QfrmeRX357ck93I4vfrAvglBWYRBBvfIKsi5iCZHPoWEBFxCzgGKAHs+172u/Cg6+bnWuZy5xjrpPAA9/j8kAFOBEoFIQWwBLoEpQVNBxkJMQrZCb8HKgT4/1j8fPor+3v+xQPICQAPGBJAEmYPLAqtAyX9jvdn86jw3+567RLspeqd6bTpqOvv7372sf5rB2YPfBX+GNYZexi6FWcSEQ/YC3UIZwRE/wD5H/Ko6/LmPeVX50btPfa6AOQK/hLPF+QYlxbfEfUL9QWZABr8RPi69DTxu+286uroAumC62jwJfez/tsFigsbD4AQNxASD+cNPg0kDSYNhAyECsAGZAE5+3H1WPHr74nxz/Wq+6gBXAbDCIAI8AX3AbL9Gfq796H2Z/Z09kv2xvUu9Sb1bfaS+a7+SwV0DO4SkxehGeoY1hU2EfgL2wYyAuP9gvmf9A/vI+m04/bfI98a4grpUPOH/9sLdRblHXQhOCH5HdkY/RI5DesH/wIk/g/5vfON7jHqeOcK5yDpae0T8wT5K/7NAboDTQQ/BGIESAUOB0wJPgsHDA4LPwgjBMb/ZPwQ+1j8DgBTBc4KEA/3EP4PVAzEBmwAZPps9cnxS+987errZ+or6cro/+ln7TLzA/vwA7sMHRQfGVQb6hqLGBUVTxGkDQ8KNQadAQD8iPXp7kLp2uW65VjpYPC7+cgDxgw8E1EW9BXJEuQNbghSAwb/hPt6+IT1dPJ17xDt+evW7PDvEvWC+y8CAAgeDDAOcA6IDUwMbgs4C3QLfwuRCggIugMX/hr4CfMZ8A/w+/Iz+Hv+XASPCEoKdQmaBqoCrP5n+zb5+fdC95b2rPWf9OnzP/RK9l76SwBUB1kOHhSiF2UYghaZEpgNZAiYA1z/b/te98ryr+2J6EnkGuIH46Dnuu9l+hgGChGhGcseOSBXHhkaoxTzDp8JyQQ2AJD7ofaL8c7sK+li5/Hn2eqX7z/1wvo5/ykCogMoBHwETQXyBkQJpQs9DUYNXAu0BxcDsf68+x37HP1EAYYGfQvVDqgPtQ1kCZ0Ddv3e92PzHfDH7fjrZuoY6XLoGum266nw1/eSAL4JDRJVGN4bhhzCGmMXThMxD1ELhgdjA3/+tPhd8lDssueq5QHn1+uN89v8HgbDDaISQhTlEl4PxgofBhECz/4h/J758fYO9EjxPu+l7gPwdPOS+If+RgTaCKoLogwvDA0LAQqJCbEJDArfCWsIQQV5AMP6QvU78bnvN/F19Yf7EAKlBykLFgyPCkUHLwM6/wP8uPkk+OD2lvU09Abzo/K488L20ftoApQJHRDfFBIXgRaPEw0P8QkNBc4ALf3J+Sn2BfJ+7TDpGuZP5abnYO0J9nsAJAtfFN4a8h2jHZ8a6RWOEFQLkAYwAuL9VPl09I/vRute6ITnBemt7NHxdfed/I0ACANMBPQEtQUUBykJlQucDWsOZw1yCggGJQEG/cn6Ffvl/X8CrQcMDHAOMg5VC3QGhwCW+mj1X/Fx7lLsrepg6Z/o5ujW6uvuQ/V0/ZMGZA+mFmQbMh0/HDoZDxWbEGYMiAi4BH0Af/vA9b/vbOrl5inmvOh17nr2a/+5BwwOkREkEkMQ1wziCC8FIgKv/3r9Hvth+GP1ofLO8JXwWfIG9g37gwBoBfAIuwruChgK9gguCAsIYAibCP8H7gUzAi39vvcc83XwlvCm8xT5vf8zBigLuA2fDT4LYwcEA/X+qfsu+UX3l/X083fyjvHY8eTz9/fX/ckEtQtqEe0UvxX6Ez4QfAujBl0C4/79+y/5A/ZL8kruvOqg6PDoSeyo8l77JgV7Du4VgRrdG1IasBb0Ef4MVggWBAUAy/sw90/yoe3f6c7n+Od16uDuZ/QK+uP+ZgKHBKkFcAZ6Bx0JPAtTDZwOXw49DGAIfwO6/kP7B/pj+wL/7gPZCHMMxQ1vDLYIXANn/cL3EPOK7wvtSesG6kTpUemz6vHtU/Ow+lwDQwwmFOkZ3RzoHIQaihbvEXENagnCBRAC2f3a+D7zqe0Z6Z/mCueg6vjwDvl6AdUIBQ6HEHgQew53C0UIcAUdAxIB6/5S/Dz5+/Uw85jxyvH+8+334vzlAQoGrwirCU8JQAgxB6IGrQb8BuwGzgUyAyX/O/p99RnyD/He8lf3of1zBGcKWQ6pD10OCwuXBvEBy/1y+tz3w/Xm8zfy9PCc8MHxy/S/+SMAEQdiDQISMhTCExIR8gxaCB8EtQAa/ur7mfm79kPznu+d7EDrX+xf8AX3cv9ZCE0QGxYUGSkZ3BYFE4gOEQrpBf0BAv6t+fH0GfDF673os+cD6Y/su/Ga9yv9qAG2BHQGYQcfCDQJxwqXDAcOXw4QDfoJhwWbAGD85vnY+UL8gwB/BeAJfQyiDDkKwQUfAFH6KPUZ8TbuSewK61PqQeo066vtCPJb+D0A0wj2EHwXgxurHCkbrhcsE4YOUQqsBlIDw/+M+4r2FPHv6yLoqOYf6JHsX/Np+1AD1gkhDvAPkQ+1DS4LoghkBmQEUgLT/7j8Kvmt9fryyfGO8k31jPly/gYDdAZLCJIIwgeIBooFIQU8BWoFBAV4A4sAgfwb+Gr0gfIf83D29fudAhIJCw6gEH8Q9Q3CCdcEDgD2+7f4LfYW9EPyxfDz70/wVPI69sz7XwLyCGoO3xHYEm8RPA4mChgGuQI/AHH+xvyv+tz3afTq8Ejueu0y76PzWvpaAlYKAxFrFSQXWBaiE9UPrguiB8sD+//l+2H3kfLv7TjqL+hk6Pnqku9m9XH7wQC4BCkHXwjuCHUJWQqgC+kMkw39DMgKEAdxAuj9jfo++V36pf08Au8GfAryC+YKjAeTAvD8kPcb89nvtu1v7MLroes+7AHuWfGD9lj9PwVCDT4UMhmAGxQbZRhIFK0PVAuZB2UETAHG/XX5Y/QS72TqZOft5mrpqe7e9db9RAUVC60O/g91D8MNmgtxCWgHUQXbAsb/Fvwo+KT0TfLD8Unzp/Yz+/v/CwS3Br0HWQchBscE2gOPA7MDwgMfA1kBZv63+iX3t/RR9Gr23PrnAF4H8wyPEJQRABBbDIIHYgK3/eD55PaL9Jjy8/DG73nvifBU8+P30P1LBE4K2Q46ET4ROw/vC0EI+QSEAtwAl/8c/un71/gz9brxYu8R71PxIPbZ/GcEhwsUEVUUFxWuE8MQFA01CW4FtwHW/ZX58/RE8CXsXOmW6C7qB+6I88L5rf9xBKAHQQnJCdoJCAqdCn4LNgwpDNEKAQgGBJ//yPt7+Vj5dftM/9wD8Qd2CroKoQibBHn/LfqD9fPxlO807obtWO2x7djuOPEq9cT6tAE9CV0QCBZwGTsamBgtFdsQfQyhCGkFjgKN/+X7YPc38hrtAunt5pDnHesm8bn4mQCSB70MtA+UEN0PNw4wDBcK6QdtBWECr/6M+oH2SvOe8fPxU/RI+P/8fAHjBLIG4QbcBU8E6gIhAgUCRAJPApgB0v8b/QT6b/dG9jb3bPp//4MFRAuVD6ERGhFCDtAJqgSo/1j77vdO9TXzb/EA8CnvX+8U8YX0j/mk/+AFQwvyDnUQ1Q+VDYAKbQfzBEMDIQIEAVb/t/wy+Uj11vHY7xnw7/Ic+Nf++AVLDNgQGhMUEzQRJw6QCuEGPAOG/4v7NPer8mruIuuO6TLqLO0b8jP4cP7VA7cH3gmLClEK3gm1CQEKiArICi0KUQg0BUcBW/1h+iT5BvrX/OEAFgVXCMUJ+QgaBsYB3vw5+Hn03vFV8JXvUu9w7xHwjfFO9Jj4W/4fBRAMLxKPFpoYMxi+FfsRxQ3RCXgGpgPyANT96Pkl9fzvP+vx5/jm1eh77UX0IPzQAz0Ksw78EFkRVhCKDmgMHAqPB4wE7QDG/Hn4qvQV8lPxpPLR9TL62P7MAloFOAaYBQ4EVQIQAZIAxQA8AWMBvQAg/8r8YvrD+LP4o/qC/rMDNAnhDcAQQxFmD6MLyQa0ARf9Tflf9hX0LvKK8Efvw+5278PxxfUx+1YBSAcWDBAP8A/zDrQM/wmHB7IFegR6AyEC8P+0/LD4lfRW8eLv2fBa9O75pQBSB9kMcBDIERARyw6hCxwIjQT7AEf9S/kR9enwZe056wDrCu0w8dr2F/3gAlwHFAoQC8IK2gkCCaMIxwgWCQQJCQjiBbECCP+4+575Uvn7+jP+JgLKBScImggCB7sDfv8f+1X3ivTL8uLxffFh8Y3xQfLm89/2WPsbAZMH2w0AEzoWJhffFe0SGA8mC6EHrgQQAk//7/u198/y2u3C6YHn1Of/6rTwGvgLAFUHCA2hEBwS2RFnEFAO6gtJCU4G0QLL/nb6VfYW82Lxp/Hm86/3M/x7AKwDQwU1BekDEgJsAIL/e/8cAOEANAGtAEH/Tv2F+7H6cfsB/hkC/gaqCxkPjhDAD+cMogjBAwn/9/q79zb1JfNS8bvvn+5w7qbvkPIi9+r8HQPKCBcNfA/mD7IOjQwxCi0ItAaXBVwEfAKc/8D7YvdT84vw2++w8eb11PtsAooIMg3OD0UQ6w5RDBYJqgVAAtD+OPtp94rzBfB47YXsne3V8Mr1tvuaAYUGywk4Cw8L7AmMCIgHKQdPB4gHQgcJBrcDlABD/ZX6R/nD+fj7W/8JAw0GmwdPBz4F6gEQ/mv6gveI9WT0yfNu8zLzO/Pj85/1xfhk/SADRwnuDjATbxV3FY4TVRCPDOgIuwUEA20AfP3U+Wj1l/Aj7P3oBOi+6SzuwPR+/DMEzAqHDxgSqRKyEcQPVg2lCrMHYASUAGj8MviI9BHyWfGV8pH1rPkE/qsB9AOWBMEDCwI0AOr+kf4j/z8ATQG/AUUB9/9K/vf8tfz8/dYA1gQsCeIMHQ9aD40NGwqyBRMB2/xZ+Y/2SfRI8m7w3e7z7THuB/Ck89L4+f43BZ8Kcg5REFEQ7Q7UDKwK3ghzByAGagTgAVf+CPqW9eXx3e8i8OHyu/fa/SQEhwk1DdEOdQ6SDMMJkwZZAy4A/vyo+TT24fIo8KTu2u4N8Rf1ZvoYADkF+QjrChsL/wlPCMMG2AWoBe0FIQayBUIE0QHH/tT7wfkp+Un64/xPAK0DIAYNB0UGBwTnAJb9qvp5+Av3J/aD9en0YfQz9NT0t/Ye+vH+sASOCp4PEhNzFLwTVxHxDUQK2gbqA04Bpf6C+6z3R/PY7jTrPumq6b/sO/Jb+QoBJgi+DUoRuBJZErcQXA6qC8YIogUgAj3+JvpL9kfzrvHk8ezzX/d/+2f/SAKoA3sDJgJYANP+Iv57/qr/KgFdAsMCLQLVAEv/Rf5k/vv/6AKiBlQKGw1KDpYNIAtnBxsD4v4q+xr4lfVh81DxaO/u7VztNe7T8D31EPuNAccH1wweEGkR8hBJDxwN+QolCYwH1QWOA2cAZPzr97rztfCh7+zwgvTP+d7/nAUYCrwMZA1VDBkKRQdNBGwBoP7K+9X41/Ui8zrxqPDT8cz0Pvl2/owDogceCs4K+gk9CFgG7ARMBGYEzwT0BE4EoQISACX9lfoc+TH55PrR/T8BVARRBssGvQWDA7EA4/2H+8f5jPiT96D2ofXG9Hf0NfVp9zP7TgAWBqoLIRDKEloT9xEnD6ELDQjYBBQCif/Q/Jb5xvWs8ejtTeuj6mfsn/DN9gv+QAVlC8APBBJUEiIR/g5hDJQJoQZxA+r/GPxB+OP0k/LO8c7yZ/UP+fj8SwBkAv4CRALCADD/OP5A/kj/7wCdArcD1wP3AnQB8f8g/4n/VAFABKgHuwqxDAkNpAvICAAF7wAb/cn5//aT9FPyLvBP7hztG+3E7lDylPf//bMEvApGD9sRcBJnEV8P/wy9CsEI4Aa7BPQBX/4m+tT1MPIL8P7vO/J09uz7owGfBhwKvQuXCxAKuwceBY4CJADL/Vv7yfhA9h/06fIZ8/D0VvjR/JsB2QXPCBkKwwk9CDoGbQRXAxsDeQPvA+YD8wL/AFf+l/t9+az4dPm4+/X+ZQI7BdoG/QbDBZcDBwGV/oj87PqW+Uv46vaJ9Xv0P/RV9Qv4VPy+AYUHuAyBEFQSEhINEOMMSgnZBdsCSQDY/Sr7BPhz9N/w9e167A3t8e/v9F/7SAKiCJINmBCjEQIROA/ODCYKaQeJBGcB8v1H+sL26fNH8j7y3fPV9oH6FP7QAD0CSwJQAez/zv6B/jf/wACeAi8E6QSPBEUDigEOAHf/KwAtAhUFMQi2CvoLpAu+CaQG5gIT/477gfja9W/zIfEC717tsex+7SPwq/S4+o0BOgjNDZURRRMFE1YR4A5CDNkJsAeMBRAD8/8p/AL4GfQy8f/v5/Dk83j40f32AhAHkglaCqUJ8gfJBZgDjwGp/7r9n/ta+Sn3ePXK9IL1wfdL+4z/uQMNB/YIRAk0CFMGVATVAikCRQLIAiIDygJ6AUT/mfwp+qn4m/gk+vz8ggDtA4EGwgeQByYG9wOHATv/Pf2E++P5Mfhs9tH0zvPp85D16fi4/V4D/QipDaQQjxF/EOoNfwrwBrkDCQG8/n78+/kP9+bz+fD27onuIvDP8yv5bv+kBeUKig5PEFYQCg/zDIQKAAhvBbECo/9B/ML4kfU58zjy0fLx9Cj4wvv7/jQBIwLhAeMAzf86/4j/vACAAkIEaQWNBZ4E6gILAbP/cf+EAMYCrwWCCIIKJgs8Cu0HqAT5AFr9Evox9570OPL47xHu5+z77MPucvLi94L+dQXDC5EQWBMAFNsShxCxDeUKZQgjBtYDJgHi/Rr6OPbf8sTwdfAo8qX1UPpP/8ID/AaqCNkI5AdNBokE4QJiAen/Qv5R/DD6L/jI9nf2ivcC+oT9aQHwBGoHcQgFCIMGigTBAqEBVAGnASECNwJ9AdT/eP36+g35Uvgj+XT71P6NAtcFDwjcCEIIkQZCBMkBdf9b/WX7bvlk92n10vMg883zKfYr+mf/GwVdClAOYBBgEJQOkgsUCLoE4wGd/6v9tPtw+dP2H/TZ8afwFvFr84T32fyaAuUH+gtqDiYPdg7RDLEKbggmBsQDHQEW/r/6ZveI9LLyTfKA8xL2evn//Or/vQFXAvIBEwFXADwA9wBjAhAEbAX1BW0F8QP1ASEAHP9T/9kAXgNBBsIIOAo/CskIHga3Ahr/qvuW+OD1avMj8R/vp+0t7Svu+PCa9bb7kwJFCdsOnxI8FNAT1xH+Du8LGgmlBmcEDQJL/wD8Xfjb9B7yx/A78YbzSvfY+14AHwScBrIHkQekBl4FGgT2AuABoQAK/xD95/r2+L/3tvcO+av7FP+aAoUFQweZB6sG8AQHA4MBuQCrAAoBVwEVAf3/Gv7O+7r5iPi2+HD6eP07AfgE8QehCdcJugiqBiMEigEY/9L8oPpo+DL2OvTq8r/yIfQ398j7PQHCBm4Lgw6dD8UOaAw0CdwF6AKUAMz+Pv2Q+4r5Nffp9DHzpfKy83b2qvqy/8AEEAkPDIANfw1nDK4KtgiyBqEEWgKy/538R/kX9pnzUfKT8mL0Zvf9+m/+FQGWAvACegK+AUkBegFiAr0DEQXXBbAFiwStAqQAGf+W/mH/XgEXBNkG7gjJCSwJMQc3BL0APv0H+jP3tvR38nXw2O767U/uPPDz80z5v/94BooMHxGuExsUtRIXEPIM3gkuB+MEvwJpAKP9Y/rz9tnztPEL8SLy2vS9+Bb9IwFLBD0G+QbJBhIGNAViBJwDtAJvAaz/ff0y+0b5QPiB+CL64vwzAGEDwQXhBqoGYQWLA8EBfADy/wEATABZAMb/cP6K/I/6IfnR+Pb5hfwWAP4DeQfjCd0KXgqrCDUGcgO4ACz+x/tx+R/38PQy81fy0/Lu9KT4k/0FAx4ICQwyDmgO5Qw4ChUHHQS4Afv/rv51/fn7F/rw9+/1oPSM9AH2+fgS/aYB+AVfCXcLLQy3C3gK1wgWB0oFVQMJAUX+FvvH99b01PI28jTzqPUa+dr8LwCPArwD1QNFA5cCRAKPAmgDfARQBXYFswQgAyIBUP9C/mL+xf8jAukEYgfoCBYJ1gdlBTUCxv5/+5j4Gfbt8wDyYPBH7xXvNfD28l33G/2FA8EJ7A5WEq0TChPjEOMNtQrRB2YFVQNPAf3+L/z8+ML1EPN88XPxFPMh9hH6Mv7XAYsEIga3BpsGKQaiBRoFcwR1A+0B1f9d/fL6H/lh+AL5+frk/SAB+QPWBWcGtwUnBEICmACI/yb/P/9s/0H/ev4Z/W37/fld+f75Avwy/wMDvgauCVELcgsyCvAHJAU6Anb/5vx9+iT43/Xf84DyMvJX8xX2QPpT/4kEDAknDHMN8gwGC1AIfAUQA0oBFwAp/x3+qvzF+qz41/bU9Rf20ffd+sX+3wKBBiUJiwrCCg4KzwhSB8AFDwQVAqj/u/x7+VD2xvNp8pfyYPR590v7Gv86AjkE/QTEBAQERwPzAi4D0wOGBNcEcgRDA4EBpf9A/tL9mP56AA0DrgWvB40ICAg2BnEDNQD6/A76k/d99bPzJvLz8F/wzfCc8vr1yvqZAKsGJwxFEIMSxBJNEa8OlQuUCAMG6QMMAhMAs/3W+q33rfRp8mjx+/Ee9Hj3c/tj/7QCEgVtBvMG8QaxBlgG3gUVBcgD2AFe/6r8P/qs+Fz4ePnR++T+AgJ7BNAF1AW1BOgC/ABz/5D+Uf5w/on+Qv5z/Tz8/vo8+nT67fub/h0C2AUVCT0L9Qs3C0gJlwacA7EAAf6L+zf59fbW9BzzKvJr8ij0ZvfY+98AtAWSCegLfwyFC3UJ8waXBMMCjAG9APr/5P5L/UD7Hvln96X2NPcn+T388P+ZA6QGqgiLCW0JmghlBwcGiwTWAr0AJP4a++r3EfUg85Lyo/M49t/56v2aAVgE0QUQBm0FawSLAyADOQOgA/YD2gMVA7EB/v93/qD91f0q/14B7gM2Bp8HygelBmkEhAFx/pT7I/kl9371EvTe8gry5/HX8iX15vjb/XgD+wiXDakQ3BFAET0Pbwx0CcQGjQS3AvMA7v5s/Hn5Y/au8+vxjPHD8mj1C/kO/c8A1wPqBREHhAeJB1UH9gZRBjUFegMcAVP+jftW+TP4dfgc+tH8+v/eAuAEnwUUBY4DkAGt/07+ov2N/cD93P2Z/er8BPxO+0D7N/xS/lwB3QQvCLAK7Au4CzYKxAfYBN8BG/+c/FL6H/j99Q70oPIb8t7yHfW8+FH9LwKWBtYJhwueC2UKaAg/BmUEFgNAApoBwwBw/4z9TPsf+ZD3Gff89yz6Tv3PABMEmgYbCJMINQhOByAGzgRRA4YBSf+Q/Iv5nPZL9CHzfPNv9bT4uPy+ABQEOwYIB6sGkwVLBEgDyALDAvcCBgOiAqoBQwDK/rT9b/0z/uv/OwKVBGEGJwexBhUFqALe/yX9yPrf+Fn3EPbq9PLzYfOP89r0ffdv+1cAmwV3CjQOVBCuEHYPKQ1gCqUHTAVgA64B5f+5/Q/7Efgm9dzyt/EQ8vPzF/f4+vb+fgIyBfIG2QcjCA8IvgctBzkGtASLAtn/8PxP+oH49/fb+Ab7/v0VAZwDCgUnBRMENwIkAGL+Rf3i/An9Yv2V/W/99/xw/ED8zPxS/skA4gMUB8IJaAu6C7cKpAjrBf4CMgCw/W/7Ufk89zb1c/NO8jLyb/Mf9gr6sP5cA1cHEApDCwcLvAnuByMGtwS+Aw4DUQIxAX7/Rf3Z+rr4b/dc96P4FvtC/pABcQR6BoIHnQcJBw0G3wSOAwcCJQDS/R37SvjP9TL06PMr9eL3n/u6/3MDLwaSB50HoQYgBaQDkgIQAgACFwL6AW0BZwAe//L9Uv2O/bz+qgDpAuwEMAZjBnQFmgM2Abr+e/yo+jv5EPj+9vf1F/Wo9Av1lvZv+XX9OAISB0gLOw6QD0YPqg1CC5wIJwYVBFYCqAC+/mP8nfmy9hz0ZfIA8iDzq/U8+UD9GAFLBJMG6gd8CIYIPQizB9oGigWkAykBUP59+zf5/Pcd+J35Lvw7/xICFATcBFoE0gLEAMT+Rv2J/IL88fx4/cv9yP2H/VX9kv2O/mYA9wLcBYsIewpHC88KNAnOBgoESQHI/o38gvqB+Hn2hfTq8hHyYPIX9DP3ZPsTAI0EKQhxCkML0AqGCegHZgY8BWEEmwOVAg4B9v57/Af6H/g996f3XPkN/Df/RAK0BD0GzwaUBtEFxgSZA0oCwADZ/o78A/qR97D13fRv9Xn3ufqk/oYCrwWgByoIdgfxBSgEnAKcATEBLAE3AQEBXwBe/z/+Zf0v/dT9Sv9IAVoD/ATGBYgFVARyAkkAN/55/B37BfoF+fr36PYC9qL1Lfbt9/T6BP+bAw0IqQvsDZ0O1w38C5IJFgfcBPkCSQGI/3X9+fo3+I31e/N/8uzy0PTr98L7uf9AA/YFtQeOCLsIeAjvByUHAwZmBDoCmP/I/D36ePji96b4pPpr/VoAxwIuBE8ERQNyAWT/ov2O/EX8pPxX/QX+a/59/mL+bP7z/i8AJwKfBCcHPglzCoUKdAl8B/0EWwLh/6r9qvu9+cH3uPXR82by5vGv8ur0ePjs/KMB6wUqCQsLiAvmCpcJFgi5BqEFsgSrA0QCVQDv/Vv7EPmN9zT3KPhE+h79KQDaAssEzgXwBWwFiAR8A14CIQGm/9P9r/tw+Xr3Q/Yz9oH3GfqZ/WQByQQwB0EI+QelBsQE5AJzAaIAYwBxAHUAKwB7/4P+kf0F/S39JP7K/8YBogPsBFgF0wSIA8gB8v9M/vj85/vx+uf5uPh/94f2Nvbw9u74KPxFALMEwgjQC3cNmw10DG4KCgizBaMD2gEnAE/+Ivyl+RX33PR280rzhfQR9436bf4cAiIFOQdZCK4IdgjsBysHLgbWBAUDtgAV/nj7Vfkh+Cn4dvnF+5L+NwEgA+cDeQMSAioATv71/GH8kfxH/Sr+4v5C/0//Qf9t/xwAeQFuA7AFzQdQCeMJZQnwB88FYAP2AML+x/zn+vz49Pbm9Bfz8/Hn8UHzD/YS+sT+dwOAB1oKzQvuCxMLrwkuCNMGpwWFBCwDZwEs/6P8Kfo4+D33e/fw+Fb7NP79ADgDnQQeBeIELQRDA08CVQE9AOX+Ov1R+3D5/Pdk9/f3zvmy/CkAlANNBt8HGggjB2EFXAOVAWEA1P/C/97/1P9v/63+wP39/L78O/17/kYAOwLpA+4EGAVwBCwDnwEYAMf+sf23/Kz7bvoC+Z73n/Zz9nT3xPk7/WgBqgVTCdcL6QyPDBQL7AiRBlkEagKyAP/+HP3y+p74bPbK9CT0wvSu9qz5R/3vAB8EegbfB2IIPgi3B/wGGwYABYoDoAFN/8n8dvrI+CD4sPhh+tb8gf/EASQDYQOMAv0ANf+1/dv8x/xc/Un+Mv/R/wkA+v/n/yIA7QBYAjwEQQb3B/sIDQknCHgGUAQFAtT/1v37+yD6J/gP9gr0cfK38T/yQfSp9xj88gCHBTUJkwuFDDwMGAuNCfgHhwY2BdgDNQIuAM79Uvsj+a33SfcU+O35dvwt/5EBRQMhBDQEuQP4AisCagGpAMT/l/4a/XH76Pno+NH43fkD/PX+LAINBQoH0AdYB+YF8AP6AXIAjP8//03/ZP87/7L+3/0E/Xv8j/xn/e/+3wDQAlYEJQUiBWcEMgPSAYIAXf9U/kH9/Pt2+s74Uvdt9or27/eh+lj+jAKUBssJvAs7DGkLpQlmBxkFBAM4AZj/8f0d/Bn6Evhd9mL1dfW+9iT5UvzH//sCgwUiB9kH1QdaB6YG2gXyBM8DTQJcABX+vvu9+YH4VvhT+Ub7wf0yABAC9wLOAsIBPAC7/qz9Tv2j/XP+Z/8qAIoAhgBPADMAgABmAeACswSABtwHcwggCPIGIwUDA9sA1/75/Cn7RPk69yT1R/ML8uHxGvPM9cT5g/5fA6oH1gqZDPcMNgzCCgoJWgfRBVwEzgL6ANT+efw1+m74gver9+j4/Pp6/eX/0QH/AmcDMgOkAgACbwH1AHMAv/+2/l395Pui+vv5Q/qa++H9tACLA9MFHQc4Bz4GhwSPAswAkv/2/tb+6/7m/pH+5P0M/Vb8GfyS/M39of+1AZ8D/wScBW4FngRvAyQC6QDH/6P+V/3J+wH6N/jJ9ij2sfaP+Kf7kv+2A2kHGQpsC1oLHAogCNsFrQPIASoAsP4q/X37uPkT+OX2h/Y09/b4lvuw/sMBXQQtBhoHQQfeBjcGfAW7BN8DvgI2AUP/DP3k+jb5Y/im+Pv5G/yL/r8AQQLMAmMCSgHv/8T+If4k/rX+jv9YANEA3wCZAEMALQCbAKgBOAP/BJgGogfcBzQHzAXpA9QBy//k/Rf8RvpZ+FD2W/TO8hfymfKM9OT3SvwoAdAFngkiDDIN8gy7C/4JIghjBs0ERAObAbT/jf1Y+2X5Efio90b40Pn1+0T+TgDDAYECmwJLAtUBbwEtAfwArwAWABv/zv1v/Fz79vp/+wT9TP/qAVYEDga/BlcGCgU7A2EB4v/w/on+fP5+/k3+yv0J/UX80vv8++v8kP6qANgCrgTaBTgG1AXhBKMDVAIRAdT/f/7z/Cb7OPlz90D2CPYU93D53vzfANAEEAgkCtcKPQqqCJIGYwRsAskAav8i/sj8UPvT+ZH43ff+9xn5Gvu5/YkAGAMJBSwGiAZLBroFEAVrBMQD9gLTAT8ARf4e/Cf6y/hg+An5rPrt/E//TAGDAswCQAIyAQ0ANP/h/hv/t/9nAOUAAQG9AEcA7f/5/54A3wGJA0IFpQZcBzoHRAarBLgCrgC+/u78L/tk+X/3lfXk88zytfLs84z2ZfoD/8QD/gcjC+IMNw1hDMgK2wjzBjkFqQMeAm8AiP54/Hr63/j79wH49vip+r/8zv53AIcB+AHwAbABdAFcAWYBawE0AZcAi/8w/tj85fux+238D/5NALECtwTyBScGYgXlAxoCbQAr/3H+Jv4S/vH9lP31/Dz8sPuh+0r8t/2//w0COQTfBb8GygYeBvkEmwM2AtkAd//x/TH8QPpR+Lv25/Ux9sT3jfoy/iECuwVtCN0J+QnyCC0HHQUlA3wBKQAP//z9z/yI+0r6XPkH+YP53Prr/Fv/xAHEAxgFrwWlBTUFnwQOBIwD/QIxAv0AU/9O/Tn7e/l5+Hv4jPl5+9r9LQD6AfMCCQNpAmsBcgDR/6n/7v9nANEA8wC4ADkAtv95/8X/swAtAusDiQWoBgMHgwZDBX8DggGL/7b9A/xb+qX44vYz9eXzV/Pk88P16/gP/acBDwaqCQgM/QylDFYLfQmDB6sFDASQAg8BZf+H/Zb71PmP+A34bvih+WX7Xf0p/4IASwGWAZQBgQGKAboB+AEPAsgBAwHK/1P++/wn/Cb8Ff3T/gUBMgPcBKoFfQVzBN0CIgGh/4/+9/21/Y39Sv3S/DX8qft5++n7Gf36/ksBqgOtBf8GdgcaBxsGuwQ6A7wBRgDF/hv9QPtM+YH3Ovbb9an2tfjN+4D/NgNaBnMISQnoCJwH0AXvA0gC+wD7/x3/Mv4j/fv76/o5+if62/pN/Ej+cgBtAugDvQTwBK0EMQSwA0MD3gJWAnkBJQBd/lD8W/ro+FP4zfhK+oH8/f48AdUCkgN2A78CxgHmAF0APABnAKcAwACPABYAg/8X/xv/vP/3AJ8CWwTIBZAGhAamBSMEQwJNAHX+yfxA+735MPih9kP1ZfRj9IX16Pdl+5n/8APOB64KQAx8DJoL+wkNCCcGdwT+ApsBIwB8/qn82fpR+V74Nfji+EP6Dfzm/Xz/mgA8AYABmgG9AQICXwKpAqgCKwIjAbL/IP7T/C38bPyW/XT/mwGRA+QEUQXOBI4D6AFAAOP+9/10/TH9+Pyj/C38tvt7+8H7t/xk/psADANLBfkG1AfNBwIHsAUeBIIC9wB2/+X9LfxR+nb45/YB9hr2YffK+Qz9pgAHBKgGLwiECM8HawbABCsD4gHuAC8Ad/+b/pH9dPx++/T6EPvl+1z9NP8UAakCuAMtBCIEyANXA/QCpAJKArQBtAA4/1b9Vfua+Yv4d/h1+V771f1cAHgC0ANEBO0DEgMOAjEBqAB2AHcAdwBKAOH/T//M/pz+9v7u/2oBJwPEBOUFRQbPBZ0E7AIHATD/i/0Z/Mb6dPkZ+Mr2wPVO9cb1X/cZ+rb9wwGuBegICAvgC4cLSAqICKoG8ARyAx0CygBT/6b93fsu+uT4Qvhu+GL57Pq8/Hz+6f/hAHABvAH2AUICqAIMAzsD/QIxAt8APP+j/Xr8Gvyp/Bb+EQAoAuED2wToBBYEpwL4AGT/KP5c/ez8rfxz/CX80Pue+8v7jfz8/QQAZgLBBLAG4wcyCKcHdQbiBDMDlAEOAJL+Av1O+4L50feL9gj2j/Y5+OL6Lf6WAZQEtwbCB7sH3gaIBRsE3QLtATsBoADs/wD/5f3C/Nv7cfux+6D8Fv7K/2gBpwJgA5MDZAMGA6cCXAIZArUBAAHX/zj+Uvx5+hf5ifgF+Yj60Pxw/+YBwwPDBN0EPQQzAxgCMQGcAFEAKAD2/5v/Gf+S/kL+Yf4U/1YA+AGpAwkFyQW9BegEeAO3Ae3/Tv7v/MP7qvqK+V/4SfeJ9nL2Svc0+Rn8q/9sA9MGZgnWChcLVgrmCCsHdAXvA5wCXgELAIb+0fwU+4/5jPhE+Mr4Bvq5+4/9Ov+EAGAB4QEzAn8C3QJCA4kDewPrAswBOwCB/gD9G/wX/AL9rv67ALICHwS3BGIERwOyAQIAif51/c78efxL/CL89PvX+/r7kfzB/Yv/wQEYBCwGpAdGCAcIBweIBdMDJAKYACr/vv05/JD63fhb91/2OvYi9xr56vsq/1YC8wSpBlgHGgc4BgsF5QP1AkMCsgETAUEAMP/2/cz89vux+xv8Jf2c/i8AkwGKAv8CAgO8AmACDgLPAYgBDgE0AOj+PP1x++T5+fj9+Av6A/yN/i8BbwPtBH0FLgU9BAMD0QHgAEIA5f+g/0//4f5k/gP+9f1m/mb/2QCCAggEFQVuBf8E5ANZAqsAGv/I/bj8z/vo+uz54vj19273m/e4+NL6w/0rAZAEcQdpCUkKGgoZCZ4H/QV2BB0D5QGpAEf/rv31+1H6CPle+Hz4Y/nm+r38lP4kAEkBAwJwAroCBANXA54DrQNTA3ECDQFa/6z9Zvzg+0T8h/1k/2wBKgM6BGcEtANaAq8AEP/A/d/8aPw5/Cr8Ivwh/ET8u/yt/S3/JQFbA3cFIAcNCB4IYgcLBmQEsAIcAbT/Zf4M/ZD78flW+AT3UPaD9sH3+fnj/A4A/gJGBaYGFQe+BuoF7AQCBEcDsAIXAlUBTwAO/7n9k/zf+877avyV/Q7/gwCuAWMCnQJ3AiACwwF6AT0B6gBXAGL/Bv5r/Nz6uPlX+e75ffvJ/WgA4QLCBMMF1AUZBd8DfwJCAVUAuv9X/wb/qf49/tr9rP3i/Zv+0v9aAewCMwToBOMEKgTqAmoB7/+q/qz94/ws/GH7cvp0+Z/4P/if+O35JfwO/0ICSAWsByEJkAkUCfMHgAYBBaEDZAIyAen/cP7K/B37qvm1+Hj4B/lN+g/8/P3C/ygBGgKmAu8CIQNVA4oDogNwA8wCpwEbAGn+6/z8++H7rPw1/iYADAJ5Ax4E4APcAlkBsv85/iX9hvxH/EX8Wfx0/KD8//y4/ev+lQCSAp0EYAaMB+8HgwdqBuQEOAOhATkA+v7F/Xb8+/pi+d73vfZT9t72bvjh+t/99ACsA6wFyAYKB6UG5AUKBUQEmwP6AjwCQAEBAJn+Pv00/Lj76vvB/Az+gP/PAL4BMAIxAuYBgAEkAeEApABIAKb/pv5V/ej7r/oE+i36Rvsz/aX/KQJLBK4FJAa1BZwELQO9AYsAsv8m/8r+eP4d/r/9ff2C/fb95v48AMQBLwMwBJMERwRkAyQCywCW/6L+7P1V/bP85vvs+uj5Hvnd+Gn54fov/QsACgO2Ba0HtgjNCB0I7QaHBSUE3wKsAXIAFv+M/ez7Z/pA+bf48/jz+Yz7d/1e//kAIALNAhwDNwNGA1sDaQNPA+MCBQK4ACX/k/1e/NT7I/xC/fX+2gCCAo0DxgMrA+0BXwDY/p791vx+/Hj8nvzP/AX9Uv3a/cH+FQDJAasDcgXMBn4HagefBk8FvQMqAr8Ahv9n/j796/to+tL4aveE9m32Vfc7+eb79f7zAXYEMwYTBywHuQb+BTQFdgTBA/wCBgLQAGX/7f2o/Nb7p/sl/DP9kv7z/w4BtwHkAa4BRAHXAIMASwAWALz/GP8i/vP8x/vx+r36XvvX/Pb+WwGZA0UFGgYGBioFzgNIAuQA0f8Y/6X+U/4E/q79YP0+/XP9Gv40/5wAFQJTAxYEOgTBA9MCrAGLAJ3/7P5l/t/9Mf1I/DD7H/pg+UP5APql+wn+2ACjA/wFkQc9CA0INQf8BaQEVQMcAukApf88/rX8Nfv0+TP5JPnY+Tn7Cv36/rkADQLeAjkDRQMxAx4DFQMDA8ECKAInAc3/TP7x/BL86/uT/Oz9qv9nAb8CZQM9A14CCAGR/0T+Wf3i/Mv88vwv/Wz9rf0L/qr+qP8HAa8CYwTbBdEGGAepBqEFOwS3AkoBDQD3/uj9u/xY+8r5P/gB92f2svYB+D36Hf00ABQDWwXRBnEHXQfSBg4GPQVvBJsDpgJ7ARkAm/4y/SH8nfvC+4j8v/0d/1YALgGKAXMBEQGWADAA8v/S/6//YP/J/uv96fwF/I37wPu7/Gv+jAC+ApUEvAUIBn4FUwTWAlgBGAAx/53+P/7z/aP9T/0Q/Q/9cf1G/oH/9ABbAnIDAwT8A20DhwKGAZwA5/9f/+X+Tv56/WP8LPsU+m75g/l9+lX80f6RASYELAZjB7oHTAdTBhQFxQOFAlMBIADZ/nb9DPzG+uH5k/n8+Rf7uvyb/mkA3wHTAkIDSgMZA98CtgKcAnUCGAJlAVMA//6h/Yj8/fst/Bj9kP4+AMMBxQIRA6ECnwFTAAz/C/5y/UH9Wf2V/dL9B/5B/qL+TP9UALQBRAPHBPMFkQaDBtMFqgREA9sBlQB8/3j+aP0q/LX6Jvm397r2f/Y89/f4hPuL/pwBSgRGBmoHvwd1B8cG7AUIBR8EJgMGArUAQP/L/Y/8x/ua+xH8Dv1V/pn/lgAgATAB4gBlAPD/pP+K/4z/g/9G/8H+/v0p/Yf8Xfzc/A/+z//QAbEDFQW8BZEFsQRbA98BggBy/7j+Qf7u/Z79Rv3z/Mb86fx6/X/+2/9XAbACpgMQBOsDVAN9Ap0B3ABGAMj/O/97/nP9MPzk+tr5Y/m9+f/6DP2b/0ICmARHBiAHJQd/BmwFKwToArcBkgBp/y3+5fyt+7f6N/pZ+if7ifxF/gwAlQGoAjEDQAMAA6YCWgIsAg8C3wFzAbEAm/9W/iL9SvwM/IL8nP0e/64A9QGrArECFwIRAej/4f4s/tn91v0B/jX+XP54/qP+Av+1/8YAJAKeA/EE2wUvBt8FAgXJA20CIAH6//X+9f3Y/Ij7DPqO+FT3sfbp9h74QPoO/SMAEgN3BRQH1wfbB1QHfgaKBY8EjQN2AjoB2f9p/hj9Hfym+8z7g/yf/dv+8P+kAOEAswBDAMf/bf9O/2T/jf+d/27/9P5F/pT9JP00/eX9Mf/kAK8CNgQqBWIF3gTKA2oCBgHW//X+Xv73/aD9Q/3h/JT8g/zU/J791v5UANwBJgP9A0QEBgRmA5kCzQEgAY4A/v9L/1b+Hf29+3T6kvlh+Q/6nPvX/WkA6ALyBEEGvAZ2BqEFfgRFAxcC/QDw/9v+vP2e/Kf7Bfvn+mX7efz7/af/MgFcAgIDJAPkAnUCCgLDAaEBjAFZAeIAEwD9/sr9wvwo/C783vwY/pj/BgEUAo4CZgK7AccAzv8H/5D+aP51/pX+qv6r/qr+yP4s/+//EAFxAtcD/wStBcEFPAU+BPwCrQF2AGb/a/5n/T785vp1+SL4N/cB97T3W/nQ+8H+xAFwBHEGngf6B6sH6wb0BewE4wPSAqsBZAAI/7P9lvzh+7j7IvwD/SP+P/8WAIMAgQArALX/U/8q/0P/if/S/+//wP9F/53+Av61/e39vP4NAKYBMwNhBPUE1gQXBOwClgFVAFL/lf4S/qr9Rf3Z/HX8PPxW/OX88f1h/wABjALCA3MEkwQ1BIUDtQLuAT8BngDu/w3/6f2P/Cr7Afph+Yb5i/pa/LL+MgF0AyMFDgYwBqsFuQSYA3UCaAFxAIL/jf6S/ab88Puc+8z7i/zD/T//uQDwAbMC8wLCAk8CzgFrATkBLAEgAegAYQCG/23+UP1z/Bb8W/w+/ZL+DABbATsCiQJGApsBwQD1/1//Df/y/vP+8P7Z/rT+nf68/jX/FABNAbMCBgQCBXYFTgWYBH4DNwL0ANL/0P7c/db8qvtc+g75/fd197T32/jf+ob9dABAA4wFFgfNB8QHLQdDBjkFLAQhAw0C4wCh/1b+Jv1C/NH76vuF/Hn9i/57/xUARgAZALn/V/8j/zX/hP/v/0QAWQAYAI3/4P5R/iD+d/5a/6kAIQJyA1QEmQQ6BFcDJgLmAMj/5v4//sD9Tv3Z/Gf8EfwA/Fn8M/2G/ikA4AFiA3ME8gTfBFgEjQOwAuABJAFrAJn/kP5O/ev7nfqs+V353fkx+y/9i//gAdMDIAWsBYMF1QTcA9AC0wHyACMAV/+B/qr96/xt/FX8vfyf/dr+MwBqAUcCqgKWAi8CpQEsAeMAzwDUAMoAgwDn//n+4v3f/DT8F/yc/LH9HP+QAMQBfQKoAlQCrQHqADwAwf94/1H/MP8A/7/+gP5n/pv+Of9AAJQB/AI0BP4EMwXPBOsDugJyAT4AMP8//lX9V/w3+wb67vgw+A/4vPhC+oP8N//7AXAERgZUB5sHPgd0BnUFawRmA2MCVQEwAPn+xf2//BH83Psp/OT83f3W/pn/AAAJAMz/eP8+/0D/iP/+/3cAwQC4AFMArf/3/nX+X/7U/sv/FgFwAooDKQQuBKEDqAJ6AU4ATf+B/uT9YP3j/Gn8AvzQ+/z7pPzO/WP/KwHjAkUEHQVYBQYFTgRlA3YCmgHQAAEAFP/z/ab8Ufsw+ob5jflg+vD7Bv5KAGIC/QPsBCcFywQMBCQDPwJ0AcEAFwBn/6n+6/1O/fj8C/2T/YH+qv/SAMABSAJdAhECjgEHAacAfgCDAJAAegAaAGP/Z/5Z/Xv8Dfw4/AH9R/7G/zMBSQLdAucCfwLWAR0BfAAFALL/bv8k/8z+bv4q/ib+hP5T/4QA7QFLA1sE6ATaBDkELgPuAa4AkP+d/sX97vwC/Pz69fke+bX49Pj6+cL7Gv6zADADOQWVBi8HGAeABp0FnwSkA7ECuwG0AJX/aP5O/W/88/vz+2v8PP0y/hP/sP/0/+j/r/92/2n/nf8JAI4A+wAhAegAVwCV/97+cf5//hj/JABtAakCkAPzA8EDDQMEAtsAw//V/hj+f/34/Hr8C/zF+8z7RPw//bT+dwBMAukDEAWaBYYF7wQHBAIDBwIlAVMAef98/lP9DvzZ+u/5kfno+f76tPzI/uMAswL3A5YElwQjBG4DqgL2AVsBzwA+AJr/5f41/qz9cv2g/Tn+JP8wACUB0AETAu8BgwH7AIYAQwA2AEgAUAAhAKL/0v7S/d38NfwS/I38m/0M/5cA8wHkAkoDLAOrAvYBOgGXABUAq/9H/9r+aP4F/tP9+f2N/pD/5ABSApQDbQS0BF8EiQNiAiIB+f/8/i3+df25/Ob7Afso+pH5dfkC+kf7Lv19/98BAASZBYMGvQZlBq0FyQTcA/gCFwIqASUACP/l/eP8LPzi+xT8svyW/Yj+Vf/X/wQA8v/H/67/yP8bAJUADgFVAUYB1wAeAE3/o/5a/pj+Wv98AL8B2QKMA7MDTgN4AmMBQAA4/1z+rP0b/Zr8Kvza+8f7Ffze/CT+z/+nAWgDzASgBc8FZwWSBIQDcAJ1AZcAyP/r/uv9xfyU+4b62PnA+Vv6ovtp/Wv/UgHbAtYDOQQbBKcDDgN2AvIBfAEFAXgA0P8W/2f+6/3F/Qj+rP6Q/38ARQG3AcUBfAEAAYAAIQD5//3/DgADALf/G/89/kz9hPwk/Fb8JP1w/v//hgHAAnwDqgNcA7kC8AEqAX0A7P9s/+7+bf72/aL9l/3x/b7+7f9SAbECxgNbBFgExQPIApcBagBm/5j+8/1e/b38Avw7+436LPpN+hL7e/xm/pEArgJwBKAFLAYgBqIF4wQNBDgDaQKTAaYAnP99/mb9gfz3++P7R/wM/QL+8/6u/xoAOQAmAAgABwA3AJYABgFcAW8BJwGIALb/6f5g/kv+wP6r/90AEAL/AncDYgPMAtoBvQCm/7H+6/1N/cz8X/wL/Of7Evyp/Ln9N//7AMcCVgRpBd0FsAX9BPgD1wLGAdkACgBF/2v+bP1Q/Db7Uvre+QX61vo//Ar+8P+lAe8CsgPxA8kDZgPwAoECHgK5AUABpQDp/yH/cf4B/vL9S/77/tn/rgBKAY0BcgEQAY8AGQDQ/7j/wv/J/6b/P/+S/rr97Pxm/Fv85fz9/Xb/DQF4AnsD8wPfA1wDlQK4AecAMQCW/wj/ff76/Y/9XP2B/RL+Dv9YAL0B+gLTAyAE2gMYAwgC5QDe/wz/cf73/X/98PxG/JX7BvvP+hz7Bfx9/Vr/VgEpA5IEawWwBXcF6gQzBHEDsALtARYBIQAO/+/96/wt/Nn7Avye/In9kP58/yQAegCJAHEAWgBjAJgA7QBBAWkBRQHLAA0AOP+G/jD+Wf4E/w8AQwFYAhIDSQP4AjcCMQEYABX/PP6S/Q/9pvxV/Cj8N/ye/HT9uP5TABICtQP5BK8FwwVDBVkEOwMcAh4BSgCR/w==";
+
+  late final Uint8List _slideBytes = base64Decode(_slideB64);
+  late final Uint8List _bumpBytes = base64Decode(_bumpB64);
+  late final Uint8List _hintBytes = base64Decode(_hintB64);
+  late final Uint8List _winBytes = base64Decode(_winB64);
+
+  void init() {
+    // فك التشفير المسبق عند تشغيل اللعبة ليكون التشغيل لحظياً (0ms latency)
+    _slideBytes;
+    _bumpBytes;
+    _hintBytes;
+    _winBytes;
+  }
+
+  Future<void> _playSfxBytes(Uint8List bytes, {double volume = 0.85}) async {
+    try {
+      final player = _sfxPool[_poolIndex];
+      _poolIndex = (_poolIndex + 1) % _sfxPool.length;
+      await player.stop();
+      await player.setVolume(volume);
+      await player.play(BytesSource(bytes));
+    } catch (_) {
+      SystemSound.play(SystemSoundType.click);
+    }
+  }
+
+  void playSlide() {
+    _playSfxBytes(_slideBytes, volume: 0.80);
+  }
+
+  void playBump() {
+    _playSfxBytes(_bumpBytes, volume: 0.90);
+  }
+
+  void playHint() {
+    _playSfxBytes(_hintBytes, volume: 0.85);
+  }
+
+  Future<void> playVictory() async {
+    try {
+      await _victoryPlayer.stop();
+      await _victoryPlayer.setVolume(0.95);
+      await _victoryPlayer.play(BytesSource(_winBytes));
+    } catch (_) {
+      SystemSound.play(SystemSoundType.click);
+    }
+  }
+
+  void dispose() {
+    for (final p in _sfxPool) {
+      p.dispose();
+    }
+    _victoryPlayer.dispose();
+  }
+}
+
 class LevelsRepository {
   static List<LevelConfig> getAllLevels() {
     return [
-      // المستوى 1: سهل • البداية (6x6 | n=11 | free0=1 | depth=11 | E=111.8)
+      // المستوى 1 • عادي (cols=5, rows=5, n=6, free0=1, depth=6)
       LevelConfig(
         levelNumber: 1,
-        difficultyLabel: 'سهل • البداية',
-        gridCols: 6,
-        gridRows: 6,
-        stageTheme: StageVisualTheme.clean,
+        difficultyLabel: 'عادي',
+        gridCols: 5,
+        gridRows: 5,
         arrows: [
-          ArrowItem(id: 'l1_1', cells: const [Point(0, 5), Point(0, 4)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l1_2', cells: const [Point(0, 0), Point(0, 1), Point(1, 1)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l1_3', cells: const [Point(2, 0), Point(2, 1)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l1_4', cells: const [Point(2, 4), Point(3, 4), Point(3, 3)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l1_5', cells: const [Point(3, 0), Point(4, 0), Point(5, 0), Point(5, 1)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l1_6', cells: const [Point(5, 3), Point(5, 2), Point(4, 2)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l1_7', cells: const [Point(4, 1), Point(3, 1), Point(3, 2), Point(2, 2)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l1_8', cells: const [Point(0, 2), Point(1, 2), Point(1, 3)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l1_9', cells: const [Point(1, 5), Point(2, 5)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l1_10', cells: const [Point(3, 5), Point(4, 5)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l1_11', cells: const [Point(4, 3), Point(4, 4), Point(5, 4), Point(5, 5)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l1_1', cells: const [Point(1, 1), Point(1, 2), Point(0, 2), Point(0, 3), Point(1, 3)]),
+          ArrowItem(id: 'l1_2', cells: const [Point(3, 3), Point(4, 3), Point(4, 4), Point(3, 4)]),
+          ArrowItem(id: 'l1_3', cells: const [Point(1, 4), Point(2, 4), Point(2, 3)]),
+          ArrowItem(id: 'l1_4', cells: const [Point(0, 1), Point(0, 0), Point(1, 0), Point(2, 0)]),
+          ArrowItem(id: 'l1_5', cells: const [Point(3, 0), Point(3, 1), Point(2, 1), Point(2, 2), Point(3, 2)]),
+          ArrowItem(id: 'l1_6', cells: const [Point(4, 2), Point(4, 1)]),
         ],
       ),
-      // المستوى 2: سهل • خطوة للأمام (7x7 | n=15 | free0=2 | depth=11 | E=113.6)
+      // المستوى 2 • عادي (cols=6, rows=6, n=8, free0=1, depth=8)
       LevelConfig(
         levelNumber: 2,
-        difficultyLabel: 'سهل • خطوة للأمام',
-        gridCols: 7,
-        gridRows: 7,
-        stageTheme: StageVisualTheme.clean,
+        difficultyLabel: 'عادي',
+        gridCols: 6,
+        gridRows: 6,
         arrows: [
-          ArrowItem(id: 'l2_1', cells: const [Point(0, 5), Point(0, 6), Point(1, 6)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l2_2', cells: const [Point(2, 6), Point(2, 5)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l2_3', cells: const [Point(1, 1), Point(2, 1)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l2_4', cells: const [Point(6, 1), Point(6, 0), Point(5, 0)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l2_5', cells: const [Point(3, 0), Point(3, 1)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l2_6', cells: const [Point(4, 4), Point(3, 4)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l2_7', cells: const [Point(0, 4), Point(1, 4), Point(1, 3), Point(2, 3)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l2_8', cells: const [Point(6, 3), Point(6, 2), Point(5, 2)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l2_9', cells: const [Point(4, 1), Point(4, 2), Point(3, 2)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l2_10', cells: const [Point(0, 3), Point(0, 2)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l2_11', cells: const [Point(0, 1), Point(0, 0)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l2_12', cells: const [Point(4, 3), Point(5, 3), Point(5, 4)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l2_13', cells: const [Point(4, 5), Point(5, 5)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l2_14', cells: const [Point(6, 4), Point(6, 5)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l2_15', cells: const [Point(3, 6), Point(4, 6), Point(5, 6), Point(6, 6)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l2_1', cells: const [Point(0, 4), Point(1, 4), Point(1, 5), Point(2, 5), Point(2, 4)]),
+          ArrowItem(id: 'l2_2', cells: const [Point(2, 0), Point(3, 0), Point(3, 1)]),
+          ArrowItem(id: 'l2_3', cells: const [Point(4, 4), Point(3, 4), Point(3, 5), Point(4, 5), Point(5, 5), Point(5, 4)]),
+          ArrowItem(id: 'l2_4', cells: const [Point(5, 3), Point(5, 2), Point(4, 2)]),
+          ArrowItem(id: 'l2_5', cells: const [Point(3, 2), Point(2, 2), Point(2, 3), Point(1, 3), Point(1, 2)]),
+          ArrowItem(id: 'l2_6', cells: const [Point(2, 1), Point(1, 1)]),
+          ArrowItem(id: 'l2_7', cells: const [Point(0, 3), Point(0, 2), Point(0, 1)]),
+          ArrowItem(id: 'l2_8', cells: const [Point(1, 0), Point(0, 0)]),
         ],
       ),
-      // المستوى 3: عادي • تشابك خفيف (8x8 | n=16 | free0=2 | depth=13 | E=147.5)
+      // المستوى 3 • عادي (cols=6, rows=6, n=10, free0=2, depth=9)
       LevelConfig(
         levelNumber: 3,
-        difficultyLabel: 'عادي • تشابك خفيف',
-        gridCols: 8,
-        gridRows: 8,
-        stageTheme: StageVisualTheme.clean,
+        difficultyLabel: 'عادي',
+        gridCols: 6,
+        gridRows: 6,
         arrows: [
-          ArrowItem(id: 'l3_1', cells: const [Point(1, 1), Point(0, 1), Point(0, 0), Point(1, 0)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l3_2', cells: const [Point(7, 0), Point(7, 1)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l3_3', cells: const [Point(7, 2), Point(7, 3), Point(6, 3)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l3_4', cells: const [Point(1, 2), Point(1, 3), Point(0, 3), Point(0, 4), Point(1, 4)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l3_5', cells: const [Point(1, 5), Point(2, 5), Point(2, 4)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l3_6', cells: const [Point(2, 0), Point(3, 0), Point(3, 1)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l3_7', cells: const [Point(3, 4), Point(3, 5), Point(3, 6), Point(4, 6), Point(4, 5)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l3_8', cells: const [Point(4, 1), Point(5, 1), Point(5, 2)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l3_9', cells: const [Point(5, 6), Point(6, 6), Point(6, 7), Point(5, 7)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l3_10', cells: const [Point(4, 7), Point(3, 7)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l3_11', cells: const [Point(2, 7), Point(2, 6), Point(1, 6)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l3_12', cells: const [Point(0, 5), Point(0, 6)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l3_13', cells: const [Point(1, 7), Point(0, 7)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l3_14', cells: const [Point(4, 3), Point(4, 4), Point(5, 4)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l3_15', cells: const [Point(6, 5), Point(6, 4), Point(7, 4), Point(7, 5)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l3_16', cells: const [Point(7, 6), Point(7, 7)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l3_1', cells: const [Point(3, 5), Point(4, 5), Point(4, 4), Point(5, 4), Point(5, 3), Point(4, 3)]),
+          ArrowItem(id: 'l3_2', cells: const [Point(0, 3), Point(0, 2), Point(1, 2)]),
+          ArrowItem(id: 'l3_3', cells: const [Point(5, 2), Point(5, 1), Point(5, 0), Point(4, 0)]),
+          ArrowItem(id: 'l3_4', cells: const [Point(2, 0), Point(2, 1)]),
+          ArrowItem(id: 'l3_5', cells: const [Point(3, 3), Point(3, 2), Point(2, 2), Point(2, 3)]),
+          ArrowItem(id: 'l3_6', cells: const [Point(3, 4), Point(2, 4)]),
+          ArrowItem(id: 'l3_7', cells: const [Point(1, 3), Point(1, 4)]),
+          ArrowItem(id: 'l3_8', cells: const [Point(2, 5), Point(1, 5)]),
+          ArrowItem(id: 'l3_9', cells: const [Point(0, 4), Point(0, 5)]),
+          ArrowItem(id: 'l3_10', cells: const [Point(1, 0), Point(1, 1), Point(0, 1), Point(0, 0)]),
         ],
       ),
-      // المستوى 4: عادي • مسار متداخل (9x9 | n=20 | free0=2 | depth=18 | E=194.5)
+      // المستوى 4 • عادي (cols=7, rows=7, n=12, free0=2, depth=11)
       LevelConfig(
         levelNumber: 4,
-        difficultyLabel: 'عادي • مسار متداخل',
-        gridCols: 9,
-        gridRows: 9,
-        stageTheme: StageVisualTheme.clean,
+        difficultyLabel: 'عادي',
+        gridCols: 7,
+        gridRows: 7,
         arrows: [
-          ArrowItem(id: 'l4_1', cells: const [Point(8, 2), Point(8, 3)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l4_2', cells: const [Point(7, 7), Point(8, 7), Point(8, 8), Point(7, 8)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l4_3', cells: const [Point(5, 7), Point(5, 8), Point(6, 8), Point(6, 7), Point(6, 6)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l4_4', cells: const [Point(6, 3), Point(5, 3)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l4_5', cells: const [Point(3, 2), Point(3, 3)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l4_6', cells: const [Point(3, 8), Point(3, 7), Point(2, 7), Point(2, 6)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l4_7', cells: const [Point(2, 1), Point(1, 1), Point(1, 2)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l4_8', cells: const [Point(2, 3), Point(2, 4), Point(1, 4), Point(1, 5), Point(2, 5)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l4_9', cells: const [Point(4, 6), Point(4, 5)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l4_10', cells: const [Point(3, 5), Point(3, 4), Point(4, 4)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l4_11', cells: const [Point(8, 4), Point(8, 5), Point(7, 5), Point(7, 4)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l4_12', cells: const [Point(8, 1), Point(8, 0), Point(7, 0)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l4_13', cells: const [Point(6, 0), Point(5, 0)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l4_14', cells: const [Point(1, 0), Point(0, 0), Point(0, 1)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l4_15', cells: const [Point(0, 2), Point(0, 3)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l4_16', cells: const [Point(0, 4), Point(0, 5)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l4_17', cells: const [Point(1, 6), Point(0, 6), Point(0, 7)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l4_18', cells: const [Point(1, 7), Point(1, 8), Point(0, 8)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l4_19', cells: const [Point(4, 3), Point(4, 2)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l4_20', cells: const [Point(5, 2), Point(5, 1), Point(4, 1), Point(4, 0)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l4_1', cells: const [Point(0, 0), Point(0, 1), Point(1, 1), Point(1, 0), Point(2, 0), Point(2, 1)]),
+          ArrowItem(id: 'l4_2', cells: const [Point(2, 6), Point(3, 6), Point(3, 5)]),
+          ArrowItem(id: 'l4_3', cells: const [Point(3, 0), Point(4, 0), Point(4, 1)]),
+          ArrowItem(id: 'l4_4', cells: const [Point(5, 5), Point(4, 5), Point(4, 6), Point(5, 6), Point(6, 6), Point(6, 5)]),
+          ArrowItem(id: 'l4_5', cells: const [Point(5, 4), Point(6, 4), Point(6, 3), Point(5, 3)]),
+          ArrowItem(id: 'l4_6', cells: const [Point(0, 3), Point(0, 2), Point(1, 2)]),
+          ArrowItem(id: 'l4_7', cells: const [Point(4, 2), Point(4, 3), Point(4, 4), Point(3, 4)]),
+          ArrowItem(id: 'l4_8', cells: const [Point(2, 4), Point(2, 3), Point(1, 3), Point(1, 4)]),
+          ArrowItem(id: 'l4_9', cells: const [Point(2, 5), Point(1, 5)]),
+          ArrowItem(id: 'l4_10', cells: const [Point(0, 4), Point(0, 5)]),
+          ArrowItem(id: 'l4_11', cells: const [Point(1, 6), Point(0, 6)]),
+          ArrowItem(id: 'l4_12', cells: const [Point(5, 0), Point(5, 1), Point(5, 2), Point(6, 2), Point(6, 1)]),
         ],
       ),
-      // المستوى 5: متوسط • المتاهة (10x10 | n=22 | free0=2 | depth=19 | E=201.8)
+      // المستوى 5 • عادي (cols=8, rows=9, n=16, free0=3, depth=11)
       LevelConfig(
         levelNumber: 5,
-        difficultyLabel: 'متوسط • المتاهة',
-        gridCols: 10,
-        gridRows: 10,
-        stageTheme: StageVisualTheme.ocean,
+        difficultyLabel: 'عادي',
+        gridCols: 8,
+        gridRows: 9,
         arrows: [
-          ArrowItem(id: 'l5_1', cells: const [Point(2, 6), Point(3, 6), Point(3, 5)], badge: ArrowBadgeStyle.heart),
-          ArrowItem(id: 'l5_2', cells: const [Point(2, 4), Point(3, 4)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l5_3', cells: const [Point(8, 3), Point(8, 4)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l5_4', cells: const [Point(9, 7), Point(8, 7)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l5_5', cells: const [Point(1, 7), Point(1, 6)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l5_6', cells: const [Point(1, 1), Point(1, 2), Point(2, 2), Point(3, 2)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l5_7', cells: const [Point(6, 1), Point(6, 2)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l5_8', cells: const [Point(5, 8), Point(6, 8), Point(6, 7), Point(5, 7), Point(5, 6)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l5_9', cells: const [Point(6, 3), Point(5, 3)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l5_10', cells: const [Point(3, 3), Point(4, 3), Point(4, 4)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l5_11', cells: const [Point(3, 8), Point(3, 9), Point(4, 9)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l5_12', cells: const [Point(8, 8), Point(8, 9), Point(7, 9), Point(7, 8)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l5_13', cells: const [Point(7, 7), Point(7, 6)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l5_14', cells: const [Point(8, 1), Point(8, 0), Point(7, 0)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l5_15', cells: const [Point(2, 0), Point(1, 0), Point(0, 0), Point(0, 1)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l5_16', cells: const [Point(0, 2), Point(0, 3)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l5_17', cells: const [Point(1, 4), Point(0, 4), Point(0, 5)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l5_18', cells: const [Point(0, 6), Point(0, 7)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l5_19', cells: const [Point(1, 9), Point(1, 8), Point(0, 8), Point(0, 9)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l5_20', cells: const [Point(8, 5), Point(8, 6), Point(9, 6), Point(9, 5)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l5_21', cells: const [Point(9, 4), Point(9, 3)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l5_22', cells: const [Point(9, 2), Point(9, 1)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l5_1', cells: const [Point(2, 6), Point(2, 5), Point(1, 5), Point(1, 6), Point(0, 6), Point(0, 5)]),
+          ArrowItem(id: 'l5_2', cells: const [Point(0, 3), Point(0, 4), Point(1, 4), Point(2, 4)]),
+          ArrowItem(id: 'l5_3', cells: const [Point(6, 4), Point(6, 3), Point(6, 2), Point(7, 2), Point(7, 1), Point(6, 1)]),
+          ArrowItem(id: 'l5_4', cells: const [Point(2, 0), Point(2, 1), Point(3, 1), Point(3, 0), Point(4, 0), Point(4, 1)]),
+          ArrowItem(id: 'l5_5', cells: const [Point(5, 8), Point(5, 7), Point(4, 7), Point(4, 6), Point(5, 6), Point(5, 5)]),
+          ArrowItem(id: 'l5_6', cells: const [Point(4, 4), Point(4, 3), Point(5, 3), Point(5, 2), Point(4, 2)]),
+          ArrowItem(id: 'l5_7', cells: const [Point(2, 2), Point(3, 2), Point(3, 3)]),
+          ArrowItem(id: 'l5_8', cells: const [Point(3, 4), Point(3, 5)]),
+          ArrowItem(id: 'l5_9', cells: const [Point(4, 8), Point(3, 8)]),
+          ArrowItem(id: 'l5_10', cells: const [Point(3, 6), Point(3, 7), Point(2, 7), Point(2, 8), Point(1, 8)]),
+          ArrowItem(id: 'l5_11', cells: const [Point(1, 7), Point(0, 7), Point(0, 8)]),
+          ArrowItem(id: 'l5_12', cells: const [Point(7, 3), Point(7, 4)]),
+          ArrowItem(id: 'l5_13', cells: const [Point(6, 5), Point(7, 5), Point(7, 6)]),
+          ArrowItem(id: 'l5_14', cells: const [Point(7, 8), Point(7, 7), Point(6, 7), Point(6, 8)]),
+          ArrowItem(id: 'l5_15', cells: const [Point(2, 3), Point(1, 3), Point(1, 2)]),
+          ArrowItem(id: 'l5_16', cells: const [Point(0, 1), Point(1, 1), Point(1, 0), Point(0, 0)]),
         ],
       ),
-      // المستوى 6: تشكيل القلب ❤️ (10x10 | n=20 | free0=2 | depth=16 | E=168.1)
+      // المستوى 6 • صعب (cols=11, rows=11, n=18, free0=3, depth=11)
       LevelConfig(
         levelNumber: 6,
-        difficultyLabel: 'تشكيل القلب ❤️',
-        gridCols: 10,
-        gridRows: 10,
-        stageTheme: StageVisualTheme.heart,
+        difficultyLabel: 'صعب',
+        gridCols: 11,
+        gridRows: 11,
         arrows: [
-          ArrowItem(id: 'l6_1', cells: const [Point(0, 2), Point(0, 3)], badge: ArrowBadgeStyle.heart),
-          ArrowItem(id: 'l6_2', cells: const [Point(1, 7), Point(0, 7), Point(0, 6), Point(1, 6)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l6_3', cells: const [Point(8, 6), Point(8, 5), Point(8, 4), Point(7, 4)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l6_4', cells: const [Point(2, 3), Point(2, 4)], badge: ArrowBadgeStyle.heart),
-          ArrowItem(id: 'l6_5', cells: const [Point(2, 7), Point(3, 7), Point(4, 7), Point(4, 6)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l6_6', cells: const [Point(3, 3), Point(4, 3)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l6_7', cells: const [Point(9, 3), Point(9, 4)], badge: ArrowBadgeStyle.heart),
-          ArrowItem(id: 'l6_8', cells: const [Point(9, 5), Point(9, 6)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l6_9', cells: const [Point(9, 7), Point(8, 7), Point(7, 7), Point(7, 8), Point(6, 8)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l6_10', cells: const [Point(4, 9), Point(5, 9), Point(5, 8)], badge: ArrowBadgeStyle.heart),
-          ArrowItem(id: 'l6_11', cells: const [Point(5, 7), Point(6, 7), Point(6, 6)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l6_12', cells: const [Point(6, 1), Point(5, 1)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l6_13', cells: const [Point(3, 1), Point(3, 2), Point(4, 2)], badge: ArrowBadgeStyle.heart),
-          ArrowItem(id: 'l6_14', cells: const [Point(5, 2), Point(6, 2)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l6_15', cells: const [Point(6, 3), Point(7, 3), Point(7, 2)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l6_16', cells: const [Point(7, 1), Point(8, 1)], badge: ArrowBadgeStyle.heart),
-          ArrowItem(id: 'l6_17', cells: const [Point(7, 5), Point(6, 5)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l6_18', cells: const [Point(1, 5), Point(1, 4)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l6_19', cells: const [Point(1, 3), Point(1, 2)], badge: ArrowBadgeStyle.heart),
-          ArrowItem(id: 'l6_20', cells: const [Point(2, 2), Point(2, 1), Point(1, 1)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l6_1', cells: const [Point(8, 5), Point(7, 5), Point(7, 6), Point(8, 6), Point(8, 7), Point(7, 7)]),
+          ArrowItem(id: 'l6_2', cells: const [Point(4, 8), Point(4, 7), Point(3, 7), Point(3, 8), Point(3, 9), Point(4, 9)]),
+          ArrowItem(id: 'l6_3', cells: const [Point(5, 7), Point(5, 8), Point(5, 9), Point(6, 9), Point(6, 8), Point(6, 7)]),
+          ArrowItem(id: 'l6_4', cells: const [Point(6, 4), Point(6, 3), Point(7, 3), Point(8, 3), Point(8, 2), Point(7, 2)]),
+          ArrowItem(id: 'l6_5', cells: const [Point(0, 3), Point(0, 2), Point(1, 2), Point(1, 1), Point(2, 1)]),
+          ArrowItem(id: 'l6_6', cells: const [Point(1, 3), Point(2, 3), Point(2, 2), Point(3, 2), Point(3, 1), Point(4, 1)]),
+          ArrowItem(id: 'l6_7', cells: const [Point(8, 1), Point(9, 1), Point(9, 2), Point(10, 2), Point(10, 3)]),
+          ArrowItem(id: 'l6_8', cells: const [Point(10, 4), Point(9, 4), Point(9, 5)]),
+          ArrowItem(id: 'l6_9', cells: const [Point(10, 6), Point(9, 6), Point(9, 7)]),
+          ArrowItem(id: 'l6_10', cells: const [Point(8, 9), Point(8, 8), Point(9, 8)]),
+          ArrowItem(id: 'l6_11', cells: const [Point(10, 7), Point(10, 8)]),
+          ArrowItem(id: 'l6_12', cells: const [Point(0, 6), Point(0, 5), Point(0, 4), Point(1, 4), Point(1, 5)]),
+          ArrowItem(id: 'l6_13', cells: const [Point(1, 6), Point(2, 6), Point(2, 7)]),
+          ArrowItem(id: 'l6_14', cells: const [Point(2, 9), Point(2, 8), Point(1, 8)]),
+          ArrowItem(id: 'l6_15', cells: const [Point(1, 7), Point(0, 7), Point(0, 8)]),
+          ArrowItem(id: 'l6_16', cells: const [Point(3, 6), Point(3, 5), Point(4, 5), Point(4, 6), Point(5, 6), Point(5, 5)]),
+          ArrowItem(id: 'l6_17', cells: const [Point(4, 4), Point(5, 4), Point(5, 3)]),
+          ArrowItem(id: 'l6_18', cells: const [Point(5, 1), Point(5, 2), Point(6, 2), Point(6, 1)]),
         ],
       ),
-      // المستوى 7: صعب • عقدة المسار (10x10 | n=23 | free0=2 | depth=18 | E=202.9)
+      // المستوى 7 • عادي (cols=8, rows=12, n=20, free0=4, depth=13)
       LevelConfig(
         levelNumber: 7,
-        difficultyLabel: 'صعب • عقدة المسار',
-        gridCols: 10,
-        gridRows: 10,
-        stageTheme: StageVisualTheme.ocean,
+        difficultyLabel: 'عادي',
+        gridCols: 8,
+        gridRows: 12,
         arrows: [
-          ArrowItem(id: 'l7_1', cells: const [Point(7, 5), Point(6, 5)], badge: ArrowBadgeStyle.heart),
-          ArrowItem(id: 'l7_2', cells: const [Point(1, 5), Point(1, 6), Point(0, 6), Point(0, 5)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l7_3', cells: const [Point(0, 3), Point(0, 4), Point(1, 4)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l7_4', cells: const [Point(7, 3), Point(8, 3), Point(8, 4)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l7_5', cells: const [Point(9, 9), Point(9, 8), Point(8, 8)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l7_6', cells: const [Point(7, 8), Point(6, 8)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l7_7', cells: const [Point(4, 9), Point(5, 9), Point(5, 8), Point(4, 8), Point(4, 7)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l7_8', cells: const [Point(3, 6), Point(4, 6)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l7_9', cells: const [Point(9, 6), Point(9, 5)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l7_10', cells: const [Point(8, 2), Point(8, 1), Point(9, 1), Point(9, 0), Point(8, 0)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l7_11', cells: const [Point(6, 1), Point(6, 0), Point(5, 0)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l7_12', cells: const [Point(2, 0), Point(2, 1)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l7_13', cells: const [Point(1, 3), Point(2, 3), Point(2, 4)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l7_14', cells: const [Point(3, 4), Point(3, 5), Point(2, 5), Point(2, 6)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l7_15', cells: const [Point(3, 7), Point(3, 8), Point(2, 8)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l7_16', cells: const [Point(2, 7), Point(1, 7), Point(1, 8)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l7_17', cells: const [Point(2, 9), Point(1, 9)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l7_18', cells: const [Point(0, 7), Point(0, 8), Point(0, 9)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l7_19', cells: const [Point(7, 0), Point(7, 1), Point(7, 2), Point(6, 2)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l7_20', cells: const [Point(5, 2), Point(4, 2)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l7_21', cells: const [Point(3, 2), Point(2, 2)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l7_22', cells: const [Point(1, 2), Point(1, 1)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l7_23', cells: const [Point(1, 0), Point(0, 0)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l7_1', cells: const [Point(0, 2), Point(0, 1), Point(0, 0), Point(1, 0), Point(1, 1), Point(2, 1)]),
+          ArrowItem(id: 'l7_2', cells: const [Point(6, 2), Point(6, 1), Point(7, 1), Point(7, 2), Point(7, 3)]),
+          ArrowItem(id: 'l7_3', cells: const [Point(6, 3), Point(6, 4), Point(7, 4), Point(7, 5), Point(6, 5), Point(6, 6)]),
+          ArrowItem(id: 'l7_4', cells: const [Point(5, 9), Point(6, 9), Point(6, 10), Point(5, 10), Point(4, 10), Point(4, 9)]),
+          ArrowItem(id: 'l7_5', cells: const [Point(2, 6), Point(2, 5), Point(3, 5), Point(3, 6), Point(4, 6), Point(4, 5)]),
+          ArrowItem(id: 'l7_6', cells: const [Point(5, 3), Point(5, 4), Point(4, 4)]),
+          ArrowItem(id: 'l7_7', cells: const [Point(3, 4), Point(2, 4), Point(2, 3), Point(2, 2), Point(1, 2), Point(1, 3)]),
+          ArrowItem(id: 'l7_8', cells: const [Point(0, 4), Point(1, 4), Point(1, 5), Point(0, 5), Point(0, 6)]),
+          ArrowItem(id: 'l7_9', cells: const [Point(1, 6), Point(1, 7), Point(0, 7), Point(0, 8), Point(1, 8), Point(2, 8)]),
+          ArrowItem(id: 'l7_10', cells: const [Point(5, 7), Point(5, 8), Point(4, 8), Point(4, 7), Point(3, 7), Point(3, 8)]),
+          ArrowItem(id: 'l7_11', cells: const [Point(1, 10), Point(2, 10), Point(2, 11), Point(3, 11)]),
+          ArrowItem(id: 'l7_12', cells: const [Point(4, 11), Point(5, 11)]),
+          ArrowItem(id: 'l7_13', cells: const [Point(7, 9), Point(7, 10), Point(7, 11)]),
+          ArrowItem(id: 'l7_14', cells: const [Point(2, 0), Point(3, 0)]),
+          ArrowItem(id: 'l7_15', cells: const [Point(5, 1), Point(4, 1), Point(4, 0), Point(5, 0)]),
+          ArrowItem(id: 'l7_16', cells: const [Point(6, 0), Point(7, 0)]),
+          ArrowItem(id: 'l7_17', cells: const [Point(3, 10), Point(3, 9), Point(2, 9)]),
+          ArrowItem(id: 'l7_18', cells: const [Point(1, 9), Point(0, 9), Point(0, 10)]),
+          ArrowItem(id: 'l7_19', cells: const [Point(1, 11), Point(0, 11)]),
+          ArrowItem(id: 'l7_20', cells: const [Point(7, 7), Point(6, 7), Point(6, 8), Point(7, 8)]),
         ],
       ),
-      // المستوى 8: صعب • الممر الضيق (10x10 | n=20 | free0=1 | depth=20 | E=207.3)
+      // المستوى 8 • عادي (cols=9, rows=11, n=21, free0=4, depth=13)
       LevelConfig(
         levelNumber: 8,
-        difficultyLabel: 'صعب • الممر الضيق',
-        gridCols: 10,
-        gridRows: 10,
-        stageTheme: StageVisualTheme.ocean,
+        difficultyLabel: 'عادي',
+        gridCols: 9,
+        gridRows: 11,
         arrows: [
-          ArrowItem(id: 'l8_1', cells: const [Point(0, 7), Point(0, 6)], badge: ArrowBadgeStyle.star),
-          ArrowItem(id: 'l8_2', cells: const [Point(0, 2), Point(1, 2), Point(1, 3)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l8_3', cells: const [Point(0, 4), Point(0, 5), Point(1, 5)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l8_4', cells: const [Point(4, 6), Point(5, 6), Point(5, 5)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l8_5', cells: const [Point(5, 2), Point(6, 2), Point(6, 3)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l8_6', cells: const [Point(6, 8), Point(6, 9), Point(5, 9)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l8_7', cells: const [Point(2, 9), Point(2, 8), Point(2, 7)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l8_8', cells: const [Point(2, 6), Point(2, 5)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l8_9', cells: const [Point(1, 1), Point(2, 1)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l8_10', cells: const [Point(8, 1), Point(9, 1), Point(9, 2)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l8_11', cells: const [Point(9, 3), Point(9, 4)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l8_12', cells: const [Point(9, 5), Point(8, 5), Point(8, 6)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l8_13', cells: const [Point(8, 9), Point(7, 9), Point(7, 8)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l8_14', cells: const [Point(6, 1), Point(7, 1), Point(7, 0), Point(6, 0), Point(5, 0)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l8_15', cells: const [Point(2, 0), Point(3, 0), Point(3, 1)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l8_16', cells: const [Point(3, 3), Point(3, 4)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l8_17', cells: const [Point(3, 8), Point(3, 7), Point(4, 7)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l8_18', cells: const [Point(4, 8), Point(5, 8), Point(5, 7), Point(6, 7)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l8_19', cells: const [Point(9, 6), Point(9, 7)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l8_20', cells: const [Point(8, 7), Point(8, 8), Point(9, 8)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l8_1', cells: const [Point(6, 0), Point(7, 0), Point(8, 0), Point(8, 1), Point(7, 1), Point(7, 2)]),
+          ArrowItem(id: 'l8_2', cells: const [Point(6, 6), Point(6, 5), Point(7, 5), Point(7, 4), Point(6, 4)]),
+          ArrowItem(id: 'l8_3', cells: const [Point(1, 4), Point(2, 4), Point(2, 5), Point(2, 6), Point(3, 6), Point(3, 5)]),
+          ArrowItem(id: 'l8_4', cells: const [Point(4, 3), Point(3, 3), Point(3, 4), Point(4, 4), Point(4, 5)]),
+          ArrowItem(id: 'l8_5', cells: const [Point(4, 7), Point(4, 6), Point(5, 6), Point(5, 5)]),
+          ArrowItem(id: 'l8_6', cells: const [Point(5, 3), Point(5, 2), Point(6, 2), Point(6, 1), Point(5, 1)]),
+          ArrowItem(id: 'l8_7', cells: const [Point(0, 1), Point(0, 2)]),
+          ArrowItem(id: 'l8_8', cells: const [Point(1, 2), Point(1, 3), Point(0, 3), Point(0, 4)]),
+          ArrowItem(id: 'l8_9', cells: const [Point(1, 9), Point(0, 9), Point(0, 10), Point(1, 10), Point(2, 10)]),
+          ArrowItem(id: 'l8_10', cells: const [Point(5, 10), Point(6, 10), Point(6, 9), Point(6, 8), Point(5, 8)]),
+          ArrowItem(id: 'l8_11', cells: const [Point(4, 9), Point(4, 8), Point(3, 8)]),
+          ArrowItem(id: 'l8_12', cells: const [Point(2, 9), Point(2, 8), Point(1, 8)]),
+          ArrowItem(id: 'l8_13', cells: const [Point(0, 8), Point(0, 7), Point(1, 7), Point(1, 6), Point(0, 6)]),
+          ArrowItem(id: 'l8_14', cells: const [Point(6, 3), Point(7, 3), Point(8, 3), Point(8, 4)]),
+          ArrowItem(id: 'l8_15', cells: const [Point(8, 5), Point(8, 6)]),
+          ArrowItem(id: 'l8_16', cells: const [Point(8, 7), Point(7, 7), Point(7, 8)]),
+          ArrowItem(id: 'l8_17', cells: const [Point(8, 8), Point(8, 9), Point(7, 9), Point(7, 10), Point(8, 10)]),
+          ArrowItem(id: 'l8_18', cells: const [Point(5, 0), Point(4, 0)]),
+          ArrowItem(id: 'l8_19', cells: const [Point(3, 0), Point(2, 0)]),
+          ArrowItem(id: 'l8_20', cells: const [Point(2, 1), Point(1, 1), Point(1, 0)]),
+          ArrowItem(id: 'l8_21', cells: const [Point(3, 9), Point(3, 10)]),
         ],
       ),
-      // المستوى 9: صعب • الشبكة المقفلة (10x10 | n=22 | free0=2 | depth=17 | E=186.4)
+      // المستوى 9 • عادي (cols=9, rows=10, n=20, free0=4, depth=12)
       LevelConfig(
         levelNumber: 9,
-        difficultyLabel: 'صعب • الشبكة المقفلة',
-        gridCols: 10,
+        difficultyLabel: 'عادي',
+        gridCols: 9,
         gridRows: 10,
-        stageTheme: StageVisualTheme.ocean,
         arrows: [
-          ArrowItem(id: 'l9_1', cells: const [Point(0, 3), Point(0, 2), Point(1, 2)], badge: ArrowBadgeStyle.heart),
-          ArrowItem(id: 'l9_2', cells: const [Point(7, 2), Point(8, 2), Point(8, 3)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l9_3', cells: const [Point(8, 4), Point(7, 4), Point(6, 4)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l9_4', cells: const [Point(4, 3), Point(4, 4)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l9_5', cells: const [Point(3, 5), Point(4, 5)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l9_6', cells: const [Point(8, 6), Point(9, 6), Point(9, 5)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l9_7', cells: const [Point(8, 0), Point(9, 0), Point(9, 1), Point(8, 1)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l9_8', cells: const [Point(6, 1), Point(7, 1), Point(7, 0), Point(6, 0)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l9_9', cells: const [Point(5, 0), Point(5, 1), Point(5, 2)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l9_10', cells: const [Point(6, 9), Point(6, 8), Point(5, 8)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l9_11', cells: const [Point(2, 8), Point(2, 7), Point(2, 6)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l9_12', cells: const [Point(2, 5), Point(2, 4)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l9_13', cells: const [Point(2, 3), Point(1, 3), Point(1, 4)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l9_14', cells: const [Point(1, 5), Point(0, 5), Point(0, 6)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l9_15', cells: const [Point(0, 7), Point(1, 7), Point(1, 8)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l9_16', cells: const [Point(2, 9), Point(1, 9)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l9_17', cells: const [Point(0, 8), Point(0, 9)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l9_18', cells: const [Point(3, 8), Point(3, 7), Point(4, 7)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l9_19', cells: const [Point(5, 6), Point(5, 7), Point(6, 7)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l9_20', cells: const [Point(7, 6), Point(7, 7)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l9_21', cells: const [Point(7, 8), Point(7, 9), Point(8, 9)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l9_22', cells: const [Point(9, 8), Point(9, 9)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l9_1', cells: const [Point(3, 7), Point(2, 7), Point(2, 8), Point(1, 8), Point(1, 7)]),
+          ArrowItem(id: 'l9_2', cells: const [Point(2, 4), Point(2, 5), Point(1, 5), Point(1, 6), Point(2, 6), Point(3, 6)]),
+          ArrowItem(id: 'l9_3', cells: const [Point(7, 6), Point(6, 6), Point(6, 7), Point(6, 8), Point(5, 8), Point(5, 7)]),
+          ArrowItem(id: 'l9_4', cells: const [Point(5, 1), Point(5, 2), Point(6, 2), Point(7, 2), Point(7, 3), Point(6, 3)]),
+          ArrowItem(id: 'l9_5', cells: const [Point(2, 3), Point(2, 2), Point(2, 1), Point(1, 1), Point(1, 0), Point(2, 0)]),
+          ArrowItem(id: 'l9_6', cells: const [Point(6, 1), Point(6, 0), Point(5, 0), Point(4, 0), Point(4, 1), Point(4, 2)]),
+          ArrowItem(id: 'l9_7', cells: const [Point(5, 3), Point(4, 3), Point(4, 4)]),
+          ArrowItem(id: 'l9_8', cells: const [Point(3, 2), Point(3, 3), Point(3, 4), Point(3, 5), Point(4, 5)]),
+          ArrowItem(id: 'l9_9', cells: const [Point(7, 7), Point(8, 7), Point(8, 6), Point(8, 5)]),
+          ArrowItem(id: 'l9_10', cells: const [Point(7, 4), Point(8, 4), Point(8, 3)]),
+          ArrowItem(id: 'l9_11', cells: const [Point(8, 2), Point(8, 1)]),
+          ArrowItem(id: 'l9_12', cells: const [Point(7, 1), Point(7, 0), Point(8, 0)]),
+          ArrowItem(id: 'l9_13', cells: const [Point(2, 9), Point(1, 9), Point(0, 9), Point(0, 8), Point(0, 7), Point(0, 6)]),
+          ArrowItem(id: 'l9_14', cells: const [Point(0, 5), Point(0, 4)]),
+          ArrowItem(id: 'l9_15', cells: const [Point(1, 4), Point(1, 3), Point(0, 3), Point(0, 2)]),
+          ArrowItem(id: 'l9_16', cells: const [Point(0, 1), Point(0, 0)]),
+          ArrowItem(id: 'l9_17', cells: const [Point(3, 8), Point(3, 9), Point(4, 9)]),
+          ArrowItem(id: 'l9_18', cells: const [Point(5, 9), Point(6, 9)]),
+          ArrowItem(id: 'l9_19', cells: const [Point(8, 8), Point(7, 8), Point(7, 9), Point(8, 9)]),
+          ArrowItem(id: 'l9_20', cells: const [Point(3, 1), Point(3, 0)]),
         ],
       ),
-      // المستوى 10: تشكيل النجمة ⭐ (11x11 | n=14 | free0=3 | depth=9 | E=96.0)
+      // المستوى 10 • صعب (cols=11, rows=11, n=12, free0=6, depth=5)
       LevelConfig(
         levelNumber: 10,
-        difficultyLabel: 'تشكيل النجمة ⭐',
+        difficultyLabel: 'صعب',
         gridCols: 11,
         gridRows: 11,
-        stageTheme: StageVisualTheme.star,
         arrows: [
-          ArrowItem(id: 'l10_1', cells: const [Point(5, 2), Point(4, 2), Point(4, 3), Point(5, 3)], badge: ArrowBadgeStyle.star),
-          ArrowItem(id: 'l10_2', cells: const [Point(9, 3), Point(8, 3), Point(8, 4), Point(8, 5)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l10_3', cells: const [Point(8, 8), Point(8, 9), Point(7, 9)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l10_4', cells: const [Point(2, 9), Point(3, 9), Point(3, 8)], badge: ArrowBadgeStyle.star),
-          ArrowItem(id: 'l10_5', cells: const [Point(4, 6), Point(3, 6), Point(3, 5)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l10_6', cells: const [Point(4, 4), Point(3, 4)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l10_7', cells: const [Point(2, 5), Point(2, 4), Point(2, 3), Point(1, 3), Point(1, 4)], badge: ArrowBadgeStyle.star),
-          ArrowItem(id: 'l10_8', cells: const [Point(3, 7), Point(4, 7)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l10_9', cells: const [Point(6, 8), Point(6, 7)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l10_10', cells: const [Point(6, 6), Point(7, 6), Point(7, 5)], badge: ArrowBadgeStyle.star),
-          ArrowItem(id: 'l10_11', cells: const [Point(7, 4), Point(6, 4), Point(6, 3)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l10_12', cells: const [Point(6, 1), Point(5, 1)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l10_13', cells: const [Point(5, 4), Point(5, 5)], badge: ArrowBadgeStyle.star),
-          ArrowItem(id: 'l10_14', cells: const [Point(5, 6), Point(5, 7)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l10_1', cells: const [Point(9, 4), Point(8, 4), Point(8, 5), Point(7, 5), Point(7, 4), Point(6, 4)]),
+          ArrowItem(id: 'l10_2', cells: const [Point(5, 5), Point(5, 4), Point(4, 4), Point(4, 5), Point(4, 6), Point(5, 6)]),
+          ArrowItem(id: 'l10_3', cells: const [Point(7, 6), Point(6, 6), Point(6, 7), Point(5, 7)]),
+          ArrowItem(id: 'l10_4', cells: const [Point(3, 9), Point(2, 9), Point(2, 8), Point(3, 8), Point(3, 7)]),
+          ArrowItem(id: 'l10_5', cells: const [Point(3, 4), Point(2, 4), Point(2, 3), Point(1, 3), Point(1, 4)]),
+          ArrowItem(id: 'l10_6', cells: const [Point(6, 3), Point(5, 3), Point(5, 2), Point(4, 2), Point(4, 1), Point(5, 1)]),
+          ArrowItem(id: 'l10_7', cells: const [Point(6, 2), Point(6, 1)]),
+          ArrowItem(id: 'l10_8', cells: const [Point(6, 8), Point(7, 8)]),
+          ArrowItem(id: 'l10_9', cells: const [Point(8, 8), Point(8, 9)]),
+          ArrowItem(id: 'l10_10', cells: const [Point(3, 6), Point(3, 5), Point(2, 5)]),
+          ArrowItem(id: 'l10_11', cells: const [Point(4, 7), Point(4, 8)]),
+          ArrowItem(id: 'l10_12', cells: const [Point(8, 3), Point(9, 3)]),
         ],
       ),
-      // المستوى 11: صعب • تقاطع الأسهم (10x10 | n=22 | free0=2 | depth=19 | E=222.3)
+      // المستوى 11 • عادي (cols=10, rows=11, n=22, free0=4, depth=15)
       LevelConfig(
         levelNumber: 11,
-        difficultyLabel: 'صعب • تقاطع الأسهم',
+        difficultyLabel: 'عادي',
         gridCols: 10,
-        gridRows: 10,
-        stageTheme: StageVisualTheme.ocean,
+        gridRows: 11,
         arrows: [
-          ArrowItem(id: 'l11_1', cells: const [Point(8, 3), Point(7, 3)], badge: ArrowBadgeStyle.heart),
-          ArrowItem(id: 'l11_2', cells: const [Point(2, 2), Point(3, 2), Point(3, 3)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l11_3', cells: const [Point(2, 3), Point(2, 4), Point(3, 4)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l11_4', cells: const [Point(5, 2), Point(5, 3), Point(4, 3), Point(4, 4)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l11_5', cells: const [Point(3, 9), Point(4, 9)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l11_6', cells: const [Point(8, 8), Point(8, 9), Point(7, 9), Point(7, 8), Point(6, 8)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l11_7', cells: const [Point(3, 8), Point(3, 7), Point(4, 7)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l11_8', cells: const [Point(9, 8), Point(9, 7)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l11_9', cells: const [Point(9, 6), Point(8, 6)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l11_10', cells: const [Point(6, 6), Point(5, 6)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l11_11', cells: const [Point(4, 6), Point(3, 6), Point(3, 5), Point(4, 5)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l11_12', cells: const [Point(7, 5), Point(6, 5), Point(6, 4)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l11_13', cells: const [Point(6, 1), Point(7, 1), Point(7, 0), Point(6, 0)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l11_14', cells: const [Point(3, 1), Point(2, 1), Point(2, 0), Point(1, 0), Point(1, 1)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l11_15', cells: const [Point(0, 2), Point(1, 2), Point(1, 3), Point(0, 3), Point(0, 4)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l11_16', cells: const [Point(0, 5), Point(1, 5), Point(2, 5), Point(2, 6)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l11_17', cells: const [Point(2, 8), Point(1, 8)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l11_18', cells: const [Point(1, 6), Point(1, 7), Point(0, 7), Point(0, 8)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l11_19', cells: const [Point(1, 9), Point(0, 9)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l11_20', cells: const [Point(8, 4), Point(8, 5), Point(9, 5), Point(9, 4)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l11_21', cells: const [Point(9, 3), Point(9, 2)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l11_22', cells: const [Point(7, 2), Point(8, 2), Point(8, 1), Point(9, 1), Point(9, 0)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l11_1', cells: const [Point(3, 10), Point(2, 10), Point(1, 10), Point(0, 10), Point(0, 9), Point(1, 9)]),
+          ArrowItem(id: 'l11_2', cells: const [Point(7, 9), Point(6, 9), Point(6, 8), Point(6, 7), Point(5, 7), Point(5, 6)]),
+          ArrowItem(id: 'l11_3', cells: const [Point(5, 3), Point(6, 3), Point(7, 3), Point(7, 2), Point(8, 2), Point(8, 3)]),
+          ArrowItem(id: 'l11_4', cells: const [Point(8, 6), Point(9, 6), Point(9, 5), Point(8, 5)]),
+          ArrowItem(id: 'l11_5', cells: const [Point(7, 4), Point(7, 5), Point(7, 6), Point(6, 6), Point(6, 5), Point(5, 5)]),
+          ArrowItem(id: 'l11_6', cells: const [Point(3, 6), Point(3, 7), Point(2, 7), Point(2, 6), Point(1, 6), Point(1, 5)]),
+          ArrowItem(id: 'l11_7', cells: const [Point(0, 0), Point(0, 1), Point(1, 1), Point(1, 0), Point(2, 0)]),
+          ArrowItem(id: 'l11_8', cells: const [Point(6, 1), Point(5, 1), Point(5, 0), Point(4, 0), Point(4, 1)]),
+          ArrowItem(id: 'l11_9', cells: const [Point(3, 2), Point(3, 3), Point(4, 3), Point(4, 4)]),
+          ArrowItem(id: 'l11_10', cells: const [Point(3, 5), Point(4, 5), Point(4, 6)]),
+          ArrowItem(id: 'l11_11', cells: const [Point(4, 9), Point(4, 10), Point(5, 10)]),
+          ArrowItem(id: 'l11_12', cells: const [Point(6, 10), Point(7, 10)]),
+          ArrowItem(id: 'l11_13', cells: const [Point(8, 10), Point(8, 9), Point(8, 8), Point(7, 8), Point(7, 7), Point(8, 7)]),
+          ArrowItem(id: 'l11_14', cells: const [Point(9, 7), Point(9, 8)]),
+          ArrowItem(id: 'l11_15', cells: const [Point(9, 9), Point(9, 10)]),
+          ArrowItem(id: 'l11_16', cells: const [Point(5, 8), Point(4, 8)]),
+          ArrowItem(id: 'l11_17', cells: const [Point(3, 9), Point(3, 8), Point(2, 8)]),
+          ArrowItem(id: 'l11_18', cells: const [Point(0, 7), Point(1, 7), Point(1, 8), Point(0, 8)]),
+          ArrowItem(id: 'l11_19', cells: const [Point(9, 4), Point(9, 3)]),
+          ArrowItem(id: 'l11_20', cells: const [Point(9, 0), Point(8, 0), Point(7, 0), Point(7, 1), Point(8, 1)]),
+          ArrowItem(id: 'l11_21', cells: const [Point(3, 4), Point(2, 4)]),
+          ArrowItem(id: 'l11_22', cells: const [Point(0, 4), Point(1, 4), Point(1, 3), Point(0, 3)]),
         ],
       ),
-      // المستوى 12: القلب الكبير ❤️ (11x11 | n=22 | free0=2 | depth=18 | E=200.0)
+      // المستوى 12 • صعب (cols=11, rows=11, n=20, free0=5, depth=13)
       LevelConfig(
         levelNumber: 12,
-        difficultyLabel: 'القلب الكبير ❤️',
+        difficultyLabel: 'صعب',
         gridCols: 11,
         gridRows: 11,
-        stageTheme: StageVisualTheme.heart,
         arrows: [
-          ArrowItem(id: 'l12_1', cells: const [Point(10, 7), Point(10, 8), Point(9, 8)], badge: ArrowBadgeStyle.heart),
-          ArrowItem(id: 'l12_2', cells: const [Point(4, 9), Point(4, 8)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l12_3', cells: const [Point(4, 1), Point(5, 1)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l12_4', cells: const [Point(6, 1), Point(6, 2)], badge: ArrowBadgeStyle.heart),
-          ArrowItem(id: 'l12_5', cells: const [Point(6, 3), Point(7, 3), Point(8, 3), Point(8, 4)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l12_6', cells: const [Point(8, 5), Point(7, 5)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l12_7', cells: const [Point(7, 4), Point(6, 4), Point(6, 5)], badge: ArrowBadgeStyle.heart),
-          ArrowItem(id: 'l12_8', cells: const [Point(6, 9), Point(7, 9), Point(7, 10), Point(6, 10)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l12_9', cells: const [Point(4, 10), Point(3, 10), Point(3, 9)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l12_10', cells: const [Point(2, 9), Point(2, 8), Point(3, 8), Point(3, 7)], badge: ArrowBadgeStyle.heart),
-          ArrowItem(id: 'l12_11', cells: const [Point(4, 7), Point(4, 6), Point(3, 6), Point(3, 5)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l12_12', cells: const [Point(3, 2), Point(4, 2), Point(5, 2), Point(5, 3)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l12_13', cells: const [Point(4, 5), Point(4, 4), Point(5, 4), Point(5, 5)], badge: ArrowBadgeStyle.heart),
-          ArrowItem(id: 'l12_14', cells: const [Point(6, 7), Point(5, 7), Point(5, 6), Point(6, 6)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l12_15', cells: const [Point(9, 7), Point(9, 6)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l12_16', cells: const [Point(10, 5), Point(9, 5), Point(9, 4)], badge: ArrowBadgeStyle.heart),
-          ArrowItem(id: 'l12_17', cells: const [Point(9, 3), Point(9, 2)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l12_18', cells: const [Point(8, 1), Point(9, 1)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l12_19', cells: const [Point(1, 3), Point(1, 4)], badge: ArrowBadgeStyle.heart),
-          ArrowItem(id: 'l12_20', cells: const [Point(1, 6), Point(0, 6), Point(0, 5)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l12_21', cells: const [Point(0, 4), Point(0, 3)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l12_22', cells: const [Point(0, 2), Point(1, 2), Point(2, 2), Point(2, 1)], badge: ArrowBadgeStyle.heart),
+          ArrowItem(id: 'l12_1', cells: const [Point(6, 9), Point(6, 10), Point(7, 10), Point(7, 9), Point(8, 9), Point(8, 8)]),
+          ArrowItem(id: 'l12_2', cells: const [Point(7, 6), Point(8, 6), Point(8, 7), Point(9, 7), Point(10, 7), Point(10, 6)]),
+          ArrowItem(id: 'l12_3', cells: const [Point(9, 4), Point(10, 4), Point(10, 5), Point(9, 5)]),
+          ArrowItem(id: 'l12_4', cells: const [Point(6, 5), Point(7, 5), Point(8, 5), Point(8, 4), Point(7, 4)]),
+          ArrowItem(id: 'l12_5', cells: const [Point(4, 2), Point(5, 2), Point(5, 3), Point(6, 3), Point(6, 4), Point(5, 4)]),
+          ArrowItem(id: 'l12_6', cells: const [Point(1, 4), Point(1, 5), Point(2, 5), Point(2, 4), Point(3, 4), Point(3, 5)]),
+          ArrowItem(id: 'l12_7', cells: const [Point(3, 7), Point(4, 7), Point(5, 7), Point(5, 8), Point(4, 8)]),
+          ArrowItem(id: 'l12_8', cells: const [Point(1, 7), Point(1, 8), Point(0, 8), Point(0, 7)]),
+          ArrowItem(id: 'l12_9', cells: const [Point(0, 3), Point(0, 2), Point(1, 2), Point(1, 1), Point(2, 1)]),
+          ArrowItem(id: 'l12_10', cells: const [Point(3, 1), Point(4, 1), Point(5, 1)]),
+          ArrowItem(id: 'l12_11', cells: const [Point(7, 2), Point(6, 2), Point(6, 1), Point(7, 1)]),
+          ArrowItem(id: 'l12_12', cells: const [Point(9, 2), Point(9, 1), Point(8, 1), Point(8, 2), Point(8, 3), Point(9, 3)]),
+          ArrowItem(id: 'l12_13', cells: const [Point(10, 3), Point(10, 2)]),
+          ArrowItem(id: 'l12_14', cells: const [Point(6, 7), Point(6, 6), Point(5, 6)]),
+          ArrowItem(id: 'l12_15', cells: const [Point(5, 5), Point(4, 5), Point(4, 6), Point(3, 6)]),
+          ArrowItem(id: 'l12_16', cells: const [Point(2, 6), Point(2, 7)]),
+          ArrowItem(id: 'l12_17', cells: const [Point(3, 10), Point(3, 9), Point(2, 9)]),
+          ArrowItem(id: 'l12_18', cells: const [Point(4, 10), Point(4, 9), Point(5, 9), Point(5, 10)]),
+          ArrowItem(id: 'l12_19', cells: const [Point(9, 8), Point(10, 8)]),
+          ArrowItem(id: 'l12_20', cells: const [Point(1, 6), Point(0, 6)]),
         ],
       ),
-      // المستوى 13: صعب • الحصار (11x11 | n=22 | free0=1 | depth=22 | E=235.0)
+      // المستوى 13 • صعب (cols=10, rows=12, n=23, free0=4, depth=16)
       LevelConfig(
         levelNumber: 13,
-        difficultyLabel: 'صعب • الحصار',
-        gridCols: 11,
-        gridRows: 11,
-        stageTheme: StageVisualTheme.ocean,
+        difficultyLabel: 'صعب',
+        gridCols: 10,
+        gridRows: 12,
         arrows: [
-          ArrowItem(id: 'l13_1', cells: const [Point(3, 6), Point(4, 6)], badge: ArrowBadgeStyle.heart),
-          ArrowItem(id: 'l13_2', cells: const [Point(7, 5), Point(7, 6), Point(8, 6), Point(8, 7), Point(7, 7)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l13_3', cells: const [Point(1, 7), Point(1, 6)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l13_4', cells: const [Point(0, 3), Point(1, 3)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l13_5', cells: const [Point(7, 3), Point(8, 3), Point(8, 4), Point(7, 4)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l13_6', cells: const [Point(3, 4), Point(2, 4), Point(2, 5)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l13_7', cells: const [Point(2, 7), Point(2, 8), Point(3, 8), Point(4, 8)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l13_8', cells: const [Point(8, 8), Point(9, 8), Point(9, 7)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l13_9', cells: const [Point(9, 6), Point(9, 5)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l13_10', cells: const [Point(9, 2), Point(8, 2)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l13_11', cells: const [Point(4, 3), Point(5, 3), Point(5, 2), Point(6, 2), Point(6, 3)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l13_12', cells: const [Point(5, 5), Point(5, 4), Point(6, 4), Point(6, 5)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l13_13', cells: const [Point(6, 10), Point(5, 10)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l13_14', cells: const [Point(0, 10), Point(0, 9), Point(1, 9)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l13_15', cells: const [Point(3, 10), Point(3, 9), Point(4, 9)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l13_16', cells: const [Point(10, 10), Point(10, 9)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l13_17', cells: const [Point(10, 2), Point(10, 1), Point(9, 1)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l13_18', cells: const [Point(1, 1), Point(1, 0), Point(2, 0)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l13_19', cells: const [Point(3, 1), Point(3, 0), Point(4, 0)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l13_20', cells: const [Point(5, 1), Point(5, 0), Point(6, 0)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l13_21', cells: const [Point(7, 1), Point(7, 0), Point(8, 0)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l13_22', cells: const [Point(9, 0), Point(10, 0)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l13_1', cells: const [Point(1, 9), Point(2, 9), Point(2, 8), Point(3, 8), Point(3, 7), Point(4, 7)]),
+          ArrowItem(id: 'l13_2', cells: const [Point(6, 8), Point(6, 7), Point(7, 7), Point(7, 6), Point(6, 6)]),
+          ArrowItem(id: 'l13_3', cells: const [Point(2, 7), Point(2, 6), Point(1, 6), Point(1, 7), Point(0, 7), Point(0, 6)]),
+          ArrowItem(id: 'l13_4', cells: const [Point(1, 3), Point(1, 4), Point(0, 4), Point(0, 5), Point(1, 5)]),
+          ArrowItem(id: 'l13_5', cells: const [Point(9, 8), Point(9, 7), Point(8, 7), Point(8, 6), Point(9, 6), Point(9, 5)]),
+          ArrowItem(id: 'l13_6', cells: const [Point(8, 0), Point(9, 0), Point(9, 1), Point(8, 1), Point(7, 1)]),
+          ArrowItem(id: 'l13_7', cells: const [Point(0, 2), Point(1, 2), Point(1, 1), Point(2, 1), Point(2, 2), Point(3, 2)]),
+          ArrowItem(id: 'l13_8', cells: const [Point(6, 2), Point(6, 1), Point(6, 0), Point(5, 0), Point(5, 1)]),
+          ArrowItem(id: 'l13_9', cells: const [Point(3, 4), Point(3, 3), Point(4, 3), Point(4, 2), Point(5, 2), Point(5, 3)]),
+          ArrowItem(id: 'l13_10', cells: const [Point(5, 10), Point(4, 10), Point(3, 10), Point(3, 9), Point(4, 9)]),
+          ArrowItem(id: 'l13_11', cells: const [Point(8, 9), Point(8, 10), Point(8, 11), Point(7, 11)]),
+          ArrowItem(id: 'l13_12', cells: const [Point(7, 10), Point(6, 10), Point(6, 11), Point(5, 11)]),
+          ArrowItem(id: 'l13_13', cells: const [Point(4, 11), Point(3, 11)]),
+          ArrowItem(id: 'l13_14', cells: const [Point(2, 11), Point(2, 10), Point(1, 10)]),
+          ArrowItem(id: 'l13_15', cells: const [Point(0, 9), Point(0, 10)]),
+          ArrowItem(id: 'l13_16', cells: const [Point(1, 11), Point(0, 11)]),
+          ArrowItem(id: 'l13_17', cells: const [Point(4, 5), Point(4, 4), Point(5, 4)]),
+          ArrowItem(id: 'l13_18', cells: const [Point(6, 3), Point(6, 4), Point(7, 4)]),
+          ArrowItem(id: 'l13_19', cells: const [Point(9, 3), Point(9, 4), Point(8, 4), Point(8, 3), Point(8, 2), Point(9, 2)]),
+          ArrowItem(id: 'l13_20', cells: const [Point(4, 1), Point(4, 0), Point(3, 0)]),
+          ArrowItem(id: 'l13_21', cells: const [Point(2, 0), Point(1, 0)]),
+          ArrowItem(id: 'l13_22', cells: const [Point(0, 1), Point(0, 0)]),
+          ArrowItem(id: 'l13_23', cells: const [Point(9, 9), Point(9, 10)]),
         ],
       ),
-      // المستوى 14: صعب • المتاهة العميقة (11x11 | n=24 | free0=2 | depth=19 | E=223.3)
+      // المستوى 14 • صعب (cols=10, rows=12, n=25, free0=4, depth=13)
       LevelConfig(
         levelNumber: 14,
-        difficultyLabel: 'صعب • المتاهة العميقة',
-        gridCols: 11,
-        gridRows: 11,
-        stageTheme: StageVisualTheme.ocean,
+        difficultyLabel: 'صعب',
+        gridCols: 10,
+        gridRows: 12,
         arrows: [
-          ArrowItem(id: 'l14_1', cells: const [Point(5, 6), Point(6, 6), Point(6, 5)], badge: ArrowBadgeStyle.star),
-          ArrowItem(id: 'l14_2', cells: const [Point(6, 3), Point(6, 4), Point(5, 4)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l14_3', cells: const [Point(1, 4), Point(1, 3), Point(1, 2), Point(2, 2)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l14_4', cells: const [Point(8, 2), Point(7, 2), Point(7, 3)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l14_5', cells: const [Point(6, 9), Point(7, 9), Point(7, 8), Point(6, 8), Point(5, 8)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l14_6', cells: const [Point(1, 9), Point(1, 8), Point(0, 8), Point(0, 7)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l14_7', cells: const [Point(1, 1), Point(0, 1), Point(0, 0), Point(1, 0), Point(2, 0)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l14_8', cells: const [Point(4, 0), Point(4, 1), Point(5, 1)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l14_9', cells: const [Point(10, 1), Point(10, 2)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l14_10', cells: const [Point(10, 3), Point(9, 3), Point(9, 4)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l14_11', cells: const [Point(9, 10), Point(8, 10), Point(7, 10)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l14_12', cells: const [Point(3, 10), Point(3, 9), Point(3, 8)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l14_13', cells: const [Point(2, 1), Point(3, 1), Point(3, 2), Point(4, 2), Point(4, 3)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l14_14', cells: const [Point(2, 3), Point(3, 3), Point(3, 4), Point(4, 4), Point(4, 5)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l14_15', cells: const [Point(4, 6), Point(4, 7), Point(5, 7)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l14_16', cells: const [Point(6, 7), Point(7, 7)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l14_17', cells: const [Point(9, 6), Point(10, 6), Point(10, 7)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l14_18', cells: const [Point(10, 8), Point(9, 8), Point(8, 8), Point(8, 9), Point(9, 9)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l14_19', cells: const [Point(10, 9), Point(10, 10)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l14_20', cells: const [Point(2, 4), Point(2, 5)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l14_21', cells: const [Point(3, 6), Point(2, 6), Point(2, 7)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l14_22', cells: const [Point(2, 8), Point(2, 9)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l14_23', cells: const [Point(2, 10), Point(1, 10)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l14_24', cells: const [Point(0, 9), Point(0, 10)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l14_1', cells: const [Point(6, 9), Point(5, 9), Point(5, 10), Point(6, 10), Point(6, 11), Point(5, 11)]),
+          ArrowItem(id: 'l14_2', cells: const [Point(1, 11), Point(1, 10), Point(1, 9), Point(0, 9), Point(0, 8), Point(1, 8)]),
+          ArrowItem(id: 'l14_3', cells: const [Point(9, 8), Point(9, 9), Point(9, 10), Point(9, 11), Point(8, 11), Point(8, 10)]),
+          ArrowItem(id: 'l14_4', cells: const [Point(9, 5), Point(8, 5), Point(8, 6), Point(7, 6), Point(7, 5)]),
+          ArrowItem(id: 'l14_5', cells: const [Point(8, 3), Point(7, 3), Point(7, 2), Point(8, 2), Point(8, 1), Point(7, 1)]),
+          ArrowItem(id: 'l14_6', cells: const [Point(5, 0), Point(5, 1), Point(6, 1), Point(6, 2), Point(5, 2)]),
+          ArrowItem(id: 'l14_7', cells: const [Point(3, 1), Point(3, 2), Point(4, 2), Point(4, 3)]),
+          ArrowItem(id: 'l14_8', cells: const [Point(4, 5), Point(5, 5), Point(6, 5), Point(6, 6), Point(5, 6)]),
+          ArrowItem(id: 'l14_9', cells: const [Point(2, 5), Point(2, 6), Point(1, 6), Point(1, 7), Point(2, 7)]),
+          ArrowItem(id: 'l14_10', cells: const [Point(4, 6), Point(3, 6), Point(3, 7), Point(4, 7)]),
+          ArrowItem(id: 'l14_11', cells: const [Point(5, 8), Point(5, 7), Point(6, 7)]),
+          ArrowItem(id: 'l14_12', cells: const [Point(7, 7), Point(7, 8)]),
+          ArrowItem(id: 'l14_13', cells: const [Point(8, 9), Point(7, 9), Point(7, 10)]),
+          ArrowItem(id: 'l14_14', cells: const [Point(2, 2), Point(2, 3), Point(1, 3), Point(1, 4), Point(2, 4)]),
+          ArrowItem(id: 'l14_15', cells: const [Point(3, 5), Point(3, 4), Point(4, 4)]),
+          ArrowItem(id: 'l14_16', cells: const [Point(6, 3), Point(5, 3), Point(5, 4), Point(6, 4)]),
+          ArrowItem(id: 'l14_17', cells: const [Point(7, 4), Point(8, 4), Point(9, 4), Point(9, 3)]),
+          ArrowItem(id: 'l14_18', cells: const [Point(9, 2), Point(9, 1)]),
+          ArrowItem(id: 'l14_19', cells: const [Point(6, 0), Point(7, 0), Point(8, 0), Point(9, 0)]),
+          ArrowItem(id: 'l14_20', cells: const [Point(0, 7), Point(0, 6), Point(0, 5)]),
+          ArrowItem(id: 'l14_21', cells: const [Point(0, 4), Point(0, 3)]),
+          ArrowItem(id: 'l14_22', cells: const [Point(1, 1), Point(1, 2), Point(0, 2), Point(0, 1)]),
+          ArrowItem(id: 'l14_23', cells: const [Point(1, 0), Point(0, 0)]),
+          ArrowItem(id: 'l14_24', cells: const [Point(2, 9), Point(3, 9), Point(3, 8), Point(4, 8), Point(4, 9)]),
+          ArrowItem(id: 'l14_25', cells: const [Point(3, 11), Point(3, 10), Point(4, 10), Point(4, 11)]),
         ],
       ),
-      // المستوى 15: تشكيل الماسة 💎 (11x11 | n=16 | free0=2 | depth=15 | E=154.6)
+      // المستوى 15 • صعب (cols=11, rows=11, n=11, free0=4, depth=7)
       LevelConfig(
         levelNumber: 15,
-        difficultyLabel: 'تشكيل الماسة 💎',
+        difficultyLabel: 'صعب',
         gridCols: 11,
         gridRows: 11,
-        stageTheme: StageVisualTheme.diamond,
         arrows: [
-          ArrowItem(id: 'l15_1', cells: const [Point(9, 3), Point(9, 4), Point(8, 4)], badge: ArrowBadgeStyle.star),
-          ArrowItem(id: 'l15_2', cells: const [Point(6, 4), Point(6, 3), Point(6, 2), Point(5, 2)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l15_3', cells: const [Point(4, 2), Point(4, 3)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l15_4', cells: const [Point(3, 5), Point(4, 5)], badge: ArrowBadgeStyle.star),
-          ArrowItem(id: 'l15_5', cells: const [Point(4, 4), Point(5, 4), Point(5, 5)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l15_6', cells: const [Point(6, 9), Point(5, 9)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l15_7', cells: const [Point(4, 9), Point(3, 9), Point(3, 8), Point(4, 8)], badge: ArrowBadgeStyle.star),
-          ArrowItem(id: 'l15_8', cells: const [Point(8, 8), Point(7, 8), Point(7, 7), Point(6, 7)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l15_9', cells: const [Point(1, 7), Point(1, 6), Point(1, 5)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l15_10', cells: const [Point(1, 4), Point(2, 4), Point(2, 5)], badge: ArrowBadgeStyle.star),
-          ArrowItem(id: 'l15_11', cells: const [Point(2, 7), Point(2, 6), Point(3, 6)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l15_12', cells: const [Point(4, 6), Point(5, 6)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l15_13', cells: const [Point(8, 6), Point(7, 6), Point(7, 5)], badge: ArrowBadgeStyle.star),
-          ArrowItem(id: 'l15_14', cells: const [Point(7, 2), Point(7, 1), Point(6, 1), Point(5, 1)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l15_15', cells: const [Point(3, 2), Point(3, 1), Point(4, 1), Point(4, 0), Point(5, 0)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l15_16', cells: const [Point(0, 4), Point(0, 5)], badge: ArrowBadgeStyle.star),
+          ArrowItem(id: 'l15_1', cells: const [Point(9, 4), Point(8, 4), Point(8, 3), Point(7, 3), Point(7, 4), Point(6, 4)]),
+          ArrowItem(id: 'l15_2', cells: const [Point(0, 5), Point(1, 5), Point(1, 4), Point(2, 4), Point(2, 5), Point(3, 5)]),
+          ArrowItem(id: 'l15_3', cells: const [Point(7, 5), Point(6, 5), Point(6, 6), Point(5, 6), Point(5, 5)]),
+          ArrowItem(id: 'l15_4', cells: const [Point(6, 1), Point(5, 1), Point(5, 2), Point(6, 2), Point(6, 3), Point(5, 3)]),
+          ArrowItem(id: 'l15_5', cells: const [Point(2, 3), Point(3, 3), Point(3, 2), Point(4, 2), Point(4, 3)]),
+          ArrowItem(id: 'l15_6', cells: const [Point(7, 7), Point(6, 7), Point(5, 7), Point(4, 7), Point(4, 8), Point(5, 8)]),
+          ArrowItem(id: 'l15_7', cells: const [Point(7, 8), Point(6, 8), Point(6, 9), Point(5, 9)]),
+          ArrowItem(id: 'l15_8', cells: const [Point(9, 6), Point(9, 5), Point(8, 5), Point(8, 6)]),
+          ArrowItem(id: 'l15_9', cells: const [Point(4, 4), Point(4, 5), Point(4, 6), Point(3, 6)]),
+          ArrowItem(id: 'l15_10', cells: const [Point(1, 6), Point(2, 6), Point(2, 7)]),
+          ArrowItem(id: 'l15_11', cells: const [Point(3, 7), Point(3, 8)]),
         ],
       ),
-      // المستوى 16: محترف • الشفق (11x11 | n=23 | free0=2 | depth=21 | E=221.7)
+      // المستوى 16 • صعب (cols=11, rows=12, n=25, free0=4, depth=17)
       LevelConfig(
         levelNumber: 16,
-        difficultyLabel: 'محترف • الشفق',
+        difficultyLabel: 'صعب',
         gridCols: 11,
-        gridRows: 11,
-        stageTheme: StageVisualTheme.twilight,
+        gridRows: 12,
         arrows: [
-          ArrowItem(id: 'l16_1', cells: const [Point(10, 0), Point(10, 1)], badge: ArrowBadgeStyle.star),
-          ArrowItem(id: 'l16_2', cells: const [Point(10, 10), Point(9, 10)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l16_3', cells: const [Point(7, 10), Point(7, 9), Point(6, 9)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l16_4', cells: const [Point(2, 10), Point(3, 10), Point(3, 9), Point(4, 9), Point(4, 8)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l16_5', cells: const [Point(3, 3), Point(4, 3)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l16_6', cells: const [Point(6, 3), Point(5, 3), Point(5, 4), Point(5, 5)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l16_7', cells: const [Point(6, 7), Point(6, 6), Point(5, 6)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l16_8', cells: const [Point(1, 6), Point(1, 5)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l16_9', cells: const [Point(1, 4), Point(0, 4), Point(0, 5)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l16_10', cells: const [Point(0, 9), Point(1, 9), Point(2, 9), Point(2, 8)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l16_11', cells: const [Point(1, 7), Point(2, 7), Point(2, 6)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l16_12', cells: const [Point(1, 2), Point(2, 2)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l16_13', cells: const [Point(4, 2), Point(5, 2)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l16_14', cells: const [Point(8, 1), Point(8, 2)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l16_15', cells: const [Point(7, 8), Point(8, 8), Point(8, 9), Point(9, 9), Point(9, 8)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l16_16', cells: const [Point(9, 7), Point(9, 6)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l16_17', cells: const [Point(9, 0), Point(8, 0), Point(7, 0)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l16_18', cells: const [Point(6, 1), Point(6, 0), Point(5, 0)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l16_19', cells: const [Point(4, 1), Point(4, 0), Point(3, 0)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l16_20', cells: const [Point(2, 1), Point(2, 0), Point(1, 0)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l16_21', cells: const [Point(1, 1), Point(0, 1), Point(0, 0)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l16_22', cells: const [Point(6, 4), Point(6, 5), Point(7, 5)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l16_23', cells: const [Point(8, 5), Point(8, 4), Point(8, 3), Point(9, 3)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l16_1', cells: const [Point(4, 0), Point(4, 1), Point(5, 1), Point(5, 0), Point(6, 0), Point(6, 1)]),
+          ArrowItem(id: 'l16_2', cells: const [Point(6, 7), Point(5, 7), Point(4, 7), Point(4, 8), Point(5, 8)]),
+          ArrowItem(id: 'l16_3', cells: const [Point(6, 8), Point(6, 9), Point(6, 10), Point(7, 10), Point(7, 9)]),
+          ArrowItem(id: 'l16_4', cells: const [Point(5, 3), Point(6, 3), Point(6, 4), Point(7, 4), Point(7, 5), Point(6, 5)]),
+          ArrowItem(id: 'l16_5', cells: const [Point(3, 5), Point(3, 6), Point(2, 6), Point(2, 5), Point(1, 5), Point(1, 6)]),
+          ArrowItem(id: 'l16_6', cells: const [Point(1, 8), Point(1, 7), Point(0, 7), Point(0, 6), Point(0, 5)]),
+          ArrowItem(id: 'l16_7', cells: const [Point(0, 4), Point(1, 4), Point(1, 3)]),
+          ArrowItem(id: 'l16_8', cells: const [Point(1, 1), Point(0, 1), Point(0, 2), Point(1, 2)]),
+          ArrowItem(id: 'l16_9', cells: const [Point(3, 3), Point(4, 3), Point(4, 2), Point(5, 2)]),
+          ArrowItem(id: 'l16_10', cells: const [Point(8, 1), Point(9, 1), Point(9, 2), Point(10, 2), Point(10, 3)]),
+          ArrowItem(id: 'l16_11', cells: const [Point(10, 7), Point(10, 6), Point(10, 5), Point(10, 4), Point(9, 4), Point(9, 5)]),
+          ArrowItem(id: 'l16_12', cells: const [Point(8, 9), Point(9, 9), Point(9, 10), Point(10, 10), Point(10, 11), Point(9, 11)]),
+          ArrowItem(id: 'l16_13', cells: const [Point(8, 10), Point(8, 11), Point(7, 11), Point(6, 11)]),
+          ArrowItem(id: 'l16_14', cells: const [Point(4, 11), Point(5, 11), Point(5, 10), Point(4, 10)]),
+          ArrowItem(id: 'l16_15', cells: const [Point(3, 10), Point(3, 9), Point(3, 8), Point(2, 8), Point(2, 9)]),
+          ArrowItem(id: 'l16_16', cells: const [Point(3, 11), Point(2, 11)]),
+          ArrowItem(id: 'l16_17', cells: const [Point(1, 11), Point(1, 10), Point(0, 10), Point(0, 11)]),
+          ArrowItem(id: 'l16_18', cells: const [Point(4, 5), Point(4, 4), Point(3, 4), Point(2, 4), Point(2, 3)]),
+          ArrowItem(id: 'l16_19', cells: const [Point(3, 1), Point(3, 0), Point(2, 0)]),
+          ArrowItem(id: 'l16_20', cells: const [Point(1, 0), Point(0, 0)]),
+          ArrowItem(id: 'l16_21', cells: const [Point(8, 3), Point(7, 3), Point(7, 2)]),
+          ArrowItem(id: 'l16_22', cells: const [Point(7, 1), Point(7, 0), Point(8, 0)]),
+          ArrowItem(id: 'l16_23', cells: const [Point(9, 0), Point(10, 0)]),
+          ArrowItem(id: 'l16_24', cells: const [Point(8, 7), Point(7, 7), Point(7, 8), Point(8, 8)]),
+          ArrowItem(id: 'l16_25', cells: const [Point(9, 7), Point(9, 8), Point(10, 8)]),
         ],
       ),
-      // المستوى 17: محترف • القلعة (11x11 | n=25 | free0=2 | depth=22 | E=238.8)
+      // المستوى 17 • صعب (cols=11, rows=12, n=25, free0=4, depth=14)
       LevelConfig(
         levelNumber: 17,
-        difficultyLabel: 'محترف • القلعة',
+        difficultyLabel: 'صعب',
         gridCols: 11,
-        gridRows: 11,
-        stageTheme: StageVisualTheme.twilight,
+        gridRows: 12,
         arrows: [
-          ArrowItem(id: 'l17_1', cells: const [Point(9, 2), Point(9, 1), Point(8, 1)], badge: ArrowBadgeStyle.heart),
-          ArrowItem(id: 'l17_2', cells: const [Point(3, 1), Point(4, 1), Point(4, 2)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l17_3', cells: const [Point(4, 10), Point(4, 9), Point(5, 9)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l17_4', cells: const [Point(7, 9), Point(6, 9), Point(6, 8)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l17_5', cells: const [Point(6, 6), Point(5, 6), Point(5, 5)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l17_6', cells: const [Point(6, 5), Point(6, 4), Point(5, 4)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l17_7', cells: const [Point(0, 4), Point(0, 5)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l17_8', cells: const [Point(0, 9), Point(1, 9), Point(1, 8)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l17_9', cells: const [Point(1, 6), Point(2, 6), Point(2, 5)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l17_10', cells: const [Point(1, 0), Point(2, 0)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l17_11', cells: const [Point(9, 0), Point(10, 0), Point(10, 1)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l17_12', cells: const [Point(10, 3), Point(9, 3)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l17_13', cells: const [Point(9, 4), Point(8, 4), Point(8, 3), Point(7, 3)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l17_14', cells: const [Point(6, 3), Point(5, 3)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l17_15', cells: const [Point(4, 3), Point(3, 3), Point(3, 4), Point(3, 5)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l17_16', cells: const [Point(2, 7), Point(3, 7)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l17_17', cells: const [Point(3, 6), Point(4, 6), Point(4, 7), Point(5, 7)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l17_18', cells: const [Point(9, 6), Point(8, 6), Point(8, 7)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l17_19', cells: const [Point(6, 7), Point(7, 7), Point(7, 8), Point(8, 8)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l17_20', cells: const [Point(10, 8), Point(10, 7), Point(9, 7), Point(9, 8)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l17_21', cells: const [Point(9, 10), Point(8, 10), Point(8, 9), Point(9, 9)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l17_22', cells: const [Point(10, 9), Point(10, 10)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l17_23', cells: const [Point(3, 2), Point(2, 2)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l17_24', cells: const [Point(0, 3), Point(0, 2)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l17_25', cells: const [Point(1, 1), Point(0, 1)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l17_1', cells: const [Point(5, 0), Point(6, 0), Point(7, 0), Point(8, 0), Point(8, 1), Point(7, 1)]),
+          ArrowItem(id: 'l17_2', cells: const [Point(4, 1), Point(3, 1), Point(3, 0), Point(2, 0), Point(2, 1)]),
+          ArrowItem(id: 'l17_3', cells: const [Point(2, 3), Point(3, 3), Point(3, 4), Point(2, 4), Point(2, 5), Point(3, 5)]),
+          ArrowItem(id: 'l17_4', cells: const [Point(4, 4), Point(5, 4), Point(5, 5), Point(4, 5), Point(4, 6)]),
+          ArrowItem(id: 'l17_5', cells: const [Point(4, 9), Point(3, 9), Point(2, 9), Point(2, 10), Point(3, 10)]),
+          ArrowItem(id: 'l17_6', cells: const [Point(9, 10), Point(10, 10), Point(10, 9), Point(10, 8), Point(9, 8), Point(9, 7)]),
+          ArrowItem(id: 'l17_7', cells: const [Point(7, 2), Point(8, 2), Point(9, 2), Point(9, 3), Point(8, 3), Point(8, 4)]),
+          ArrowItem(id: 'l17_8', cells: const [Point(7, 6), Point(8, 6), Point(8, 5), Point(7, 5), Point(6, 5), Point(6, 6)]),
+          ArrowItem(id: 'l17_9', cells: const [Point(6, 10), Point(7, 10), Point(7, 11), Point(6, 11)]),
+          ArrowItem(id: 'l17_10', cells: const [Point(3, 11), Point(2, 11), Point(1, 11), Point(1, 10), Point(1, 9)]),
+          ArrowItem(id: 'l17_11', cells: const [Point(1, 3), Point(1, 4), Point(1, 5), Point(1, 6), Point(0, 6), Point(0, 5)]),
+          ArrowItem(id: 'l17_12', cells: const [Point(0, 4), Point(0, 3)]),
+          ArrowItem(id: 'l17_13', cells: const [Point(1, 1), Point(1, 2), Point(0, 2), Point(0, 1)]),
+          ArrowItem(id: 'l17_14', cells: const [Point(1, 0), Point(0, 0)]),
+          ArrowItem(id: 'l17_15', cells: const [Point(9, 4), Point(9, 5), Point(9, 6), Point(10, 6), Point(10, 5)]),
+          ArrowItem(id: 'l17_16', cells: const [Point(10, 4), Point(10, 3)]),
+          ArrowItem(id: 'l17_17', cells: const [Point(10, 2), Point(10, 1)]),
+          ArrowItem(id: 'l17_18', cells: const [Point(9, 1), Point(9, 0), Point(10, 0)]),
+          ArrowItem(id: 'l17_19', cells: const [Point(5, 6), Point(5, 7), Point(6, 7), Point(6, 8), Point(5, 8)]),
+          ArrowItem(id: 'l17_20', cells: const [Point(2, 8), Point(3, 8), Point(4, 8), Point(4, 7), Point(3, 7)]),
+          ArrowItem(id: 'l17_21', cells: const [Point(1, 7), Point(0, 7), Point(0, 8)]),
+          ArrowItem(id: 'l17_22', cells: const [Point(0, 9), Point(0, 10)]),
+          ArrowItem(id: 'l17_23', cells: const [Point(7, 9), Point(7, 8), Point(7, 7), Point(8, 7), Point(8, 8)]),
+          ArrowItem(id: 'l17_24', cells: const [Point(9, 9), Point(8, 9), Point(8, 10)]),
+          ArrowItem(id: 'l17_25', cells: const [Point(8, 11), Point(9, 11)]),
         ],
       ),
-      // المستوى 18: نجمة السماء ⭐ (12x12 | n=15 | free0=3 | depth=13 | E=124.4)
+      // المستوى 18 • صعب (cols=12, rows=12, n=13, free0=7, depth=4)
       LevelConfig(
         levelNumber: 18,
-        difficultyLabel: 'نجمة السماء ⭐',
+        difficultyLabel: 'صعب',
         gridCols: 12,
         gridRows: 12,
-        stageTheme: StageVisualTheme.star,
         arrows: [
-          ArrowItem(id: 'l18_1', cells: const [Point(6, 1), Point(6, 0), Point(5, 0)], badge: ArrowBadgeStyle.star),
-          ArrowItem(id: 'l18_2', cells: const [Point(2, 4), Point(3, 4)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l18_3', cells: const [Point(5, 4), Point(6, 4)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l18_4', cells: const [Point(7, 4), Point(7, 5)], badge: ArrowBadgeStyle.star),
-          ArrowItem(id: 'l18_5', cells: const [Point(7, 7), Point(7, 6), Point(6, 6)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l18_6', cells: const [Point(5, 5), Point(5, 6)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l18_7', cells: const [Point(6, 7), Point(5, 7)], badge: ArrowBadgeStyle.star),
-          ArrowItem(id: 'l18_8', cells: const [Point(4, 7), Point(3, 7), Point(3, 8), Point(4, 8)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l18_9', cells: const [Point(5, 8), Point(6, 8)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l18_10', cells: const [Point(8, 9), Point(7, 9), Point(7, 8), Point(8, 8), Point(8, 7)], badge: ArrowBadgeStyle.star),
-          ArrowItem(id: 'l18_11', cells: const [Point(8, 6), Point(8, 5)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l18_12', cells: const [Point(8, 4), Point(9, 4), Point(9, 5)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l18_13', cells: const [Point(9, 10), Point(8, 10)], badge: ArrowBadgeStyle.star),
-          ArrowItem(id: 'l18_14', cells: const [Point(2, 10), Point(3, 10), Point(3, 9), Point(2, 9)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l18_15', cells: const [Point(5, 1), Point(5, 2), Point(6, 2)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l18_1', cells: const [Point(8, 10), Point(8, 9), Point(7, 9), Point(7, 8), Point(8, 8), Point(8, 7)]),
+          ArrowItem(id: 'l18_2', cells: const [Point(7, 6), Point(7, 5), Point(8, 5), Point(8, 4), Point(9, 4), Point(9, 5)]),
+          ArrowItem(id: 'l18_3', cells: const [Point(9, 9), Point(9, 10)]),
+          ArrowItem(id: 'l18_4', cells: const [Point(5, 1), Point(6, 1), Point(6, 2), Point(5, 2), Point(5, 3), Point(6, 3)]),
+          ArrowItem(id: 'l18_5', cells: const [Point(4, 7), Point(3, 7), Point(3, 6), Point(4, 6), Point(4, 5)]),
+          ArrowItem(id: 'l18_6', cells: const [Point(4, 4), Point(5, 4), Point(6, 4), Point(6, 5)]),
+          ArrowItem(id: 'l18_7', cells: const [Point(7, 7), Point(6, 7), Point(6, 8), Point(5, 8)]),
+          ArrowItem(id: 'l18_8', cells: const [Point(3, 9), Point(4, 9), Point(4, 8), Point(3, 8)]),
+          ArrowItem(id: 'l18_9', cells: const [Point(3, 5), Point(3, 4), Point(2, 4), Point(2, 5)]),
+          ArrowItem(id: 'l18_10', cells: const [Point(3, 10), Point(2, 10)]),
+          ArrowItem(id: 'l18_11', cells: const [Point(11, 4), Point(10, 4), Point(10, 5)]),
+          ArrowItem(id: 'l18_12', cells: const [Point(0, 4), Point(1, 4), Point(1, 5)]),
+          ArrowItem(id: 'l18_13', cells: const [Point(6, 0), Point(5, 0)]),
         ],
       ),
-      // المستوى 19: محترف • التحدي الأقصى (12x12 | n=25 | free0=1 | depth=25 | E=257.6)
+      // المستوى 19 • صعب جداً (cols=11, rows=13, n=28, free0=4, depth=18)
       LevelConfig(
         levelNumber: 19,
-        difficultyLabel: 'محترف • التحدي الأقصى',
-        gridCols: 12,
-        gridRows: 12,
-        stageTheme: StageVisualTheme.twilight,
+        difficultyLabel: 'صعب جداً',
+        gridCols: 11,
+        gridRows: 13,
         arrows: [
-          ArrowItem(id: 'l19_1', cells: const [Point(3, 11), Point(4, 11), Point(4, 10), Point(5, 10)], badge: ArrowBadgeStyle.heart),
-          ArrowItem(id: 'l19_2', cells: const [Point(8, 11), Point(8, 10)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l19_3', cells: const [Point(9, 2), Point(9, 3), Point(8, 3)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l19_4', cells: const [Point(1, 4), Point(1, 3), Point(0, 3), Point(0, 4)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l19_5', cells: const [Point(0, 5), Point(0, 6), Point(1, 6)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l19_6', cells: const [Point(11, 6), Point(11, 5)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l19_7', cells: const [Point(11, 1), Point(10, 1), Point(9, 1)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l19_8', cells: const [Point(3, 1), Point(2, 1), Point(2, 0), Point(3, 0)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l19_9', cells: const [Point(6, 0), Point(6, 1)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l19_10', cells: const [Point(6, 10), Point(7, 10), Point(7, 9)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l19_11', cells: const [Point(6, 3), Point(7, 3), Point(7, 2), Point(6, 2)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l19_12', cells: const [Point(3, 2), Point(2, 2), Point(2, 3)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l19_13', cells: const [Point(2, 5), Point(2, 6)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l19_14', cells: const [Point(2, 9), Point(2, 8), Point(3, 8)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l19_15', cells: const [Point(5, 8), Point(6, 8)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l19_16', cells: const [Point(9, 8), Point(9, 7), Point(8, 7)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l19_17', cells: const [Point(6, 7), Point(5, 7)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l19_18', cells: const [Point(4, 9), Point(4, 8), Point(4, 7)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l19_19', cells: const [Point(4, 4), Point(5, 4)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l19_20', cells: const [Point(10, 3), Point(10, 4)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l19_21', cells: const [Point(9, 5), Point(10, 5), Point(10, 6)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l19_22', cells: const [Point(10, 7), Point(10, 8)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l19_23', cells: const [Point(10, 10), Point(10, 9), Point(9, 9), Point(9, 10)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l19_24', cells: const [Point(9, 11), Point(10, 11)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l19_25', cells: const [Point(11, 10), Point(11, 11)], badge: ArrowBadgeStyle.none),
+          ArrowItem(id: 'l19_1', cells: const [Point(1, 12), Point(1, 11), Point(2, 11), Point(2, 10), Point(1, 10), Point(1, 9)]),
+          ArrowItem(id: 'l19_2', cells: const [Point(2, 6), Point(1, 6), Point(1, 5), Point(0, 5), Point(0, 4), Point(1, 4)]),
+          ArrowItem(id: 'l19_3', cells: const [Point(6, 4), Point(6, 5), Point(5, 5), Point(5, 4), Point(4, 4), Point(4, 5)]),
+          ArrowItem(id: 'l19_4', cells: const [Point(4, 7), Point(5, 7), Point(5, 8), Point(4, 8), Point(4, 9), Point(5, 9)]),
+          ArrowItem(id: 'l19_5', cells: const [Point(6, 10), Point(6, 9), Point(7, 9), Point(7, 10), Point(8, 10), Point(8, 9)]),
+          ArrowItem(id: 'l19_6', cells: const [Point(8, 8), Point(8, 7), Point(7, 7), Point(7, 6), Point(8, 6), Point(8, 5)]),
+          ArrowItem(id: 'l19_7', cells: const [Point(7, 5), Point(7, 4), Point(8, 4), Point(9, 4), Point(9, 3), Point(8, 3)]),
+          ArrowItem(id: 'l19_8', cells: const [Point(4, 3), Point(4, 2), Point(3, 2), Point(3, 3)]),
+          ArrowItem(id: 'l19_9', cells: const [Point(2, 4), Point(2, 5), Point(3, 5), Point(3, 6)]),
+          ArrowItem(id: 'l19_10', cells: const [Point(3, 12), Point(4, 12), Point(5, 12)]),
+          ArrowItem(id: 'l19_11', cells: const [Point(8, 12), Point(7, 12), Point(6, 12), Point(6, 11), Point(7, 11)]),
+          ArrowItem(id: 'l19_12', cells: const [Point(10, 11), Point(10, 10), Point(10, 9)]),
+          ArrowItem(id: 'l19_13', cells: const [Point(10, 1), Point(9, 1), Point(8, 1)]),
+          ArrowItem(id: 'l19_14', cells: const [Point(1, 1), Point(0, 1), Point(0, 0), Point(1, 0)]),
+          ArrowItem(id: 'l19_15', cells: const [Point(2, 1), Point(2, 0), Point(3, 0)]),
+          ArrowItem(id: 'l19_16', cells: const [Point(4, 0), Point(5, 0)]),
+          ArrowItem(id: 'l19_17', cells: const [Point(6, 0), Point(7, 0)]),
+          ArrowItem(id: 'l19_18', cells: const [Point(8, 0), Point(9, 0)]),
+          ArrowItem(id: 'l19_19', cells: const [Point(10, 6), Point(9, 6), Point(9, 7)]),
+          ArrowItem(id: 'l19_20', cells: const [Point(10, 7), Point(10, 8), Point(9, 8), Point(9, 9)]),
+          ArrowItem(id: 'l19_21', cells: const [Point(9, 10), Point(9, 11)]),
+          ArrowItem(id: 'l19_22', cells: const [Point(9, 12), Point(10, 12)]),
+          ArrowItem(id: 'l19_23', cells: const [Point(0, 6), Point(0, 7)]),
+          ArrowItem(id: 'l19_24', cells: const [Point(2, 8), Point(2, 7), Point(1, 7), Point(1, 8), Point(0, 8), Point(0, 9)]),
+          ArrowItem(id: 'l19_25', cells: const [Point(0, 10), Point(0, 11)]),
+          ArrowItem(id: 'l19_26', cells: const [Point(7, 3), Point(6, 3), Point(5, 3), Point(5, 2), Point(6, 2)]),
+          ArrowItem(id: 'l19_27', cells: const [Point(4, 1), Point(5, 1), Point(6, 1), Point(7, 1), Point(7, 2), Point(8, 2)]),
+          ArrowItem(id: 'l19_28', cells: const [Point(9, 2), Point(10, 2)]),
         ],
       ),
-      // المستوى 20: التاج الملكي 👑 (12x12 | n=16 | free0=2 | depth=14 | E=152.4)
+      // المستوى 20 • تحدي التاج (cols=12, rows=12, n=12, free0=6, depth=7)
       LevelConfig(
         levelNumber: 20,
-        difficultyLabel: 'التاج الملكي 👑',
+        difficultyLabel: 'تحدي التاج',
         gridCols: 12,
         gridRows: 12,
-        stageTheme: StageVisualTheme.crown,
         arrows: [
-          ArrowItem(id: 'l20_1', cells: const [Point(6, 8), Point(6, 9), Point(5, 9)], badge: ArrowBadgeStyle.star),
-          ArrowItem(id: 'l20_2', cells: const [Point(0, 9), Point(0, 8), Point(0, 7)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l20_3', cells: const [Point(0, 6), Point(0, 5), Point(1, 5)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l20_4', cells: const [Point(5, 5), Point(5, 6), Point(6, 6)], badge: ArrowBadgeStyle.star),
-          ArrowItem(id: 'l20_5', cells: const [Point(6, 7), Point(7, 7), Point(7, 6)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l20_6', cells: const [Point(6, 5), Point(7, 5)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l20_7', cells: const [Point(11, 7), Point(11, 6), Point(11, 5), Point(10, 5), Point(10, 6)], badge: ArrowBadgeStyle.star),
-          ArrowItem(id: 'l20_8', cells: const [Point(10, 8), Point(10, 9), Point(9, 9), Point(9, 8)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l20_9', cells: const [Point(8, 5), Point(8, 6), Point(9, 6), Point(9, 5)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l20_10', cells: const [Point(10, 4), Point(9, 4)], badge: ArrowBadgeStyle.star),
-          ArrowItem(id: 'l20_11', cells: const [Point(6, 4), Point(5, 4)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l20_12', cells: const [Point(1, 4), Point(2, 4), Point(2, 5)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l20_13', cells: const [Point(2, 8), Point(2, 9), Point(3, 9), Point(4, 9), Point(4, 8)], badge: ArrowBadgeStyle.star),
-          ArrowItem(id: 'l20_14', cells: const [Point(3, 6), Point(4, 6), Point(4, 5)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l20_15', cells: const [Point(2, 7), Point(2, 6), Point(1, 6), Point(1, 7)], badge: ArrowBadgeStyle.none),
-          ArrowItem(id: 'l20_16', cells: const [Point(1, 8), Point(1, 9)], badge: ArrowBadgeStyle.star),
+          ArrowItem(id: 'l20_1', cells: const [Point(3, 6), Point(4, 6), Point(4, 7), Point(5, 7), Point(5, 6), Point(6, 6)]),
+          ArrowItem(id: 'l20_2', cells: const [Point(8, 6), Point(7, 6), Point(7, 7), Point(6, 7), Point(6, 8), Point(5, 8)]),
+          ArrowItem(id: 'l20_3', cells: const [Point(3, 7), Point(3, 8), Point(4, 8), Point(4, 9), Point(5, 9), Point(6, 9)]),
+          ArrowItem(id: 'l20_4', cells: const [Point(9, 9), Point(9, 8), Point(9, 7), Point(10, 7), Point(10, 6)]),
+          ArrowItem(id: 'l20_5', cells: const [Point(9, 4), Point(10, 4), Point(10, 5), Point(9, 5)]),
+          ArrowItem(id: 'l20_6', cells: const [Point(1, 7), Point(2, 7), Point(2, 6), Point(1, 6), Point(1, 5)]),
+          ArrowItem(id: 'l20_7', cells: const [Point(3, 5), Point(2, 5), Point(2, 4), Point(1, 4)]),
+          ArrowItem(id: 'l20_8', cells: const [Point(6, 4), Point(6, 5), Point(5, 5), Point(5, 4)]),
+          ArrowItem(id: 'l20_9', cells: const [Point(8, 7), Point(8, 8)]),
+          ArrowItem(id: 'l20_10', cells: const [Point(1, 9), Point(1, 8), Point(2, 8), Point(2, 9)]),
+          ArrowItem(id: 'l20_11', cells: const [Point(7, 8), Point(7, 9)]),
+          ArrowItem(id: 'l20_12', cells: const [Point(10, 8), Point(10, 9)]),
         ],
       ),
     ];
@@ -875,7 +771,6 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
   late final List<LevelConfig> _allLevels;
   int _currentLevelIndex = 0;
 
-  // هل اللاعب في الصفحة الرئيسية أم داخل اللعب؟
   bool _isInHomeScreen = true;
 
   late List<ArrowItem> _activeArrows;
@@ -884,7 +779,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
   bool _rulerEnabled = false;
   String? _hintedArrowId;
 
-  // تحريك السهم عند الخروج أو الاصطدام (يعمل فقط لحظة لمس السهم لتوفير البطارية 100%)
+  // تحريك السهم عند الخروج أو الاصطدام (سرعة هادئة وانسيابية تمكن اللاعب من متابعة حركة السهم)
   String? _animatingArrowId;
   bool _isBlockedAnimation = false;
   double _blockedMaxSteps = 0.25;
@@ -900,12 +795,12 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     _allLevels = LevelsRepository.getAllLevels();
+    GameAudioService.instance.init();
     _moveController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 520),
+      duration: const Duration(milliseconds: 700), // سرعة هادئة وواضحة
     );
 
-    // لا يعمل _sunburstController إلا عند فتح شاشة الفوز فقط لتوفير البطارية!
     _sunburstController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 16),
@@ -918,6 +813,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
   void dispose() {
     _moveController.dispose();
     _sunburstController.dispose();
+    GameAudioService.instance.dispose();
     super.dispose();
   }
 
@@ -958,7 +854,6 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
     return cleared / _activeArrows.length;
   }
 
-  /// حساب عدد الخلايا الفارغة أمام رأس السهم قبل الاصطدام (أو -1 إذا كان مفتوحاً للنهاية)
   int _freeCellsAhead(ArrowItem arrow) {
     final occupied = <Point<int>, String>{};
     for (final other in _activeArrows) {
@@ -989,7 +884,6 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
 
   bool _isArrowFree(ArrowItem arrow) => _freeCellsAhead(arrow) == -1;
 
-  /// تشغيل خروج سهم طريقه مفتوح (يتحول لونه إلى الأزرق وينطلق خارجاً، ثم يفحص الأسهم الحمراء المنتظرة!)
   void _launchFreeArrow(ArrowItem arrow) {
     if (_moveController.isAnimating) return;
 
@@ -1002,9 +896,12 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
       }
     });
 
+    if (_soundEnabled) GameAudioService.instance.playSlide();
     if (_vibrationEnabled) HapticFeedback.lightImpact();
+
+    // سرعة هادئة وانسيابية متناسبة مع طول ومسار السهم (بين 650 إلى 1050 مللي ثانية)
     final totalCells = arrow.cells.length + _currentConfig.gridCols + 3;
-    final durationMs = (totalCells * 28).clamp(320, 620);
+    final durationMs = (totalCells * 42).clamp(650, 1050);
     _moveController.duration = Duration(milliseconds: durationMs);
     _moveController.forward(from: 0).then((_) {
       if (!mounted || _animatingArrowId != arrow.id) return;
@@ -1013,12 +910,10 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
         _animatingArrowId = null;
       });
 
-      // فحص هل هناك سهم أحمر في وضع الانتظار (Queued) انفتح طريقه الآن ليخرج لوحده!
       _checkAndTriggerQueuedRedArrows();
     });
   }
 
-  /// فحص الأسهم الحمراء المنتظرة: إذا انفتح طريق أي منها يخرج تلقائياً باللون الأزرق!
   void _checkAndTriggerQueuedRedArrows() {
     for (final candidate in _activeArrows) {
       if (!candidate.isCleared &&
@@ -1029,8 +924,8 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
       }
     }
 
-    // إذا لم يتبقَ أي سهم في الشبكة، اكتمل المستوى!
     if (_activeArrows.every((a) => a.isCleared)) {
+      if (_soundEnabled) GameAudioService.instance.playVictory();
       _sunburstController.repeat();
       setState(() {
         _isLevelCompleted = true;
@@ -1063,8 +958,9 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
         }
       });
 
+      if (_soundEnabled) GameAudioService.instance.playBump();
       if (_vibrationEnabled) HapticFeedback.heavyImpact();
-      _moveController.duration = const Duration(milliseconds: 320);
+      _moveController.duration = const Duration(milliseconds: 360);
       _moveController.forward(from: 0).then((_) {
         if (!mounted || _animatingArrowId != arrow.id) return;
         setState(() {
@@ -1108,6 +1004,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
 
     for (final arrow in _activeArrows) {
       if (!arrow.isCleared && _isArrowFree(arrow)) {
+        if (_soundEnabled) GameAudioService.instance.playHint();
         if (_vibrationEnabled) HapticFeedback.selectionClick();
         setState(() {
           _hintedArrowId = arrow.id;
@@ -1142,7 +1039,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
             ],
           ),
           content: const Text(
-            'اصطدمت الأسهم ببعضها 3 مرات.\nابحث عن السهم الوحيد المفتوح في البداية لفك عقدة المتاهة!',
+            'اصطدمت الأسهم ببعضها 3 مرات.\nابحث عن السهم المفتوح في البداية لفك عقدة المتاهة!',
             textAlign: TextAlign.center,
             style:
                 TextStyle(fontSize: 16, color: Color(0xFF4B5563), height: 1.4),
@@ -1154,7 +1051,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
               height: 52,
               child: FilledButton.icon(
                 style: FilledButton.styleFrom(
-                  backgroundColor: const Color(0xFF1976D2),
+                  backgroundColor: const Color(0xFF1E88E5),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
@@ -1217,10 +1114,6 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                   ),
                   itemBuilder: (context, idx) {
                     final isCurrent = idx == _currentLevelIndex;
-                    final palette =
-                        StagePalette.of(_allLevels[idx].stageTheme);
-                    final shapeEmoji = palette.badgeEmoji;
-
                     return InkWell(
                       onTap: () {
                         Navigator.pop(ctx);
@@ -1230,16 +1123,16 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                       child: Container(
                         decoration: BoxDecoration(
                           gradient: isCurrent
-                              ? LinearGradient(
+                              ? const LinearGradient(
                                   colors: [
-                                    palette.progressColor,
-                                    const Color(0xFF1565C0)
+                                    Color(0xFF2196F3),
+                                    Color(0xFF1565C0)
                                   ],
                                   begin: Alignment.topLeft,
                                   end: Alignment.bottomRight,
                                 )
                               : null,
-                          color: isCurrent ? null : palette.bgBottom,
+                          color: isCurrent ? null : const Color(0xFFF0F5FF),
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(
                             color: isCurrent
@@ -1249,26 +1142,15 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                           ),
                         ),
                         alignment: Alignment.center,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              '${idx + 1}',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w800,
-                                height: 1.1,
-                                color: isCurrent
-                                    ? Colors.white
-                                    : const Color(0xFF1E3A8A),
-                              ),
-                            ),
-                            if (shapeEmoji != null)
-                              Text(
-                                shapeEmoji,
-                                style: const TextStyle(fontSize: 11),
-                              ),
-                          ],
+                        child: Text(
+                          '${idx + 1}',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w800,
+                            color: isCurrent
+                                ? Colors.white
+                                : const Color(0xFF1E3A8A),
+                          ),
                         ),
                       ),
                     );
@@ -1314,7 +1196,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
           title: const Row(
             children: [
-              Icon(Icons.auto_awesome_rounded, color: Color(0xFF1976D2)),
+              Icon(Icons.auto_awesome_rounded, color: Color(0xFF1E88E5)),
               SizedBox(width: 10),
               Text(
                 'حول لعبة مسار الأسهم',
@@ -1323,10 +1205,9 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
             ],
           ),
           content: const Text(
-            'لعبة ألغاز منطقية تعتمد على التركيز وترتيب خطوات تفكيك الأسهم المتشابكة ذات المسار العميق دون اصطدام.\n\n'
-            '• تضم 20 مستوى متدرج الصعوبة بشبكات كثيفة (حتى 12×12 و26 سهماً متداخلاً).\n'
-            '• كل مستوى يبدأ بسهم أو سهمين مفتوحين فقط لفتح سلسلة المتاهة بالكامل.\n'
-            '• مزودة بمجموعات بصرية متنوعة وتشكيلات القلب ❤️ والنجمة ⭐ والماسة 💎 والتاج 👑.',
+            'لعبة ألغاز منطقية كلاسيكية تعتمد على الدقة وترتيب فك الأسهم المتشابكة دون اصطدام.\n\n'
+            '• تم تصميم جميع المستويات الـ 20 بنفس أسلوب وتصميم وترتيب اللعبة الأصلية بدقة تامة.\n'
+            '• حركة هادئة وسلسة للأسهم مع توفير كامل للبطارية وتوافق تام مع أجهزة أندرويد.',
             style:
                 TextStyle(fontSize: 16, height: 1.5, color: Color(0xFF374151)),
           ),
@@ -1346,7 +1227,6 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    // إصلاح زر الرجوع في أندرويد: إذا كان اللاعب داخل المستوى أو شاشة الفوز، يعود للرئيسية بدلاً من قفل اللعبة!
     return PopScope(
       canPop: _isInHomeScreen,
       onPopInvokedWithResult: (didPop, _) {
@@ -1367,469 +1247,397 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
       return _buildVictoryScreen();
     }
 
-    final palette = StagePalette.of(_currentConfig.stageTheme);
-
+    // تصميم اللعب الأصلي النظيف 100%: خلفية بيضاء نقية بدون تدرجات أو بطاقات إضافية
     return Directionality(
       textDirection: TextDirection.ltr,
       child: Scaffold(
-        body: AnimatedContainer(
-          duration: const Duration(milliseconds: 450),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [palette.bgTop, palette.bgBottom],
-            ),
-          ),
-          child: SafeArea(
-            child: Column(
-              children: [
-                // 1. الهيدر العلوي: الإعدادات والرئيسية يسار | المستوى والصعوبة وسط | اختيار المستوى يمين
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(12, 10, 12, 4),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Row(
+        backgroundColor: Colors.white,
+        body: SafeArea(
+          child: Column(
+            children: [
+              // 1. الهيدر العلوي الأصلي: ترس الإعدادات يسار | رقم المستوى والصعوبة وسط | سهم المستويات الأزرق يمين
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      onPressed: _openSettingsModal,
+                      icon: const Icon(
+                        Icons.settings_outlined,
+                        color: Color(0xFF1E88E5),
+                        size: 33,
+                      ),
+                      tooltip: 'الإعدادات',
+                    ),
+                    Directionality(
+                      textDirection: TextDirection.rtl,
+                      child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          IconButton(
-                            onPressed: _openSettingsModal,
-                            icon: Icon(
-                              Icons.settings_outlined,
-                              color: palette.progressColor,
-                              size: 30,
+                          Text(
+                            'المستوى ${_currentConfig.levelNumber}',
+                            style: const TextStyle(
+                              fontSize: 26,
+                              fontWeight: FontWeight.w800,
+                              color: Color(0xFF111827),
+                              height: 1.15,
                             ),
-                            tooltip: 'الإعدادات',
                           ),
-                          IconButton(
-                            onPressed: _goToHomeScreen,
-                            icon: Icon(
-                              Icons.home_outlined,
-                              color: palette.progressColor,
-                              size: 30,
+                          const SizedBox(height: 2),
+                          Text(
+                            _currentConfig.difficultyLabel,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              color: Color(0xFF757F8C),
+                              fontWeight: FontWeight.w500,
                             ),
-                            tooltip: 'الرئيسية',
                           ),
                         ],
                       ),
-                      Directionality(
-                        textDirection: TextDirection.rtl,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              'المستوى ${_currentConfig.levelNumber}',
-                              style: const TextStyle(
-                                fontSize: 25,
-                                fontWeight: FontWeight.w800,
-                                color: Color(0xFF111827),
-                                height: 1.15,
-                              ),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              _currentConfig.difficultyLabel,
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: palette.progressColor.withOpacity(0.85),
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ],
+                    ),
+                    IconButton(
+                      onPressed: _openLevelsSelector,
+                      icon: const Icon(
+                        Icons.chevron_right_rounded,
+                        color: Color(0xFF1E88E5),
+                        size: 38,
+                      ),
+                      tooltip: 'المستويات',
+                    ),
+                  ],
+                ),
+              ),
+
+              // 2. صف القلوب الثلاثة الأصلي (قلوب حمراء ثلاثية الأبعاد)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(3, (index) {
+                    final active = index < _hearts;
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 6),
+                      child: AnimatedScale(
+                        scale: active ? 1.0 : 0.82,
+                        duration: const Duration(milliseconds: 240),
+                        child: CustomPaint(
+                          size: const Size(36, 34),
+                          painter: GlossyHeartPainter(isActive: active),
                         ),
                       ),
-                      IconButton(
-                        onPressed: _openLevelsSelector,
-                        icon: Icon(
-                          Icons.grid_view_rounded,
-                          color: palette.progressColor,
-                          size: 29,
-                        ),
-                        tooltip: 'المستويات',
-                      ),
-                    ],
+                    );
+                  }),
+                ),
+              ),
+
+              const SizedBox(height: 6),
+
+              // 3. شريط التقدم النحيف الأصلي
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(6),
+                  child: LinearProgressIndicator(
+                    value: _progressFraction,
+                    minHeight: 5,
+                    backgroundColor: const Color(0xFFE9EDF2),
+                    valueColor: const AlwaysStoppedAnimation<Color>(
+                      Color(0xFF2196F3),
+                    ),
                   ),
                 ),
+              ),
 
-                // 2. صف القلوب الثلاثة (ثابت بدون إعادة رسم 60fps لتوفير البطارية 100%)
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: List.generate(3, (index) {
-                      final active = index < _hearts;
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 6),
-                        child: AnimatedScale(
-                          scale: active ? 1.0 : 0.82,
-                          duration: const Duration(milliseconds: 240),
-                          child: CustomPaint(
-                            size: const Size(36, 34),
-                            painter: GlossyHeartPainter(
-                              isActive: active,
-                              glowPulse: 0.6,
+              // 4. مساحة شبكة اللعب (خلفية بيضاء نقية مباشرة كما في الصور الأصلية تماماً)
+              Expanded(
+                child: Center(
+                  child: AspectRatio(
+                    aspectRatio: 1,
+                    child: Padding(
+                      padding: const EdgeInsets.all(24.0),
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          final boardSize = constraints.biggest.shortestSide;
+                          return RepaintBoundary(
+                            child: GestureDetector(
+                              behavior: HitTestBehavior.opaque,
+                              onTapUp: (details) => _handleBoardTap(
+                                details.localPosition,
+                                boardSize,
+                              ),
+                              child: AnimatedBuilder(
+                                animation: _moveController,
+                                builder: (context, _) {
+                                  return CustomPaint(
+                                    size: Size(boardSize, boardSize),
+                                    painter: ArrowBoardPainter(
+                                      gridCols: _currentConfig.gridCols,
+                                      gridRows: _currentConfig.gridRows,
+                                      arrows: _activeArrows,
+                                      rulerEnabled: _rulerEnabled,
+                                      hintedArrowId: _hintedArrowId,
+                                      animatingArrowId: _animatingArrowId,
+                                      isBlockedAnimation: _isBlockedAnimation,
+                                      blockedMaxSteps: _blockedMaxSteps,
+                                      animationValue: Curves.easeInOutCubic
+                                          .transform(_moveController.value),
+                                    ),
+                                  );
+                                },
+                              ),
                             ),
-                          ),
-                        ),
-                      );
-                    }),
-                  ),
-                ),
-
-                const SizedBox(height: 6),
-
-                // 3. شريط التقدم المتناغم مع الطابع البصري للمرحلة
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 18),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(6),
-                    child: LinearProgressIndicator(
-                      value: _progressFraction,
-                      minHeight: 5,
-                      backgroundColor: Colors.black.withOpacity(0.06),
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        palette.progressColor,
+                          );
+                        },
                       ),
                     ),
                   ),
                 ),
+              ),
 
-                // 4. مساحة شبكة اللعب الكثيفة (Zero Idle Repaints: لا تعيد الرسم إلا لحظة تحرك السهم فقط!)
-                Expanded(
-                  child: Center(
-                    child: AspectRatio(
-                      aspectRatio: 1,
-                      child: Padding(
-                        padding: const EdgeInsets.all(18.0),
+              // 5. أزرار الأدوات المساعدة السفلية المطابقة للصورة الأصلية تماماً
+              Padding(
+                padding: const EdgeInsets.only(bottom: 24, top: 6),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // زر المسطرة
+                    _buildNeumorphicPowerButton(
+                      isActive: _rulerEnabled,
+                      badgeText: null,
+                      onTap: () {
+                        if (_vibrationEnabled) {
+                          HapticFeedback.selectionClick();
+                        }
+                        if (_soundEnabled) GameAudioService.instance.playHint();
+                        setState(() => _rulerEnabled = !_rulerEnabled);
+                      },
+                      customChild: Transform.rotate(
+                        angle: -0.55,
                         child: Container(
+                          width: 44,
+                          height: 20,
                           decoration: BoxDecoration(
-                            color: palette.boardCardColor,
-                            borderRadius: BorderRadius.circular(26),
+                            gradient: const LinearGradient(
+                              colors: [Color(0xFF7986CB), Color(0xFF5C6BC0)],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            borderRadius: BorderRadius.circular(5),
+                            border: Border.all(color: Colors.white, width: 1.5),
                             boxShadow: [
                               BoxShadow(
-                                color: palette.boardGlowColor,
-                                blurRadius: 28,
-                                spreadRadius: 2,
-                                offset: const Offset(0, 10),
+                                color: const Color(0xFF5C6BC0).withOpacity(0.35),
+                                blurRadius: 6,
+                                offset: const Offset(0, 3),
                               ),
                             ],
                           ),
-                          padding: const EdgeInsets.all(14.0),
-                          child: LayoutBuilder(
-                            builder: (context, constraints) {
-                              final boardSize =
-                                  constraints.biggest.shortestSide;
-                              return RepaintBoundary(
-                                child: GestureDetector(
-                                  behavior: HitTestBehavior.opaque,
-                                  onTapUp: (details) => _handleBoardTap(
-                                    details.localPosition,
-                                    boardSize,
-                                  ),
-                                  child: AnimatedBuilder(
-                                    animation: _moveController,
-                                    builder: (context, _) {
-                                      return CustomPaint(
-                                        size: Size(boardSize, boardSize),
-                                        painter: ArrowBoardPainter(
-                                          gridCols: _currentConfig.gridCols,
-                                          gridRows: _currentConfig.gridRows,
-                                          arrows: _activeArrows,
-                                          rulerEnabled: _rulerEnabled,
-                                          hintedArrowId: _hintedArrowId,
-                                          animatingArrowId: _animatingArrowId,
-                                          isBlockedAnimation:
-                                              _isBlockedAnimation,
-                                          blockedMaxSteps: _blockedMaxSteps,
-                                          animationValue: Curves.easeOutCubic
-                                              .transform(_moveController.value),
-                                          palette: palette,
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
+                          child: CustomPaint(painter: RulerMarksPainter()),
                         ),
                       ),
+                    ),
+                    const SizedBox(width: 38),
+                    // زر اللمبة
+                    _buildNeumorphicPowerButton(
+                      isActive: _hintedArrowId != null,
+                      badgeText: '$_hintsCount',
+                      onTap: _useHint,
+                      customChild: CustomPaint(
+                        size: const Size(54, 54),
+                        painter: NeonLampBulbPainter(
+                          isBoosted: _hintedArrowId != null,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              // 6. مساحة الإعلان السفلية الأصلية
+              if (!_adsRemoved)
+                Container(
+                  width: double.infinity,
+                  height: 52,
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFE5EAEF),
+                    border: Border(
+                      top: BorderSide(color: Color(0xFFD5DCE4), width: 1),
+                    ),
+                  ),
+                  alignment: Alignment.center,
+                  child: const Text(
+                    'مساحة إعلانية (Google AdMob Banner)',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Color(0xFF8C96A5),
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                 ),
-
-                // 5. أزرار الأدوات المساعدة السفلية (توهج ثابت أنيق بدون استنزاف البطارية)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 22, top: 6),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      // زر المسطرة
-                      _buildNeumorphicPowerButton(
-                        isActive: _rulerEnabled,
-                        badgeText: null,
-                        ambientGlowColor: const Color(0xFF5C6BC0),
-                        glowIntensity: _rulerEnabled ? 0.85 : 0.20,
-                        onTap: () {
-                          if (_vibrationEnabled) {
-                            HapticFeedback.selectionClick();
-                          }
-                          setState(() => _rulerEnabled = !_rulerEnabled);
-                        },
-                        customChild: Transform.rotate(
-                          angle: -0.55,
-                          child: Container(
-                            width: 44,
-                            height: 20,
-                            decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                colors: [
-                                  Color(0xFF7986CB),
-                                  Color(0xFF5C6BC0)
-                                ],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              ),
-                              borderRadius: BorderRadius.circular(5),
-                              border:
-                                  Border.all(color: Colors.white, width: 1.5),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: const Color(0xFF5C6BC0)
-                                      .withOpacity(0.35),
-                                  blurRadius: 6,
-                                  offset: const Offset(0, 3),
-                                ),
-                              ],
-                            ),
-                            child: CustomPaint(painter: RulerMarksPainter()),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 38),
-                      // زر اللمبة المضيئة
-                      _buildNeumorphicPowerButton(
-                        isActive: _hintedArrowId != null,
-                        badgeText: '$_hintsCount',
-                        ambientGlowColor: const Color(0xFFFFAB3D),
-                        glowIntensity: _hintedArrowId != null ? 1.0 : 0.65,
-                        onTap: _useHint,
-                        customChild: CustomPaint(
-                          size: const Size(54, 54),
-                          painter: NeonLampBulbPainter(
-                            glowPulse: 0.7,
-                            isBoosted: _hintedArrowId != null,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                // 6. الشريط السفلي الرمادي الفاتح
-                if (!_adsRemoved)
-                  Container(
-                    width: double.infinity,
-                    height: 52,
-                    decoration: const BoxDecoration(
-                      color: Color(0xFFE5EAEF),
-                      border: Border(
-                        top: BorderSide(color: Color(0xFFD5DCE4), width: 1),
-                      ),
-                    ),
-                    alignment: Alignment.center,
-                    child: const Text(
-                      'مساحة إعلانية (Google AdMob Banner)',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Color(0xFF8C96A5),
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-              ],
-            ),
+            ],
           ),
         ),
       ),
     );
   }
 
-  /// 🏠 الصفحة الرئيسية البسيطة والاحترافية (بدون أنيميشن لا نهائي يستهلك البطارية)
+  /// 🏠 الصفحة الرئيسية البسيطة والاحترافية
   Widget _buildHomeScreen() {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        body: Container(
-          width: double.infinity,
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                Color(0xFFF4F8FF),
-                Color(0xFFFFFFFF),
-                Color(0xFFEFF6FF),
-              ],
-            ),
-          ),
-          child: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 24),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  // 1. في الأعلى: الشعار البصري + اسم اللعبة
-                  Column(
-                    children: [
-                      const SizedBox(height: 24),
-                      Container(
-                        width: 126,
-                        height: 126,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(34),
-                          border: Border.all(
-                            color: const Color(0xFFDBEAFE),
-                            width: 2.5,
+        backgroundColor: Colors.white,
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 24),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  children: [
+                    const SizedBox(height: 24),
+                    Container(
+                      width: 126,
+                      height: 126,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(34),
+                        border: Border.all(
+                          color: const Color(0xFFDBEAFE),
+                          width: 2.5,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFF1976D2).withOpacity(0.16),
+                            blurRadius: 28,
+                            offset: const Offset(0, 12),
                           ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color(0xFF1976D2).withOpacity(0.16),
-                              blurRadius: 28,
-                              offset: const Offset(0, 12),
-                            ),
-                          ],
-                        ),
-                        padding: const EdgeInsets.all(22),
-                        child: CustomPaint(
-                          painter: HomeLogoPainter(pulse: 0.5),
-                        ),
+                        ],
                       ),
-                      const SizedBox(height: 24),
-                      const Text(
-                        'مسار الأسهم',
-                        style: TextStyle(
-                          fontSize: 38,
-                          fontWeight: FontWeight.w900,
-                          color: Color(0xFF0F172A),
-                          letterSpacing: 0.4,
-                        ),
+                      padding: const EdgeInsets.all(22),
+                      child: CustomPaint(
+                        painter: HomeLogoPainter(),
                       ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'فكّك الأسهم المتشابكة بذكاء • المستوى ${_currentConfig.levelNumber} من ${_allLevels.length}',
-                        style: const TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFF64748B),
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  // 2. في المنتصف: زر كبير وواضح "▶️ ابدأ اللعب"
-                  Column(
-                    children: [
-                      Container(
-                        width: double.infinity,
-                        height: 74,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(38),
-                          gradient: const LinearGradient(
-                            colors: [
-                              Color(0xFF2196F3),
-                              Color(0xFF1565C0),
-                            ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color(0xFF1976D2).withOpacity(0.38),
-                              blurRadius: 24,
-                              offset: const Offset(0, 10),
-                            ),
-                          ],
-                        ),
-                        child: Material(
-                          color: Colors.transparent,
-                          child: InkWell(
-                            borderRadius: BorderRadius.circular(38),
-                            onTap: () {
-                              if (_vibrationEnabled) {
-                                HapticFeedback.mediumImpact();
-                              }
-                              setState(() {
-                                _isInHomeScreen = false;
-                              });
-                            },
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.play_arrow_rounded,
-                                  color: Colors.white,
-                                  size: 38,
-                                ),
-                                SizedBox(width: 10),
-                                Text(
-                                  'ابدأ اللعب',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 25,
-                                    fontWeight: FontWeight.w900,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      TextButton.icon(
-                        onPressed: _openLevelsSelector,
-                        icon: const Icon(
-                          Icons.grid_view_rounded,
-                          size: 20,
-                          color: Color(0xFF1976D2),
-                        ),
-                        label: Text(
-                          'اختيار المستوى (1 - ${_allLevels.length})',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            color: Color(0xFF1976D2),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  // 3. أسفل الصفحة: أزرار صغيرة ومنظمة (⚙️ الإعدادات | ℹ️ حول اللعبة)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        _buildHomeFooterButton(
-                          icon: Icons.settings_rounded,
-                          label: 'الإعدادات',
-                          onTap: _openSettingsModal,
-                        ),
-                        const SizedBox(width: 16),
-                        _buildHomeFooterButton(
-                          icon: Icons.info_outline_rounded,
-                          label: 'حول اللعبة',
-                          onTap: _showAboutDialog,
-                        ),
-                      ],
                     ),
+                    const SizedBox(height: 24),
+                    const Text(
+                      'مسار الأسهم',
+                      style: TextStyle(
+                        fontSize: 38,
+                        fontWeight: FontWeight.w900,
+                        color: Color(0xFF0F172A),
+                        letterSpacing: 0.4,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'فكّك الأسهم المتشابكة بذكاء • المستوى ${_currentConfig.levelNumber} من ${_allLevels.length}',
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF64748B),
+                      ),
+                    ),
+                  ],
+                ),
+                Column(
+                  children: [
+                    Container(
+                      width: double.infinity,
+                      height: 74,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(38),
+                        gradient: const LinearGradient(
+                          colors: [
+                            Color(0xFF2196F3),
+                            Color(0xFF1565C0),
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFF1976D2).withOpacity(0.38),
+                            blurRadius: 24,
+                            offset: const Offset(0, 10),
+                          ),
+                        ],
+                      ),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(38),
+                          onTap: () {
+                            if (_vibrationEnabled) {
+                              HapticFeedback.mediumImpact();
+                            }
+                            setState(() {
+                              _isInHomeScreen = false;
+                            });
+                          },
+                          child: const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.play_arrow_rounded,
+                                color: Colors.white,
+                                size: 38,
+                              ),
+                              SizedBox(width: 10),
+                              Text(
+                                'ابدأ اللعب',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 25,
+                                  fontWeight: FontWeight.w900,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    TextButton.icon(
+                      onPressed: _openLevelsSelector,
+                      icon: const Icon(
+                        Icons.grid_view_rounded,
+                        size: 20,
+                        color: Color(0xFF1E88E5),
+                      ),
+                      label: Text(
+                        'اختيار المستوى (1 - ${_allLevels.length})',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFF1E88E5),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      _buildHomeFooterButton(
+                        icon: Icons.settings_rounded,
+                        label: 'الإعدادات',
+                        onTap: _openSettingsModal,
+                      ),
+                      const SizedBox(width: 16),
+                      _buildHomeFooterButton(
+                        icon: Icons.info_outline_rounded,
+                        label: 'حول اللعبة',
+                        onTap: _showAboutDialog,
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
@@ -1881,7 +1689,6 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
     );
   }
 
-  /// التفاعل الدقيق باللمس
   void _handleBoardTap(Offset localPos, double boardSize) {
     if (_animatingArrowId != null || _moveController.isAnimating) return;
 
@@ -1925,8 +1732,6 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
   Widget _buildNeumorphicPowerButton({
     required bool isActive,
     required String? badgeText,
-    required Color ambientGlowColor,
-    required double glowIntensity,
     required VoidCallback onTap,
     required Widget customChild,
   }) {
@@ -1936,39 +1741,20 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
         clipBehavior: Clip.none,
         children: [
           Container(
-            width: 84,
-            height: 84,
+            width: 82,
+            height: 82,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: isActive
-                    ? [const Color(0xFFFFF8E7), const Color(0xFFFFECB3)]
-                    : [const Color(0xFFFFFFFF), const Color(0xFFF4F7FB)],
-              ),
+              color: Colors.white,
               border: Border.all(
-                color: isActive
-                    ? ambientGlowColor.withOpacity(0.8)
-                    : const Color(0xFFEBF0F5),
-                width: 2.5,
+                color: isActive ? const Color(0xFF1E88E5) : const Color(0xFFEBF0F5),
+                width: 2.2,
               ),
               boxShadow: [
-                BoxShadow(
-                  color: ambientGlowColor.withOpacity(0.24 * glowIntensity),
-                  blurRadius: 22 + (8 * glowIntensity),
-                  spreadRadius: 2 * glowIntensity,
-                  offset: const Offset(0, 4),
-                ),
                 BoxShadow(
                   color: const Color(0xFF90A4AE).withOpacity(0.20),
                   blurRadius: 16,
                   offset: const Offset(0, 7),
-                ),
-                const BoxShadow(
-                  color: Colors.white,
-                  blurRadius: 6,
-                  offset: Offset(-3, -3),
                 ),
               ],
             ),
@@ -1986,13 +1772,6 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                   color: const Color(0xFF2196F3),
                   shape: BoxShape.circle,
                   border: Border.all(color: Colors.white, width: 2.2),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFF2196F3).withOpacity(0.35),
-                      blurRadius: 6,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
                 ),
                 alignment: Alignment.center,
                 child: Text(
@@ -2010,12 +1789,10 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
     );
   }
 
-  /// شاشة "اكتمل المستوى!" مع معالجة خاصة عند إنهاء المستوى الأخير (المستوى 20)
   Widget _buildVictoryScreen() {
     final isLastLevel = _currentLevelIndex >= _allLevels.length - 1;
     final nextLevelIndex = isLastLevel ? 0 : _currentLevelIndex + 1;
     final nextLevelNumber = _allLevels[nextLevelIndex].levelNumber;
-    final palette = StagePalette.of(_currentConfig.stageTheme);
 
     return Directionality(
       textDirection: TextDirection.rtl,
@@ -2052,44 +1829,20 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                               color: earned
                                   ? const Color(0xFFFFD54F)
                                   : Colors.white.withOpacity(0.35),
-                              shadows: earned
-                                  ? const [
-                                      Shadow(
-                                        color: Color(0x66FF8F00),
-                                        blurRadius: 12,
-                                        offset: Offset(0, 4),
-                                      )
-                                    ]
-                                  : null,
                             ),
                           );
                         }),
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        isLastLevel
-                            ? 'أتممت جميع المستويات! 🏆'
-                            : 'اكتمل المستوى!',
+                        isLastLevel ? 'أتممت جميع المستويات! 🏆' : 'اكتمل المستوى!',
                         textAlign: TextAlign.center,
                         style: const TextStyle(
-                          fontSize: 34,
+                          fontSize: 36,
                           fontWeight: FontWeight.w900,
                           color: Colors.white,
-                          letterSpacing: 0.3,
                         ),
                       ),
-                      if (isLastLevel)
-                        const Padding(
-                          padding: EdgeInsets.only(top: 6),
-                          child: Text(
-                            'أحسنت! نجحت في حل جميع المتاهات الـ 20 بنجاح',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.white,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
                     ],
                   ),
                   Container(
@@ -2118,7 +1871,6 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                         isBlockedAnimation: false,
                         blockedMaxSteps: 0,
                         animationValue: 0,
-                        palette: palette,
                         ignoreClearedState: true,
                       ),
                     ),
@@ -2138,7 +1890,6 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                               backgroundColor: Colors.white,
                               foregroundColor: const Color(0xFF1976D2),
                               elevation: 4,
-                              shadowColor: Colors.black26,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(36),
                               ),
@@ -2214,9 +1965,6 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
 
 /// رسام شعار الصفحة الرئيسية
 class HomeLogoPainter extends CustomPainter {
-  final double pulse;
-  HomeLogoPainter({required this.pulse});
-
   @override
   void paint(Canvas canvas, Size size) {
     final w = size.width;
@@ -2272,7 +2020,7 @@ class HomeLogoPainter extends CustomPainter {
     canvas.drawPath(head2, headPaint2);
 
     final starCenter = Offset(w * 0.52, h * 0.50);
-    final starRadius = w * (0.12 + pulse * 0.02);
+    final starRadius = w * 0.12;
     final starPaint = Paint()
       ..color = const Color(0xFFFFB300)
       ..style = PaintingStyle.fill;
@@ -2295,19 +2043,14 @@ class HomeLogoPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant HomeLogoPainter oldDelegate) =>
-      oldDelegate.pulse != pulse;
+  bool shouldRepaint(covariant HomeLogoPainter oldDelegate) => false;
 }
 
-/// رسام اللمبة المضيئة المستوحاة من ملف (10-Neon Lamp Login Form)
+/// رسام اللمبة
 class NeonLampBulbPainter extends CustomPainter {
-  final double glowPulse;
   final bool isBoosted;
 
-  NeonLampBulbPainter({
-    required this.glowPulse,
-    required this.isBoosted,
-  });
+  NeonLampBulbPainter({required this.isBoosted});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -2315,20 +2058,6 @@ class NeonLampBulbPainter extends CustomPainter {
     canvas.save();
     canvas.translate(center.dx, center.dy);
     canvas.rotate(-0.35);
-
-    final glowRadius = 22.0 + (glowPulse * 5.0) + (isBoosted ? 6.0 : 0.0);
-    final ambientPaint = Paint()
-      ..shader = RadialGradient(
-        colors: [
-          const Color(0xFFFFE194).withOpacity(isBoosted ? 0.70 : 0.45),
-          const Color(0xFFFFAB3D).withOpacity(isBoosted ? 0.35 : 0.20),
-          const Color(0xFFFFAB3D).withOpacity(0.0),
-        ],
-        stops: const [0.0, 0.55, 1.0],
-      ).createShader(
-        Rect.fromCircle(center: const Offset(0, -4), radius: glowRadius),
-      );
-    canvas.drawCircle(const Offset(0, -4), glowRadius, ambientPaint);
 
     final baseRect = RRect.fromRectAndRadius(
       const Rect.fromLTWH(-6.5, 9.0, 13.0, 8.5),
@@ -2387,22 +2116,6 @@ class NeonLampBulbPainter extends CustomPainter {
 
     canvas.drawPath(bulbPath, bulbPaint);
 
-    final filamentPaint = Paint()
-      ..color = Colors.white.withOpacity(0.75 + glowPulse * 0.25)
-      ..strokeWidth = 1.6
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round;
-    final filamentPath = Path()
-      ..moveTo(-3.2, 8.0)
-      ..lineTo(-3.2, -2.0)
-      ..arcToPoint(
-        const Offset(3.2, -2.0),
-        radius: const Radius.circular(3.5),
-        clockwise: true,
-      )
-      ..lineTo(3.2, 8.0);
-    canvas.drawPath(filamentPath, filamentPaint);
-
     final highlightPaint = Paint()
       ..color = Colors.white.withOpacity(0.55)
       ..style = PaintingStyle.fill;
@@ -2416,10 +2129,10 @@ class NeonLampBulbPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant NeonLampBulbPainter oldDelegate) =>
-      oldDelegate.glowPulse != glowPulse || oldDelegate.isBoosted != isBoosted;
+      oldDelegate.isBoosted != isBoosted;
 }
 
-/// رسام علامات المسطرة الصغيرة
+/// رسام علامات المسطرة
 class RulerMarksPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
@@ -2442,12 +2155,8 @@ class RulerMarksPainter extends CustomPainter {
 /// رسام القلب اللامع ثلاثي الأبعاد
 class GlossyHeartPainter extends CustomPainter {
   final bool isActive;
-  final double glowPulse;
 
-  GlossyHeartPainter({
-    required this.isActive,
-    required this.glowPulse,
-  });
+  GlossyHeartPainter({required this.isActive});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -2469,11 +2178,6 @@ class GlossyHeartPainter extends CustomPainter {
       canvas.drawPath(path, inactivePaint);
       return;
     }
-
-    final glowPaint = Paint()
-      ..color = const Color(0xFFFF3366).withOpacity(0.24)
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 5);
-    canvas.drawPath(path.shift(const Offset(0, 2)), glowPaint);
 
     final rect = Offset.zero & size;
     final fillPaint = Paint()
@@ -2504,7 +2208,11 @@ class GlossyHeartPainter extends CustomPainter {
       oldDelegate.isActive != isActive;
 }
 
-/// محرك رسم شبكة الأسهم المحسن (يدعم الشبكات الكثيفة 10x10 و12x12 بكفاءة عالية)
+/// محرك رسم شبكة الأسهم الأصلي النظيف:
+/// - أسهم كحلية داكنة (#071A3E) بحواف دائرية واضحة ومستديرة مطابقة للصور
+/// - تحول السهم للأزرق السماوي (#2196F3) عند الخروج الصحيح
+/// - تحول السهم للأحمر عند الاصطدام مع اهتزاز خفيف
+/// - نقاط الشبكة الرمادية الهادئة في الخلفية
 class ArrowBoardPainter extends CustomPainter {
   final int gridCols;
   final int gridRows;
@@ -2515,7 +2223,6 @@ class ArrowBoardPainter extends CustomPainter {
   final bool isBlockedAnimation;
   final double blockedMaxSteps;
   final double animationValue;
-  final StagePalette palette;
   final bool ignoreClearedState;
 
   ArrowBoardPainter({
@@ -2528,7 +2235,6 @@ class ArrowBoardPainter extends CustomPainter {
     required this.isBlockedAnimation,
     required this.blockedMaxSteps,
     required this.animationValue,
-    required this.palette,
     this.ignoreClearedState = false,
   });
 
@@ -2536,18 +2242,18 @@ class ArrowBoardPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final cellW = size.width / gridCols;
     final cellH = size.height / gridRows;
-    final strokeW = math.min(cellW, cellH) * 0.165;
+    final strokeW = math.min(cellW, cellH) * 0.175;
 
     Offset centerOf(double col, double row) {
       return Offset((col + 0.5) * cellW, (row + 0.5) * cellH);
     }
 
-    // 1. رسم نقاط الشبكة الهادئة
+    // 1. رسم نقاط الشبكة الرمادية الهادئة في خلفية اللوحة
     if (!ignoreClearedState) {
       final dotPaint = Paint()
-        ..color = palette.gridDotColor
+        ..color = const Color(0xFFD8DFEB)
         ..style = PaintingStyle.fill;
-      final dotRadius = math.min(cellW, cellH) * 0.052;
+      final dotRadius = math.min(cellW, cellH) * 0.055;
       for (int r = 0; r < gridRows; r++) {
         for (int c = 0; c < gridCols; c++) {
           canvas.drawCircle(
@@ -2559,7 +2265,7 @@ class ArrowBoardPainter extends CustomPainter {
       }
     }
 
-    // 2. رسم خطوط المسطرة الإرشادية
+    // 2. خطوط المسطرة الإرشادية
     if (rulerEnabled && !ignoreClearedState) {
       final guidePaint = Paint()
         ..color = const Color(0xFF64B5F6).withOpacity(0.65)
@@ -2588,9 +2294,9 @@ class ArrowBoardPainter extends CustomPainter {
       final isHinted = arrow.id == hintedArrowId;
       final isAnimating = arrow.id == animatingArrowId;
 
-      Color arrowColor = palette.arrowNormalColor;
+      Color arrowColor = const Color(0xFF071A3E); // الكحلي الأصلي
       if (isAnimating && !isBlockedAnimation) {
-        arrowColor = const Color(0xFF2196F3); // أزرق عند الخروج الصحيح
+        arrowColor = const Color(0xFF2196F3); // أزرق سماوي عند الخروج الصح
       } else if ((isAnimating && isBlockedAnimation) || arrow.isQueuedRed) {
         arrowColor = const Color(0xFFE53935); // أحمر عند الاصطدام والانتظار
       } else if (isHinted) {
@@ -2621,26 +2327,12 @@ class ArrowBoardPainter extends CustomPainter {
 
       if (polylinePoints.length < 2) continue;
 
-      final arrowPath = _buildRoundedCornerPath(polylinePoints, cellW * 0.18);
+      final arrowPath = _buildRoundedCornerPath(polylinePoints, cellW * 0.22);
 
-      // أ) ظل ناعم تحت السهم
-      if (!ignoreClearedState) {
-        final shadowPaint = Paint()
-          ..color = const Color(0xFF0F172A).withOpacity(0.10)
-          ..strokeWidth = strokeW
-          ..style = PaintingStyle.stroke
-          ..strokeCap = StrokeCap.round
-          ..strokeJoin = StrokeJoin.round;
-        canvas.drawPath(arrowPath.shift(const Offset(0, 2.0)), shadowPaint);
-      }
-
-      // ب) هالة ضوئية حول السهم المُلمّح أو السهم الأزرق المنطلق
-      if (isHinted || (isAnimating && !isBlockedAnimation)) {
-        final glowColor = (isAnimating && !isBlockedAnimation)
-            ? const Color(0xFF2196F3).withOpacity(0.24)
-            : const Color(0xFFFFAB3D).withOpacity(0.45);
+      // هالة ضوئية خفيفة فقط للتلميح
+      if (isHinted) {
         final glowPaint = Paint()
-          ..color = glowColor
+          ..color = const Color(0xFFFFAB3D).withOpacity(0.40)
           ..strokeWidth = strokeW * 2.3
           ..style = PaintingStyle.stroke
           ..strokeCap = StrokeCap.round
@@ -2648,7 +2340,7 @@ class ArrowBoardPainter extends CustomPainter {
         canvas.drawPath(arrowPath, glowPaint);
       }
 
-      // ج) رسم جسم السهم
+      // رسم جسم السهم
       final linePaint = Paint()
         ..color = arrowColor
         ..strokeWidth = strokeW
@@ -2657,89 +2349,13 @@ class ArrowBoardPainter extends CustomPainter {
         ..strokeJoin = StrokeJoin.round;
       canvas.drawPath(arrowPath, linePaint);
 
-      // د) رسم شكل ❤️ أو ⭐ صغير عند ذيل السهم المميز
-      if (arrow.badge != ArrowBadgeStyle.none && !ignoreClearedState) {
-        _drawTailBadge(
-          canvas,
-          polylinePoints.first,
-          arrow.badge,
-          strokeW * 1.15,
-        );
-      }
-
-      // هـ) رسم رأس السهم
+      // رسم رأس السهم المطابق للأصل
       _drawArrowHead(
         canvas,
         polylinePoints.last,
         arrow.headDir,
         strokeW * 2.45,
         arrowColor,
-        hasShadow: !ignoreClearedState,
-      );
-    }
-  }
-
-  void _drawTailBadge(
-    Canvas canvas,
-    Offset center,
-    ArrowBadgeStyle badge,
-    double radius,
-  ) {
-    final bgPaint = Paint()
-      ..color = Colors.white
-      ..style = PaintingStyle.fill;
-    final borderPaint = Paint()
-      ..color = badge == ArrowBadgeStyle.heart
-          ? const Color(0xFFFF5252)
-          : const Color(0xFFFFB300)
-      ..strokeWidth = 1.3
-      ..style = PaintingStyle.stroke;
-
-    canvas.drawCircle(center, radius * 1.05, bgPaint);
-    canvas.drawCircle(center, radius * 1.05, borderPaint);
-
-    if (badge == ArrowBadgeStyle.heart) {
-      final w = radius * 1.3;
-      final h = radius * 1.3;
-      canvas.save();
-      canvas.translate(center.dx - w / 2, center.dy - h / 2);
-      final path = Path()
-        ..moveTo(w * 0.5, h * 0.90)
-        ..cubicTo(w * 0.10, h * 0.60, -w * 0.05, h * 0.28, w * 0.20, h * 0.10)
-        ..cubicTo(w * 0.35, 0, w * 0.46, h * 0.12, w * 0.5, h * 0.24)
-        ..cubicTo(w * 0.54, h * 0.12, w * 0.65, 0, w * 0.80, h * 0.10)
-        ..cubicTo(w * 1.05, h * 0.28, w * 0.90, h * 0.60, w * 0.5, h * 0.90)
-        ..close();
-      canvas.drawPath(
-        path,
-        Paint()
-          ..color = const Color(0xFFFF5252)
-          ..style = PaintingStyle.fill,
-      );
-      canvas.restore();
-    } else if (badge == ArrowBadgeStyle.star) {
-      final starPath = Path();
-      final rOuter = radius * 0.78;
-      final rInner = rOuter * 0.45;
-      for (int i = 0; i < 10; i++) {
-        final r = i.isEven ? rOuter : rInner;
-        final angle = -math.pi / 2 + i * (math.pi / 5);
-        final pt = Offset(
-          center.dx + r * math.cos(angle),
-          center.dy + r * math.sin(angle),
-        );
-        if (i == 0) {
-          starPath.moveTo(pt.dx, pt.dy);
-        } else {
-          starPath.lineTo(pt.dx, pt.dy);
-        }
-      }
-      starPath.close();
-      canvas.drawPath(
-        starPath,
-        Paint()
-          ..color = const Color(0xFFFFB300)
-          ..style = PaintingStyle.fill,
       );
     }
   }
@@ -2838,9 +2454,8 @@ class ArrowBoardPainter extends CustomPainter {
     Offset tip,
     ArrowDir dir,
     double headSize,
-    Color color, {
-    bool hasShadow = true,
-  }) {
+    Color color,
+  ) {
     double angle = 0;
     switch (dir) {
       case ArrowDir.right:
@@ -2867,13 +2482,6 @@ class ArrowBoardPainter extends CustomPainter {
       ..quadraticBezierTo(
           -headSize * 0.36, 0, -headSize * 0.50, headSize * 0.52)
       ..close();
-
-    if (hasShadow) {
-      final shadowPaint = Paint()
-        ..color = const Color(0xFF0F172A).withOpacity(0.12)
-        ..style = PaintingStyle.fill;
-      canvas.drawPath(path.shift(const Offset(1.5, 1.5)), shadowPaint);
-    }
 
     final paint = Paint()
       ..color = color
@@ -2914,7 +2522,6 @@ class ArrowBoardPainter extends CustomPainter {
   bool shouldRepaint(covariant ArrowBoardPainter oldDelegate) => true;
 }
 
-/// رسام خلفية الأشعة الزرقاء الاحتفالية في شاشة الفوز
 class SunburstPainter extends CustomPainter {
   final double rotation;
   SunburstPainter({required this.rotation});
@@ -2958,7 +2565,6 @@ class SunburstPainter extends CustomPainter {
       oldDelegate.rotation != rotation;
 }
 
-/// شاشة الإعدادات العربية السليمة
 class SettingsScreen extends StatefulWidget {
   final bool soundEnabled;
   final bool vibrationEnabled;
@@ -3048,7 +2654,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   context,
                   'المساعدة',
                   'اضغط على الأسهم التي يكون طريقها مفتوحاً لإخراجها من الشبكة.\n\n'
-                      '• كل مستوى يبدأ بسهم أو سهمين مفتوحين فقط، وإخراجهما يفتح الطريق لباقي الأسهم بالتتابع.\n'
+                      '• كل مستوى يبدأ بأسهم قليلة مفتوحة، وإخراجها يفتح الطريق لباقي الأسهم.\n'
                       '• عند الضغط على سهم مسدود يتحول للأحمر ويدخل في وضع الانتظار، وبمجرد فتح طريقه ينطلق تلقائياً لوحده!',
                 ),
               ),
@@ -3064,7 +2670,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 onTap: () => _showInfoDialog(
                   context,
                   'حول اللعبة',
-                  'لعبة مسار الأسهم (الإصدار 1.4.0)\nتضم 20 مستوى عالي الكثافة والعمق مع توفير كامل للبطارية وأيقونة خارجية مخصصة.',
+                  'لعبة مسار الأسهم (الإصدار 1.5.0)\nمطابقة 100% للتصميم الأصلي النظيف مع 20 مستوى متقن.',
                 ),
               ),
               const Divider(
