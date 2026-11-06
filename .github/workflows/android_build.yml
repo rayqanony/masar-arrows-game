@@ -3,6 +3,8 @@ name: Build Android APK & AAB
 on:
   push:
     branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
   workflow_dispatch:
 
 jobs:
@@ -24,10 +26,11 @@ jobs:
         with:
           channel: 'stable'
 
-      - name: Create missing platform files & Get dependencies
+      - name: Create missing platform files & Generate App Launcher Icon
         run: |
           flutter create . --project-name masar_arrows_game --org com.masar.arrows
           flutter pub get
+          dart run flutter_launcher_icons
 
       - name: Build Debug APK for testing
         run: flutter build apk --debug
