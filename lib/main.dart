@@ -133,6 +133,7 @@ class LevelConfig {
   final String difficultyLabel;
   final int gridCols;
   final int gridRows;
+  final bool isCustomShape;
   final List<ArrowItem> arrows;
 
   const LevelConfig({
@@ -140,6 +141,7 @@ class LevelConfig {
     required this.difficultyLabel,
     required this.gridCols,
     required this.gridRows,
+    this.isCustomShape = false,
     required this.arrows,
   });
 }
@@ -229,531 +231,554 @@ class GameAudioService {
 class LevelsRepository {
   static List<LevelConfig> getAllLevels() {
     return [
-      // المستوى 1 • عادي (cols=5, rows=5, n=6, free0=1, depth=6)
+      // المستوى 1: سهل (6x6 | arrows=8 | max_len=6 | cov=36/36)
       LevelConfig(
         levelNumber: 1,
-        difficultyLabel: 'عادي',
-        gridCols: 5,
-        gridRows: 5,
-        arrows: [
-          ArrowItem(id: 'l1_1', cells: const [Point(1, 1), Point(1, 2), Point(0, 2), Point(0, 3), Point(1, 3)]),
-          ArrowItem(id: 'l1_2', cells: const [Point(3, 3), Point(4, 3), Point(4, 4), Point(3, 4)]),
-          ArrowItem(id: 'l1_3', cells: const [Point(1, 4), Point(2, 4), Point(2, 3)]),
-          ArrowItem(id: 'l1_4', cells: const [Point(0, 1), Point(0, 0), Point(1, 0), Point(2, 0)]),
-          ArrowItem(id: 'l1_5', cells: const [Point(3, 0), Point(3, 1), Point(2, 1), Point(2, 2), Point(3, 2)]),
-          ArrowItem(id: 'l1_6', cells: const [Point(4, 2), Point(4, 1)]),
-        ],
-      ),
-      // المستوى 2 • عادي (cols=6, rows=6, n=8, free0=1, depth=8)
-      LevelConfig(
-        levelNumber: 2,
-        difficultyLabel: 'عادي',
+        difficultyLabel: 'سهل',
         gridCols: 6,
         gridRows: 6,
+        isCustomShape: false,
         arrows: [
-          ArrowItem(id: 'l2_1', cells: const [Point(0, 4), Point(1, 4), Point(1, 5), Point(2, 5), Point(2, 4)]),
-          ArrowItem(id: 'l2_2', cells: const [Point(2, 0), Point(3, 0), Point(3, 1)]),
-          ArrowItem(id: 'l2_3', cells: const [Point(4, 4), Point(3, 4), Point(3, 5), Point(4, 5), Point(5, 5), Point(5, 4)]),
-          ArrowItem(id: 'l2_4', cells: const [Point(5, 3), Point(5, 2), Point(4, 2)]),
-          ArrowItem(id: 'l2_5', cells: const [Point(3, 2), Point(2, 2), Point(2, 3), Point(1, 3), Point(1, 2)]),
-          ArrowItem(id: 'l2_6', cells: const [Point(2, 1), Point(1, 1)]),
-          ArrowItem(id: 'l2_7', cells: const [Point(0, 3), Point(0, 2), Point(0, 1)]),
-          ArrowItem(id: 'l2_8', cells: const [Point(1, 0), Point(0, 0)]),
+          ArrowItem(id: 'l1_1', cells: const [Point(0, 0), Point(1, 0), Point(2, 0), Point(3, 0), Point(4, 0)]),
+          ArrowItem(id: 'l1_2', cells: const [Point(5, 0), Point(5, 1), Point(5, 2)]),
+          ArrowItem(id: 'l1_3', cells: const [Point(5, 3), Point(4, 3), Point(3, 3), Point(2, 3)]),
+          ArrowItem(id: 'l1_4', cells: const [Point(4, 2), Point(4, 1), Point(3, 1), Point(2, 1), Point(1, 1), Point(0, 1)]),
+          ArrowItem(id: 'l1_5', cells: const [Point(3, 2), Point(2, 2), Point(1, 2), Point(0, 2), Point(0, 3)]),
+          ArrowItem(id: 'l1_6', cells: const [Point(1, 3), Point(1, 4), Point(0, 4), Point(0, 5), Point(1, 5), Point(2, 5)]),
+          ArrowItem(id: 'l1_7', cells: const [Point(2, 4), Point(3, 4), Point(3, 5), Point(4, 5), Point(5, 5)]),
+          ArrowItem(id: 'l1_8', cells: const [Point(4, 4), Point(5, 4)]),
         ],
       ),
-      // المستوى 3 • عادي (cols=6, rows=6, n=10, free0=2, depth=9)
+      // المستوى 2: سهل (7x7 | arrows=9 | max_len=8 | cov=49/49)
+      LevelConfig(
+        levelNumber: 2,
+        difficultyLabel: 'سهل',
+        gridCols: 7,
+        gridRows: 7,
+        isCustomShape: false,
+        arrows: [
+          ArrowItem(id: 'l2_1', cells: const [Point(6, 0), Point(5, 0), Point(4, 0), Point(3, 0), Point(2, 0), Point(1, 0), Point(0, 0)]),
+          ArrowItem(id: 'l2_2', cells: const [Point(6, 1), Point(5, 1), Point(4, 1), Point(3, 1)]),
+          ArrowItem(id: 'l2_3', cells: const [Point(6, 2), Point(5, 2), Point(4, 2), Point(3, 2), Point(2, 2), Point(2, 1), Point(1, 1)]),
+          ArrowItem(id: 'l2_4', cells: const [Point(0, 1), Point(0, 2)]),
+          ArrowItem(id: 'l2_5', cells: const [Point(1, 2), Point(1, 3), Point(0, 3), Point(0, 4), Point(0, 5)]),
+          ArrowItem(id: 'l2_6', cells: const [Point(0, 6), Point(1, 6), Point(2, 6), Point(3, 6)]),
+          ArrowItem(id: 'l2_7', cells: const [Point(3, 3), Point(4, 3), Point(5, 3), Point(6, 3)]),
+          ArrowItem(id: 'l2_8', cells: const [Point(2, 3), Point(2, 4), Point(1, 4), Point(1, 5), Point(2, 5), Point(3, 5), Point(3, 4), Point(4, 4)]),
+          ArrowItem(id: 'l2_9', cells: const [Point(5, 4), Point(6, 4), Point(6, 5), Point(6, 6), Point(5, 6), Point(5, 5), Point(4, 5), Point(4, 6)]),
+        ],
+      ),
+      // المستوى 3: عادي (8x8 | arrows=10 | max_len=10 | cov=64/64)
       LevelConfig(
         levelNumber: 3,
         difficultyLabel: 'عادي',
-        gridCols: 6,
-        gridRows: 6,
+        gridCols: 8,
+        gridRows: 8,
+        isCustomShape: false,
         arrows: [
-          ArrowItem(id: 'l3_1', cells: const [Point(3, 5), Point(4, 5), Point(4, 4), Point(5, 4), Point(5, 3), Point(4, 3)]),
-          ArrowItem(id: 'l3_2', cells: const [Point(0, 3), Point(0, 2), Point(1, 2)]),
-          ArrowItem(id: 'l3_3', cells: const [Point(5, 2), Point(5, 1), Point(5, 0), Point(4, 0)]),
-          ArrowItem(id: 'l3_4', cells: const [Point(2, 0), Point(2, 1)]),
-          ArrowItem(id: 'l3_5', cells: const [Point(3, 3), Point(3, 2), Point(2, 2), Point(2, 3)]),
-          ArrowItem(id: 'l3_6', cells: const [Point(3, 4), Point(2, 4)]),
-          ArrowItem(id: 'l3_7', cells: const [Point(1, 3), Point(1, 4)]),
-          ArrowItem(id: 'l3_8', cells: const [Point(2, 5), Point(1, 5)]),
-          ArrowItem(id: 'l3_9', cells: const [Point(0, 4), Point(0, 5)]),
-          ArrowItem(id: 'l3_10', cells: const [Point(1, 0), Point(1, 1), Point(0, 1), Point(0, 0)]),
+          ArrowItem(id: 'l3_1', cells: const [Point(7, 0), Point(6, 0), Point(5, 0), Point(4, 0), Point(3, 0), Point(2, 0)]),
+          ArrowItem(id: 'l3_2', cells: const [Point(7, 1), Point(6, 1), Point(5, 1), Point(4, 1), Point(3, 1), Point(2, 1), Point(1, 1), Point(1, 0), Point(0, 0), Point(0, 1)]),
+          ArrowItem(id: 'l3_3', cells: const [Point(0, 2), Point(1, 2), Point(2, 2), Point(3, 2), Point(4, 2), Point(5, 2)]),
+          ArrowItem(id: 'l3_4', cells: const [Point(0, 7), Point(0, 6), Point(0, 5), Point(0, 4), Point(0, 3), Point(1, 3), Point(2, 3)]),
+          ArrowItem(id: 'l3_5', cells: const [Point(1, 7), Point(1, 6), Point(1, 5), Point(1, 4), Point(2, 4), Point(3, 4), Point(3, 3), Point(4, 3)]),
+          ArrowItem(id: 'l3_6', cells: const [Point(4, 4), Point(4, 5), Point(3, 5), Point(2, 5), Point(2, 6), Point(2, 7)]),
+          ArrowItem(id: 'l3_7', cells: const [Point(7, 4), Point(7, 5), Point(7, 6), Point(7, 7)]),
+          ArrowItem(id: 'l3_8', cells: const [Point(6, 6), Point(6, 7), Point(5, 7), Point(4, 7), Point(4, 6), Point(3, 6), Point(3, 7)]),
+          ArrowItem(id: 'l3_9', cells: const [Point(5, 6), Point(5, 5), Point(6, 5), Point(6, 4), Point(5, 4), Point(5, 3), Point(6, 3), Point(7, 3)]),
+          ArrowItem(id: 'l3_10', cells: const [Point(6, 2), Point(7, 2)]),
         ],
       ),
-      // المستوى 4 • عادي (cols=7, rows=7, n=12, free0=2, depth=11)
+      // المستوى 4: عادي (9x9 | arrows=10 | max_len=12 | cov=81/81)
       LevelConfig(
         levelNumber: 4,
         difficultyLabel: 'عادي',
-        gridCols: 7,
-        gridRows: 7,
+        gridCols: 9,
+        gridRows: 9,
+        isCustomShape: false,
         arrows: [
-          ArrowItem(id: 'l4_1', cells: const [Point(0, 0), Point(0, 1), Point(1, 1), Point(1, 0), Point(2, 0), Point(2, 1)]),
-          ArrowItem(id: 'l4_2', cells: const [Point(2, 6), Point(3, 6), Point(3, 5)]),
-          ArrowItem(id: 'l4_3', cells: const [Point(3, 0), Point(4, 0), Point(4, 1)]),
-          ArrowItem(id: 'l4_4', cells: const [Point(5, 5), Point(4, 5), Point(4, 6), Point(5, 6), Point(6, 6), Point(6, 5)]),
-          ArrowItem(id: 'l4_5', cells: const [Point(5, 4), Point(6, 4), Point(6, 3), Point(5, 3)]),
-          ArrowItem(id: 'l4_6', cells: const [Point(0, 3), Point(0, 2), Point(1, 2)]),
-          ArrowItem(id: 'l4_7', cells: const [Point(4, 2), Point(4, 3), Point(4, 4), Point(3, 4)]),
-          ArrowItem(id: 'l4_8', cells: const [Point(2, 4), Point(2, 3), Point(1, 3), Point(1, 4)]),
-          ArrowItem(id: 'l4_9', cells: const [Point(2, 5), Point(1, 5)]),
-          ArrowItem(id: 'l4_10', cells: const [Point(0, 4), Point(0, 5)]),
-          ArrowItem(id: 'l4_11', cells: const [Point(1, 6), Point(0, 6)]),
-          ArrowItem(id: 'l4_12', cells: const [Point(5, 0), Point(5, 1), Point(5, 2), Point(6, 2), Point(6, 1)]),
+          ArrowItem(id: 'l4_1', cells: const [Point(0, 8), Point(0, 7), Point(0, 6), Point(0, 5), Point(0, 4), Point(0, 3), Point(0, 2), Point(0, 1), Point(0, 0), Point(1, 0), Point(2, 0), Point(3, 0)]),
+          ArrowItem(id: 'l4_2', cells: const [Point(8, 0), Point(7, 0), Point(6, 0), Point(5, 0), Point(4, 0), Point(4, 1), Point(4, 2), Point(4, 3), Point(4, 4)]),
+          ArrowItem(id: 'l4_3', cells: const [Point(8, 1), Point(7, 1), Point(6, 1), Point(5, 1), Point(5, 2), Point(5, 3), Point(5, 4), Point(5, 5), Point(5, 6)]),
+          ArrowItem(id: 'l4_4', cells: const [Point(2, 2), Point(3, 2), Point(3, 1), Point(2, 1), Point(1, 1), Point(1, 2), Point(1, 3), Point(1, 4), Point(1, 5), Point(1, 6), Point(1, 7), Point(1, 8)]),
+          ArrowItem(id: 'l4_5', cells: const [Point(2, 8), Point(2, 7), Point(2, 6), Point(2, 5), Point(2, 4), Point(2, 3), Point(3, 3), Point(3, 4), Point(3, 5), Point(4, 5), Point(4, 6)]),
+          ArrowItem(id: 'l4_6', cells: const [Point(3, 6), Point(3, 7), Point(3, 8), Point(4, 8)]),
+          ArrowItem(id: 'l4_7', cells: const [Point(4, 7), Point(5, 7), Point(5, 8), Point(6, 8), Point(7, 8), Point(8, 8)]),
+          ArrowItem(id: 'l4_8', cells: const [Point(8, 2), Point(7, 2), Point(6, 2), Point(6, 3), Point(6, 4), Point(6, 5), Point(6, 6), Point(6, 7), Point(7, 7)]),
+          ArrowItem(id: 'l4_9', cells: const [Point(8, 7), Point(8, 6), Point(7, 6), Point(7, 5), Point(8, 5)]),
+          ArrowItem(id: 'l4_10', cells: const [Point(8, 3), Point(7, 3), Point(7, 4), Point(8, 4)]),
         ],
       ),
-      // المستوى 5 • عادي (cols=8, rows=9, n=16, free0=3, depth=11)
+      // المستوى 5: عادي (10x11 | arrows=13 | max_len=14 | cov=110/110)
       LevelConfig(
         levelNumber: 5,
         difficultyLabel: 'عادي',
-        gridCols: 8,
-        gridRows: 9,
+        gridCols: 10,
+        gridRows: 11,
+        isCustomShape: false,
         arrows: [
-          ArrowItem(id: 'l5_1', cells: const [Point(2, 6), Point(2, 5), Point(1, 5), Point(1, 6), Point(0, 6), Point(0, 5)]),
-          ArrowItem(id: 'l5_2', cells: const [Point(0, 3), Point(0, 4), Point(1, 4), Point(2, 4)]),
-          ArrowItem(id: 'l5_3', cells: const [Point(6, 4), Point(6, 3), Point(6, 2), Point(7, 2), Point(7, 1), Point(6, 1)]),
-          ArrowItem(id: 'l5_4', cells: const [Point(2, 0), Point(2, 1), Point(3, 1), Point(3, 0), Point(4, 0), Point(4, 1)]),
-          ArrowItem(id: 'l5_5', cells: const [Point(5, 8), Point(5, 7), Point(4, 7), Point(4, 6), Point(5, 6), Point(5, 5)]),
-          ArrowItem(id: 'l5_6', cells: const [Point(4, 4), Point(4, 3), Point(5, 3), Point(5, 2), Point(4, 2)]),
-          ArrowItem(id: 'l5_7', cells: const [Point(2, 2), Point(3, 2), Point(3, 3)]),
-          ArrowItem(id: 'l5_8', cells: const [Point(3, 4), Point(3, 5)]),
-          ArrowItem(id: 'l5_9', cells: const [Point(4, 8), Point(3, 8)]),
-          ArrowItem(id: 'l5_10', cells: const [Point(3, 6), Point(3, 7), Point(2, 7), Point(2, 8), Point(1, 8)]),
-          ArrowItem(id: 'l5_11', cells: const [Point(1, 7), Point(0, 7), Point(0, 8)]),
-          ArrowItem(id: 'l5_12', cells: const [Point(7, 3), Point(7, 4)]),
-          ArrowItem(id: 'l5_13', cells: const [Point(6, 5), Point(7, 5), Point(7, 6)]),
-          ArrowItem(id: 'l5_14', cells: const [Point(7, 8), Point(7, 7), Point(6, 7), Point(6, 8)]),
-          ArrowItem(id: 'l5_15', cells: const [Point(2, 3), Point(1, 3), Point(1, 2)]),
-          ArrowItem(id: 'l5_16', cells: const [Point(0, 1), Point(1, 1), Point(1, 0), Point(0, 0)]),
+          ArrowItem(id: 'l5_1', cells: const [Point(0, 10), Point(0, 9), Point(0, 8), Point(0, 7), Point(0, 6), Point(0, 5), Point(0, 4)]),
+          ArrowItem(id: 'l5_2', cells: const [Point(0, 3), Point(1, 3), Point(2, 3), Point(3, 3), Point(4, 3), Point(5, 3), Point(6, 3), Point(7, 3)]),
+          ArrowItem(id: 'l5_3', cells: const [Point(9, 10), Point(9, 9), Point(9, 8), Point(9, 7), Point(9, 6), Point(9, 5), Point(9, 4), Point(9, 3), Point(9, 2), Point(9, 1), Point(9, 0), Point(8, 0), Point(7, 0)]),
+          ArrowItem(id: 'l5_4', cells: const [Point(3, 0), Point(2, 0), Point(1, 0), Point(0, 0)]),
+          ArrowItem(id: 'l5_5', cells: const [Point(1, 4), Point(1, 5), Point(1, 6), Point(1, 7), Point(1, 8), Point(1, 9), Point(1, 10)]),
+          ArrowItem(id: 'l5_6', cells: const [Point(4, 4), Point(3, 4), Point(2, 4), Point(2, 5), Point(2, 6), Point(2, 7), Point(2, 8), Point(2, 9), Point(2, 10)]),
+          ArrowItem(id: 'l5_7', cells: const [Point(8, 2), Point(8, 3), Point(8, 4), Point(7, 4), Point(6, 4), Point(5, 4), Point(5, 5), Point(4, 5), Point(3, 5), Point(3, 6), Point(3, 7), Point(3, 8), Point(3, 9), Point(3, 10)]),
+          ArrowItem(id: 'l5_8', cells: const [Point(8, 1), Point(7, 1), Point(7, 2), Point(6, 2), Point(5, 2), Point(4, 2), Point(3, 2)]),
+          ArrowItem(id: 'l5_9', cells: const [Point(4, 0), Point(5, 0), Point(6, 0), Point(6, 1), Point(5, 1), Point(4, 1), Point(3, 1), Point(2, 1), Point(2, 2), Point(1, 2), Point(0, 2)]),
+          ArrowItem(id: 'l5_10', cells: const [Point(1, 1), Point(0, 1)]),
+          ArrowItem(id: 'l5_11', cells: const [Point(6, 5), Point(7, 5), Point(8, 5), Point(8, 6), Point(8, 7), Point(8, 8), Point(8, 9), Point(8, 10)]),
+          ArrowItem(id: 'l5_12', cells: const [Point(5, 10), Point(4, 10), Point(4, 9), Point(4, 8), Point(4, 7), Point(4, 6), Point(5, 6), Point(6, 6), Point(7, 6), Point(7, 7), Point(7, 8), Point(7, 9), Point(7, 10)]),
+          ArrowItem(id: 'l5_13', cells: const [Point(6, 8), Point(6, 7), Point(5, 7), Point(5, 8), Point(5, 9), Point(6, 9), Point(6, 10)]),
         ],
       ),
-      // المستوى 6 • صعب (cols=11, rows=11, n=18, free0=3, depth=11)
+      // المستوى 6: صعب (11x12 | arrows=15 | max_len=13 | cov=132/132)
       LevelConfig(
         levelNumber: 6,
         difficultyLabel: 'صعب',
         gridCols: 11,
-        gridRows: 11,
+        gridRows: 12,
+        isCustomShape: false,
         arrows: [
-          ArrowItem(id: 'l6_1', cells: const [Point(8, 5), Point(7, 5), Point(7, 6), Point(8, 6), Point(8, 7), Point(7, 7)]),
-          ArrowItem(id: 'l6_2', cells: const [Point(4, 8), Point(4, 7), Point(3, 7), Point(3, 8), Point(3, 9), Point(4, 9)]),
-          ArrowItem(id: 'l6_3', cells: const [Point(5, 7), Point(5, 8), Point(5, 9), Point(6, 9), Point(6, 8), Point(6, 7)]),
-          ArrowItem(id: 'l6_4', cells: const [Point(6, 4), Point(6, 3), Point(7, 3), Point(8, 3), Point(8, 2), Point(7, 2)]),
-          ArrowItem(id: 'l6_5', cells: const [Point(0, 3), Point(0, 2), Point(1, 2), Point(1, 1), Point(2, 1)]),
-          ArrowItem(id: 'l6_6', cells: const [Point(1, 3), Point(2, 3), Point(2, 2), Point(3, 2), Point(3, 1), Point(4, 1)]),
-          ArrowItem(id: 'l6_7', cells: const [Point(8, 1), Point(9, 1), Point(9, 2), Point(10, 2), Point(10, 3)]),
-          ArrowItem(id: 'l6_8', cells: const [Point(10, 4), Point(9, 4), Point(9, 5)]),
-          ArrowItem(id: 'l6_9', cells: const [Point(10, 6), Point(9, 6), Point(9, 7)]),
-          ArrowItem(id: 'l6_10', cells: const [Point(8, 9), Point(8, 8), Point(9, 8)]),
-          ArrowItem(id: 'l6_11', cells: const [Point(10, 7), Point(10, 8)]),
-          ArrowItem(id: 'l6_12', cells: const [Point(0, 6), Point(0, 5), Point(0, 4), Point(1, 4), Point(1, 5)]),
-          ArrowItem(id: 'l6_13', cells: const [Point(1, 6), Point(2, 6), Point(2, 7)]),
-          ArrowItem(id: 'l6_14', cells: const [Point(2, 9), Point(2, 8), Point(1, 8)]),
-          ArrowItem(id: 'l6_15', cells: const [Point(1, 7), Point(0, 7), Point(0, 8)]),
-          ArrowItem(id: 'l6_16', cells: const [Point(3, 6), Point(3, 5), Point(4, 5), Point(4, 6), Point(5, 6), Point(5, 5)]),
-          ArrowItem(id: 'l6_17', cells: const [Point(4, 4), Point(5, 4), Point(5, 3)]),
-          ArrowItem(id: 'l6_18', cells: const [Point(5, 1), Point(5, 2), Point(6, 2), Point(6, 1)]),
+          ArrowItem(id: 'l6_1', cells: const [Point(10, 11), Point(10, 10), Point(10, 9), Point(10, 8)]),
+          ArrowItem(id: 'l6_2', cells: const [Point(10, 0), Point(9, 0), Point(8, 0), Point(7, 0), Point(6, 0), Point(5, 0)]),
+          ArrowItem(id: 'l6_3', cells: const [Point(4, 0), Point(3, 0), Point(2, 0), Point(1, 0), Point(0, 0)]),
+          ArrowItem(id: 'l6_4', cells: const [Point(10, 7), Point(10, 6), Point(10, 5), Point(10, 4), Point(10, 3), Point(10, 2), Point(10, 1), Point(9, 1), Point(8, 1)]),
+          ArrowItem(id: 'l6_5', cells: const [Point(0, 3), Point(0, 4), Point(0, 5), Point(0, 6), Point(0, 7), Point(0, 8), Point(0, 9), Point(0, 10), Point(0, 11)]),
+          ArrowItem(id: 'l6_6', cells: const [Point(9, 11), Point(9, 10), Point(9, 9), Point(9, 8), Point(9, 7), Point(9, 6), Point(9, 5), Point(9, 4), Point(9, 3), Point(9, 2), Point(8, 2), Point(7, 2)]),
+          ArrowItem(id: 'l6_7', cells: const [Point(7, 1), Point(6, 1), Point(5, 1), Point(4, 1), Point(3, 1), Point(2, 1), Point(1, 1)]),
+          ArrowItem(id: 'l6_8', cells: const [Point(0, 1), Point(0, 2), Point(1, 2), Point(2, 2), Point(3, 2), Point(4, 2), Point(5, 2), Point(6, 2), Point(6, 3)]),
+          ArrowItem(id: 'l6_9', cells: const [Point(7, 3), Point(8, 3), Point(8, 4), Point(8, 5), Point(8, 6), Point(8, 7), Point(8, 8), Point(8, 9), Point(8, 10), Point(8, 11)]),
+          ArrowItem(id: 'l6_10', cells: const [Point(1, 3), Point(1, 4), Point(1, 5), Point(1, 6), Point(1, 7), Point(1, 8), Point(1, 9), Point(1, 10), Point(1, 11)]),
+          ArrowItem(id: 'l6_11', cells: const [Point(5, 4), Point(6, 4), Point(7, 4), Point(7, 5), Point(7, 6), Point(7, 7), Point(7, 8), Point(7, 9), Point(7, 10), Point(7, 11)]),
+          ArrowItem(id: 'l6_12', cells: const [Point(5, 3), Point(4, 3), Point(3, 3), Point(2, 3), Point(2, 4), Point(2, 5), Point(2, 6), Point(2, 7), Point(2, 8), Point(2, 9), Point(2, 10)]),
+          ArrowItem(id: 'l6_13', cells: const [Point(6, 11), Point(6, 10), Point(6, 9), Point(6, 8), Point(6, 7), Point(6, 6), Point(6, 5), Point(5, 5), Point(4, 5), Point(4, 4), Point(3, 4), Point(3, 5), Point(3, 6)]),
+          ArrowItem(id: 'l6_14', cells: const [Point(4, 6), Point(5, 6), Point(5, 7), Point(5, 8), Point(5, 9), Point(5, 10), Point(5, 11)]),
+          ArrowItem(id: 'l6_15', cells: const [Point(2, 11), Point(3, 11), Point(3, 10), Point(3, 9), Point(3, 8), Point(3, 7), Point(4, 7), Point(4, 8), Point(4, 9), Point(4, 10), Point(4, 11)]),
         ],
       ),
-      // المستوى 7 • عادي (cols=8, rows=12, n=20, free0=4, depth=13)
+      // المستوى 7: عادي (10x14 | arrows=15 | max_len=16 | cov=140/140)
       LevelConfig(
         levelNumber: 7,
         difficultyLabel: 'عادي',
-        gridCols: 8,
-        gridRows: 12,
+        gridCols: 10,
+        gridRows: 14,
+        isCustomShape: false,
         arrows: [
-          ArrowItem(id: 'l7_1', cells: const [Point(0, 2), Point(0, 1), Point(0, 0), Point(1, 0), Point(1, 1), Point(2, 1)]),
-          ArrowItem(id: 'l7_2', cells: const [Point(6, 2), Point(6, 1), Point(7, 1), Point(7, 2), Point(7, 3)]),
-          ArrowItem(id: 'l7_3', cells: const [Point(6, 3), Point(6, 4), Point(7, 4), Point(7, 5), Point(6, 5), Point(6, 6)]),
-          ArrowItem(id: 'l7_4', cells: const [Point(5, 9), Point(6, 9), Point(6, 10), Point(5, 10), Point(4, 10), Point(4, 9)]),
-          ArrowItem(id: 'l7_5', cells: const [Point(2, 6), Point(2, 5), Point(3, 5), Point(3, 6), Point(4, 6), Point(4, 5)]),
-          ArrowItem(id: 'l7_6', cells: const [Point(5, 3), Point(5, 4), Point(4, 4)]),
-          ArrowItem(id: 'l7_7', cells: const [Point(3, 4), Point(2, 4), Point(2, 3), Point(2, 2), Point(1, 2), Point(1, 3)]),
-          ArrowItem(id: 'l7_8', cells: const [Point(0, 4), Point(1, 4), Point(1, 5), Point(0, 5), Point(0, 6)]),
-          ArrowItem(id: 'l7_9', cells: const [Point(1, 6), Point(1, 7), Point(0, 7), Point(0, 8), Point(1, 8), Point(2, 8)]),
-          ArrowItem(id: 'l7_10', cells: const [Point(5, 7), Point(5, 8), Point(4, 8), Point(4, 7), Point(3, 7), Point(3, 8)]),
-          ArrowItem(id: 'l7_11', cells: const [Point(1, 10), Point(2, 10), Point(2, 11), Point(3, 11)]),
-          ArrowItem(id: 'l7_12', cells: const [Point(4, 11), Point(5, 11)]),
-          ArrowItem(id: 'l7_13', cells: const [Point(7, 9), Point(7, 10), Point(7, 11)]),
-          ArrowItem(id: 'l7_14', cells: const [Point(2, 0), Point(3, 0)]),
-          ArrowItem(id: 'l7_15', cells: const [Point(5, 1), Point(4, 1), Point(4, 0), Point(5, 0)]),
-          ArrowItem(id: 'l7_16', cells: const [Point(6, 0), Point(7, 0)]),
-          ArrowItem(id: 'l7_17', cells: const [Point(3, 10), Point(3, 9), Point(2, 9)]),
-          ArrowItem(id: 'l7_18', cells: const [Point(1, 9), Point(0, 9), Point(0, 10)]),
-          ArrowItem(id: 'l7_19', cells: const [Point(1, 11), Point(0, 11)]),
-          ArrowItem(id: 'l7_20', cells: const [Point(7, 7), Point(6, 7), Point(6, 8), Point(7, 8)]),
+          ArrowItem(id: 'l7_1', cells: const [Point(9, 0), Point(8, 0), Point(7, 0), Point(6, 0), Point(5, 0), Point(4, 0), Point(3, 0), Point(2, 0), Point(1, 0), Point(0, 0), Point(0, 1)]),
+          ArrowItem(id: 'l7_2', cells: const [Point(0, 13), Point(0, 12), Point(0, 11), Point(0, 10), Point(0, 9), Point(0, 8), Point(0, 7), Point(0, 6), Point(0, 5), Point(0, 4), Point(0, 3), Point(0, 2), Point(1, 2), Point(1, 1), Point(2, 1)]),
+          ArrowItem(id: 'l7_3', cells: const [Point(5, 1), Point(6, 1), Point(7, 1), Point(8, 1), Point(9, 1)]),
+          ArrowItem(id: 'l7_4', cells: const [Point(9, 2), Point(8, 2), Point(7, 2), Point(6, 2), Point(5, 2), Point(4, 2), Point(4, 1), Point(3, 1), Point(3, 2), Point(2, 2), Point(2, 3), Point(1, 3), Point(1, 4), Point(1, 5)]),
+          ArrowItem(id: 'l7_5', cells: const [Point(9, 3), Point(8, 3), Point(7, 3), Point(6, 3), Point(5, 3), Point(4, 3), Point(3, 3), Point(3, 4), Point(2, 4), Point(2, 5), Point(2, 6), Point(1, 6), Point(1, 7), Point(1, 8), Point(1, 9), Point(1, 10)]),
+          ArrowItem(id: 'l7_6', cells: const [Point(4, 4), Point(5, 4), Point(6, 4), Point(7, 4), Point(8, 4), Point(9, 4)]),
+          ArrowItem(id: 'l7_7', cells: const [Point(9, 5), Point(8, 5), Point(7, 5), Point(6, 5), Point(5, 5), Point(4, 5), Point(3, 5), Point(3, 6), Point(3, 7), Point(2, 7), Point(2, 8), Point(2, 9), Point(2, 10)]),
+          ArrowItem(id: 'l7_8', cells: const [Point(1, 13), Point(1, 12), Point(1, 11), Point(2, 11), Point(3, 11), Point(4, 11), Point(5, 11), Point(6, 11)]),
+          ArrowItem(id: 'l7_9', cells: const [Point(6, 6), Point(7, 6), Point(8, 6), Point(9, 6)]),
+          ArrowItem(id: 'l7_10', cells: const [Point(2, 13), Point(2, 12), Point(3, 12), Point(3, 13), Point(4, 13), Point(4, 12), Point(5, 12), Point(5, 13), Point(6, 13), Point(6, 12), Point(7, 12), Point(7, 13)]),
+          ArrowItem(id: 'l7_11', cells: const [Point(8, 13), Point(9, 13), Point(9, 12), Point(8, 12), Point(8, 11), Point(9, 11)]),
+          ArrowItem(id: 'l7_12', cells: const [Point(9, 7), Point(8, 7), Point(7, 7), Point(6, 7), Point(5, 7), Point(5, 6), Point(4, 6), Point(4, 7), Point(4, 8), Point(3, 8), Point(3, 9), Point(3, 10), Point(4, 10), Point(4, 9), Point(5, 9)]),
+          ArrowItem(id: 'l7_13', cells: const [Point(5, 8), Point(6, 8), Point(7, 8), Point(8, 8), Point(9, 8)]),
+          ArrowItem(id: 'l7_14', cells: const [Point(5, 10), Point(6, 10), Point(6, 9), Point(7, 9), Point(8, 9), Point(9, 9)]),
+          ArrowItem(id: 'l7_15', cells: const [Point(7, 11), Point(7, 10), Point(8, 10), Point(9, 10)]),
         ],
       ),
-      // المستوى 8 • عادي (cols=9, rows=11, n=21, free0=4, depth=13)
+      // المستوى 8: عادي (11x14 | arrows=21 | max_len=15 | cov=154/154)
       LevelConfig(
         levelNumber: 8,
         difficultyLabel: 'عادي',
-        gridCols: 9,
-        gridRows: 11,
+        gridCols: 11,
+        gridRows: 14,
+        isCustomShape: false,
         arrows: [
-          ArrowItem(id: 'l8_1', cells: const [Point(6, 0), Point(7, 0), Point(8, 0), Point(8, 1), Point(7, 1), Point(7, 2)]),
-          ArrowItem(id: 'l8_2', cells: const [Point(6, 6), Point(6, 5), Point(7, 5), Point(7, 4), Point(6, 4)]),
-          ArrowItem(id: 'l8_3', cells: const [Point(1, 4), Point(2, 4), Point(2, 5), Point(2, 6), Point(3, 6), Point(3, 5)]),
-          ArrowItem(id: 'l8_4', cells: const [Point(4, 3), Point(3, 3), Point(3, 4), Point(4, 4), Point(4, 5)]),
-          ArrowItem(id: 'l8_5', cells: const [Point(4, 7), Point(4, 6), Point(5, 6), Point(5, 5)]),
-          ArrowItem(id: 'l8_6', cells: const [Point(5, 3), Point(5, 2), Point(6, 2), Point(6, 1), Point(5, 1)]),
-          ArrowItem(id: 'l8_7', cells: const [Point(0, 1), Point(0, 2)]),
-          ArrowItem(id: 'l8_8', cells: const [Point(1, 2), Point(1, 3), Point(0, 3), Point(0, 4)]),
-          ArrowItem(id: 'l8_9', cells: const [Point(1, 9), Point(0, 9), Point(0, 10), Point(1, 10), Point(2, 10)]),
-          ArrowItem(id: 'l8_10', cells: const [Point(5, 10), Point(6, 10), Point(6, 9), Point(6, 8), Point(5, 8)]),
-          ArrowItem(id: 'l8_11', cells: const [Point(4, 9), Point(4, 8), Point(3, 8)]),
-          ArrowItem(id: 'l8_12', cells: const [Point(2, 9), Point(2, 8), Point(1, 8)]),
-          ArrowItem(id: 'l8_13', cells: const [Point(0, 8), Point(0, 7), Point(1, 7), Point(1, 6), Point(0, 6)]),
-          ArrowItem(id: 'l8_14', cells: const [Point(6, 3), Point(7, 3), Point(8, 3), Point(8, 4)]),
-          ArrowItem(id: 'l8_15', cells: const [Point(8, 5), Point(8, 6)]),
-          ArrowItem(id: 'l8_16', cells: const [Point(8, 7), Point(7, 7), Point(7, 8)]),
-          ArrowItem(id: 'l8_17', cells: const [Point(8, 8), Point(8, 9), Point(7, 9), Point(7, 10), Point(8, 10)]),
-          ArrowItem(id: 'l8_18', cells: const [Point(5, 0), Point(4, 0)]),
-          ArrowItem(id: 'l8_19', cells: const [Point(3, 0), Point(2, 0)]),
-          ArrowItem(id: 'l8_20', cells: const [Point(2, 1), Point(1, 1), Point(1, 0)]),
-          ArrowItem(id: 'l8_21', cells: const [Point(3, 9), Point(3, 10)]),
+          ArrowItem(id: 'l8_1', cells: const [Point(10, 13), Point(10, 12), Point(10, 11), Point(10, 10), Point(10, 9), Point(10, 8), Point(10, 7)]),
+          ArrowItem(id: 'l8_2', cells: const [Point(10, 6), Point(9, 6), Point(8, 6), Point(7, 6), Point(6, 6), Point(5, 6)]),
+          ArrowItem(id: 'l8_3', cells: const [Point(10, 0), Point(9, 0), Point(8, 0), Point(7, 0), Point(6, 0), Point(5, 0), Point(4, 0)]),
+          ArrowItem(id: 'l8_4', cells: const [Point(10, 1), Point(9, 1), Point(8, 1), Point(7, 1), Point(6, 1)]),
+          ArrowItem(id: 'l8_5', cells: const [Point(3, 0), Point(2, 0), Point(1, 0), Point(0, 0)]),
+          ArrowItem(id: 'l8_6', cells: const [Point(10, 5), Point(9, 5), Point(8, 5), Point(7, 5), Point(6, 5), Point(5, 5), Point(4, 5)]),
+          ArrowItem(id: 'l8_7', cells: const [Point(1, 1), Point(0, 1), Point(0, 2), Point(0, 3), Point(0, 4), Point(1, 4), Point(2, 4), Point(3, 4), Point(4, 4), Point(5, 4), Point(6, 4), Point(7, 4), Point(8, 4), Point(9, 4), Point(10, 4)]),
+          ArrowItem(id: 'l8_8', cells: const [Point(9, 7), Point(9, 8), Point(9, 9), Point(9, 10), Point(9, 11), Point(9, 12), Point(9, 13)]),
+          ArrowItem(id: 'l8_9', cells: const [Point(2, 5), Point(1, 5), Point(0, 5), Point(0, 6), Point(0, 7), Point(0, 8), Point(0, 9), Point(0, 10), Point(0, 11), Point(0, 12), Point(0, 13)]),
+          ArrowItem(id: 'l8_10', cells: const [Point(3, 5), Point(3, 6), Point(4, 6), Point(4, 7), Point(4, 8), Point(4, 9), Point(4, 10)]),
+          ArrowItem(id: 'l8_11', cells: const [Point(8, 9), Point(8, 10), Point(8, 11), Point(8, 12), Point(8, 13)]),
+          ArrowItem(id: 'l8_12', cells: const [Point(2, 8), Point(3, 8), Point(3, 7), Point(2, 7), Point(2, 6), Point(1, 6), Point(1, 7), Point(1, 8), Point(1, 9), Point(1, 10), Point(1, 11), Point(1, 12), Point(1, 13)]),
+          ArrowItem(id: 'l8_13', cells: const [Point(4, 13), Point(3, 13), Point(3, 12), Point(3, 11), Point(3, 10), Point(3, 9), Point(2, 9), Point(2, 10), Point(2, 11), Point(2, 12), Point(2, 13)]),
+          ArrowItem(id: 'l8_14', cells: const [Point(5, 7), Point(6, 7), Point(7, 7), Point(8, 7), Point(8, 8), Point(7, 8), Point(7, 9), Point(7, 10), Point(7, 11), Point(7, 12), Point(7, 13)]),
+          ArrowItem(id: 'l8_15', cells: const [Point(6, 8), Point(5, 8), Point(5, 9), Point(6, 9), Point(6, 10), Point(5, 10), Point(5, 11), Point(4, 11), Point(4, 12), Point(5, 12), Point(5, 13)]),
+          ArrowItem(id: 'l8_16', cells: const [Point(6, 11), Point(6, 12), Point(6, 13)]),
+          ArrowItem(id: 'l8_17', cells: const [Point(5, 1), Point(4, 1), Point(3, 1), Point(2, 1), Point(2, 2), Point(1, 2), Point(1, 3), Point(2, 3)]),
+          ArrowItem(id: 'l8_18', cells: const [Point(3, 3), Point(3, 2), Point(4, 2), Point(4, 3), Point(5, 3)]),
+          ArrowItem(id: 'l8_19', cells: const [Point(5, 2), Point(6, 2), Point(6, 3), Point(7, 3)]),
+          ArrowItem(id: 'l8_20', cells: const [Point(7, 2), Point(8, 2), Point(8, 3), Point(9, 3), Point(10, 3)]),
+          ArrowItem(id: 'l8_21', cells: const [Point(9, 2), Point(10, 2)]),
         ],
       ),
-      // المستوى 9 • عادي (cols=9, rows=10, n=20, free0=4, depth=12)
+      // المستوى 9: صعب (12x14 | arrows=18 | max_len=16 | cov=168/168)
       LevelConfig(
         levelNumber: 9,
-        difficultyLabel: 'عادي',
-        gridCols: 9,
-        gridRows: 10,
+        difficultyLabel: 'صعب',
+        gridCols: 12,
+        gridRows: 14,
+        isCustomShape: false,
         arrows: [
-          ArrowItem(id: 'l9_1', cells: const [Point(3, 7), Point(2, 7), Point(2, 8), Point(1, 8), Point(1, 7)]),
-          ArrowItem(id: 'l9_2', cells: const [Point(2, 4), Point(2, 5), Point(1, 5), Point(1, 6), Point(2, 6), Point(3, 6)]),
-          ArrowItem(id: 'l9_3', cells: const [Point(7, 6), Point(6, 6), Point(6, 7), Point(6, 8), Point(5, 8), Point(5, 7)]),
-          ArrowItem(id: 'l9_4', cells: const [Point(5, 1), Point(5, 2), Point(6, 2), Point(7, 2), Point(7, 3), Point(6, 3)]),
-          ArrowItem(id: 'l9_5', cells: const [Point(2, 3), Point(2, 2), Point(2, 1), Point(1, 1), Point(1, 0), Point(2, 0)]),
-          ArrowItem(id: 'l9_6', cells: const [Point(6, 1), Point(6, 0), Point(5, 0), Point(4, 0), Point(4, 1), Point(4, 2)]),
-          ArrowItem(id: 'l9_7', cells: const [Point(5, 3), Point(4, 3), Point(4, 4)]),
-          ArrowItem(id: 'l9_8', cells: const [Point(3, 2), Point(3, 3), Point(3, 4), Point(3, 5), Point(4, 5)]),
-          ArrowItem(id: 'l9_9', cells: const [Point(7, 7), Point(8, 7), Point(8, 6), Point(8, 5)]),
-          ArrowItem(id: 'l9_10', cells: const [Point(7, 4), Point(8, 4), Point(8, 3)]),
-          ArrowItem(id: 'l9_11', cells: const [Point(8, 2), Point(8, 1)]),
-          ArrowItem(id: 'l9_12', cells: const [Point(7, 1), Point(7, 0), Point(8, 0)]),
-          ArrowItem(id: 'l9_13', cells: const [Point(2, 9), Point(1, 9), Point(0, 9), Point(0, 8), Point(0, 7), Point(0, 6)]),
-          ArrowItem(id: 'l9_14', cells: const [Point(0, 5), Point(0, 4)]),
-          ArrowItem(id: 'l9_15', cells: const [Point(1, 4), Point(1, 3), Point(0, 3), Point(0, 2)]),
-          ArrowItem(id: 'l9_16', cells: const [Point(0, 1), Point(0, 0)]),
-          ArrowItem(id: 'l9_17', cells: const [Point(3, 8), Point(3, 9), Point(4, 9)]),
-          ArrowItem(id: 'l9_18', cells: const [Point(5, 9), Point(6, 9)]),
-          ArrowItem(id: 'l9_19', cells: const [Point(8, 8), Point(7, 8), Point(7, 9), Point(8, 9)]),
-          ArrowItem(id: 'l9_20', cells: const [Point(3, 1), Point(3, 0)]),
+          ArrowItem(id: 'l9_1', cells: const [Point(0, 13), Point(0, 12), Point(0, 11), Point(0, 10), Point(0, 9), Point(0, 8), Point(0, 7), Point(0, 6), Point(0, 5), Point(0, 4), Point(0, 3), Point(0, 2), Point(0, 1), Point(0, 0), Point(1, 0), Point(2, 0)]),
+          ArrowItem(id: 'l9_2', cells: const [Point(3, 0), Point(4, 0), Point(5, 0), Point(6, 0), Point(7, 0)]),
+          ArrowItem(id: 'l9_3', cells: const [Point(1, 13), Point(1, 12), Point(1, 11), Point(1, 10), Point(1, 9), Point(1, 8), Point(1, 7), Point(1, 6), Point(1, 5), Point(1, 4), Point(1, 3), Point(1, 2), Point(1, 1), Point(2, 1), Point(3, 1)]),
+          ArrowItem(id: 'l9_4', cells: const [Point(8, 0), Point(9, 0), Point(10, 0), Point(11, 0), Point(11, 1), Point(11, 2), Point(11, 3), Point(11, 4), Point(11, 5), Point(11, 6), Point(11, 7), Point(11, 8)]),
+          ArrowItem(id: 'l9_5', cells: const [Point(11, 9), Point(11, 10), Point(11, 11), Point(11, 12), Point(11, 13)]),
+          ArrowItem(id: 'l9_6', cells: const [Point(9, 1), Point(10, 1), Point(10, 2), Point(10, 3), Point(10, 4), Point(10, 5), Point(10, 6), Point(10, 7), Point(10, 8), Point(10, 9), Point(10, 10), Point(10, 11), Point(10, 12), Point(10, 13)]),
+          ArrowItem(id: 'l9_7', cells: const [Point(9, 2), Point(9, 3), Point(9, 4), Point(9, 5), Point(9, 6), Point(9, 7), Point(9, 8), Point(9, 9), Point(9, 10), Point(9, 11), Point(9, 12), Point(9, 13)]),
+          ArrowItem(id: 'l9_8', cells: const [Point(2, 4), Point(2, 5), Point(2, 6), Point(2, 7), Point(2, 8), Point(2, 9), Point(2, 10), Point(2, 11), Point(2, 12), Point(2, 13)]),
+          ArrowItem(id: 'l9_9', cells: const [Point(3, 6), Point(3, 7), Point(3, 8), Point(3, 9), Point(3, 10), Point(3, 11), Point(3, 12), Point(3, 13)]),
+          ArrowItem(id: 'l9_10', cells: const [Point(4, 6), Point(4, 7), Point(4, 8), Point(4, 9), Point(4, 10), Point(4, 11), Point(4, 12), Point(4, 13)]),
+          ArrowItem(id: 'l9_11', cells: const [Point(5, 6), Point(5, 7), Point(5, 8), Point(5, 9), Point(5, 10), Point(5, 11), Point(5, 12), Point(5, 13)]),
+          ArrowItem(id: 'l9_12', cells: const [Point(8, 1), Point(8, 2), Point(8, 3), Point(8, 4), Point(8, 5), Point(8, 6), Point(8, 7), Point(8, 8), Point(8, 9), Point(8, 10), Point(8, 11), Point(8, 12), Point(8, 13)]),
+          ArrowItem(id: 'l9_13', cells: const [Point(2, 3), Point(2, 2), Point(3, 2), Point(4, 2), Point(4, 1), Point(5, 1), Point(6, 1), Point(7, 1), Point(7, 2), Point(7, 3)]),
+          ArrowItem(id: 'l9_14', cells: const [Point(3, 3), Point(4, 3), Point(5, 3), Point(5, 2), Point(6, 2), Point(6, 3), Point(6, 4), Point(7, 4), Point(7, 5)]),
+          ArrowItem(id: 'l9_15', cells: const [Point(3, 4), Point(3, 5), Point(4, 5), Point(4, 4), Point(5, 4), Point(5, 5), Point(6, 5), Point(6, 6), Point(7, 6), Point(7, 7), Point(6, 7), Point(6, 8)]),
+          ArrowItem(id: 'l9_16', cells: const [Point(7, 8), Point(7, 9), Point(6, 9), Point(6, 10), Point(7, 10), Point(7, 11)]),
+          ArrowItem(id: 'l9_17', cells: const [Point(6, 11), Point(6, 12), Point(6, 13)]),
+          ArrowItem(id: 'l9_18', cells: const [Point(7, 12), Point(7, 13)]),
         ],
       ),
-      // المستوى 10 • صعب (cols=11, rows=11, n=12, free0=6, depth=5)
+      // المستوى 10: القلب الكبير ❤️ (23x21 | arrows=31 | max_len=20 | cov=322/328)
       LevelConfig(
         levelNumber: 10,
-        difficultyLabel: 'صعب',
-        gridCols: 11,
-        gridRows: 11,
+        difficultyLabel: 'القلب الكبير ❤️',
+        gridCols: 23,
+        gridRows: 21,
+        isCustomShape: true,
         arrows: [
-          ArrowItem(id: 'l10_1', cells: const [Point(9, 4), Point(8, 4), Point(8, 5), Point(7, 5), Point(7, 4), Point(6, 4)]),
-          ArrowItem(id: 'l10_2', cells: const [Point(5, 5), Point(5, 4), Point(4, 4), Point(4, 5), Point(4, 6), Point(5, 6)]),
-          ArrowItem(id: 'l10_3', cells: const [Point(7, 6), Point(6, 6), Point(6, 7), Point(5, 7)]),
-          ArrowItem(id: 'l10_4', cells: const [Point(3, 9), Point(2, 9), Point(2, 8), Point(3, 8), Point(3, 7)]),
-          ArrowItem(id: 'l10_5', cells: const [Point(3, 4), Point(2, 4), Point(2, 3), Point(1, 3), Point(1, 4)]),
-          ArrowItem(id: 'l10_6', cells: const [Point(6, 3), Point(5, 3), Point(5, 2), Point(4, 2), Point(4, 1), Point(5, 1)]),
-          ArrowItem(id: 'l10_7', cells: const [Point(6, 2), Point(6, 1)]),
-          ArrowItem(id: 'l10_8', cells: const [Point(6, 8), Point(7, 8)]),
-          ArrowItem(id: 'l10_9', cells: const [Point(8, 8), Point(8, 9)]),
-          ArrowItem(id: 'l10_10', cells: const [Point(3, 6), Point(3, 5), Point(2, 5)]),
-          ArrowItem(id: 'l10_11', cells: const [Point(4, 7), Point(4, 8)]),
-          ArrowItem(id: 'l10_12', cells: const [Point(8, 3), Point(9, 3)]),
+          ArrowItem(id: 'l10_1', cells: const [Point(11, 20), Point(11, 19), Point(10, 19), Point(10, 18), Point(9, 18), Point(9, 17), Point(8, 17), Point(8, 16), Point(7, 16), Point(7, 15), Point(6, 15), Point(6, 14), Point(5, 14), Point(5, 13), Point(4, 13)]),
+          ArrowItem(id: 'l10_2', cells: const [Point(12, 19), Point(12, 18), Point(13, 18), Point(13, 17), Point(14, 17), Point(14, 16), Point(15, 16), Point(15, 15), Point(16, 15), Point(16, 14), Point(17, 14), Point(17, 13)]),
+          ArrowItem(id: 'l10_3', cells: const [Point(18, 13), Point(18, 12), Point(19, 12), Point(19, 11), Point(20, 11)]),
+          ArrowItem(id: 'l10_4', cells: const [Point(11, 18), Point(11, 17), Point(12, 17), Point(12, 16), Point(13, 16), Point(13, 15), Point(14, 15), Point(14, 14), Point(15, 14), Point(15, 13), Point(16, 13), Point(16, 12)]),
+          ArrowItem(id: 'l10_5', cells: const [Point(10, 17), Point(10, 16), Point(11, 16), Point(11, 15), Point(12, 15), Point(12, 14), Point(13, 14), Point(13, 13), Point(14, 13), Point(14, 12), Point(15, 12), Point(15, 11), Point(15, 10), Point(15, 9), Point(15, 8), Point(15, 7), Point(15, 6)]),
+          ArrowItem(id: 'l10_6', cells: const [Point(17, 12), Point(17, 11), Point(16, 11), Point(16, 10), Point(16, 9), Point(16, 8), Point(16, 7), Point(16, 6), Point(16, 5), Point(16, 4), Point(16, 3), Point(16, 2), Point(16, 1)]),
+          ArrowItem(id: 'l10_7', cells: const [Point(18, 11), Point(18, 10), Point(17, 10), Point(17, 9), Point(17, 8), Point(17, 7), Point(17, 6), Point(17, 5), Point(17, 4), Point(17, 3), Point(17, 2), Point(17, 1), Point(17, 0), Point(16, 0), Point(15, 0), Point(14, 0)]),
+          ArrowItem(id: 'l10_8', cells: const [Point(9, 16), Point(9, 15), Point(10, 15), Point(10, 14), Point(11, 14), Point(11, 13), Point(12, 13), Point(12, 12), Point(13, 12), Point(13, 11)]),
+          ArrowItem(id: 'l10_9', cells: const [Point(8, 15), Point(8, 14), Point(9, 14), Point(9, 13), Point(10, 13), Point(10, 12), Point(11, 12), Point(11, 11), Point(12, 11), Point(12, 10), Point(12, 9), Point(12, 8)]),
+          ArrowItem(id: 'l10_10', cells: const [Point(14, 11), Point(14, 10), Point(13, 10), Point(13, 9)]),
+          ArrowItem(id: 'l10_11', cells: const [Point(14, 9), Point(14, 8), Point(13, 8), Point(13, 7)]),
+          ArrowItem(id: 'l10_12', cells: const [Point(14, 7), Point(14, 6), Point(14, 5), Point(15, 5), Point(15, 4), Point(15, 3), Point(15, 2), Point(15, 1), Point(14, 1), Point(13, 1), Point(13, 2), Point(12, 2)]),
+          ArrowItem(id: 'l10_13', cells: const [Point(7, 14), Point(7, 13), Point(6, 13), Point(6, 12), Point(6, 11), Point(6, 10)]),
+          ArrowItem(id: 'l10_14', cells: const [Point(14, 2), Point(14, 3), Point(14, 4), Point(13, 4), Point(13, 3), Point(12, 3), Point(11, 3), Point(10, 3), Point(10, 2)]),
+          ArrowItem(id: 'l10_15', cells: const [Point(8, 13), Point(8, 12), Point(9, 12), Point(9, 11)]),
+          ArrowItem(id: 'l10_16', cells: const [Point(10, 11), Point(10, 10), Point(11, 10), Point(11, 9), Point(11, 8), Point(11, 7), Point(12, 7), Point(12, 6), Point(13, 6), Point(13, 5), Point(12, 5), Point(12, 4), Point(11, 4), Point(10, 4), Point(9, 4), Point(8, 4), Point(7, 4), Point(6, 4), Point(5, 4), Point(4, 4)]),
+          ArrowItem(id: 'l10_17', cells: const [Point(8, 8), Point(7, 8), Point(6, 8), Point(5, 8), Point(4, 8), Point(3, 8), Point(2, 8), Point(1, 8), Point(0, 8)]),
+          ArrowItem(id: 'l10_18', cells: const [Point(7, 12), Point(7, 11), Point(8, 11), Point(8, 10), Point(9, 10), Point(9, 9), Point(8, 9), Point(7, 9), Point(6, 9), Point(5, 9), Point(4, 9), Point(3, 9), Point(2, 9), Point(1, 9), Point(1, 10)]),
+          ArrowItem(id: 'l10_19', cells: const [Point(10, 9), Point(10, 8), Point(9, 8), Point(9, 7), Point(10, 7), Point(10, 6), Point(11, 6), Point(11, 5), Point(10, 5), Point(9, 5)]),
+          ArrowItem(id: 'l10_20', cells: const [Point(9, 6), Point(8, 6), Point(8, 7), Point(7, 7), Point(6, 7), Point(5, 7), Point(4, 7), Point(3, 7)]),
+          ArrowItem(id: 'l10_21', cells: const [Point(8, 5), Point(7, 5), Point(7, 6), Point(6, 6), Point(6, 5), Point(5, 5), Point(5, 6), Point(4, 6), Point(4, 5), Point(3, 5), Point(3, 6), Point(2, 6)]),
+          ArrowItem(id: 'l10_22', cells: const [Point(2, 7), Point(1, 7), Point(0, 7), Point(0, 6), Point(1, 6), Point(1, 5)]),
+          ArrowItem(id: 'l10_23', cells: const [Point(0, 5), Point(0, 4), Point(0, 3), Point(1, 3), Point(1, 2), Point(2, 2), Point(2, 1), Point(3, 1), Point(3, 0)]),
+          ArrowItem(id: 'l10_24', cells: const [Point(4, 11), Point(3, 11), Point(3, 12), Point(4, 12), Point(5, 12), Point(5, 11), Point(5, 10), Point(4, 10), Point(3, 10), Point(2, 10), Point(2, 11)]),
+          ArrowItem(id: 'l10_25', cells: const [Point(1, 4), Point(2, 4), Point(3, 4), Point(3, 3), Point(3, 2), Point(4, 2), Point(4, 3), Point(5, 3), Point(6, 3), Point(7, 3), Point(8, 3), Point(9, 3), Point(9, 2), Point(9, 1), Point(8, 1), Point(8, 0)]),
+          ArrowItem(id: 'l10_26', cells: const [Point(8, 2), Point(7, 2), Point(6, 2), Point(5, 2), Point(5, 1), Point(4, 1), Point(4, 0)]),
+          ArrowItem(id: 'l10_27', cells: const [Point(21, 10), Point(20, 10), Point(19, 10), Point(19, 9), Point(18, 9), Point(18, 8), Point(18, 7), Point(18, 6), Point(18, 5), Point(18, 4), Point(18, 3)]),
+          ArrowItem(id: 'l10_28', cells: const [Point(5, 0), Point(6, 0), Point(6, 1), Point(7, 1), Point(7, 0)]),
+          ArrowItem(id: 'l10_29', cells: const [Point(18, 0), Point(19, 0), Point(19, 1), Point(20, 1), Point(20, 2), Point(21, 2)]),
+          ArrowItem(id: 'l10_30', cells: const [Point(18, 1), Point(18, 2), Point(19, 2), Point(19, 3), Point(19, 4), Point(19, 5), Point(19, 6), Point(19, 7), Point(19, 8), Point(20, 8), Point(20, 9), Point(21, 9), Point(21, 8), Point(22, 8), Point(22, 7), Point(22, 6), Point(22, 5)]),
+          ArrowItem(id: 'l10_31', cells: const [Point(21, 6), Point(21, 5), Point(20, 5), Point(20, 4), Point(20, 3), Point(21, 3), Point(21, 4), Point(22, 4), Point(22, 3)]),
         ],
       ),
-      // المستوى 11 • عادي (cols=10, rows=11, n=22, free0=4, depth=15)
+      // المستوى 11: صعب (12x14 | arrows=15 | max_len=17 | cov=168/168)
       LevelConfig(
         levelNumber: 11,
-        difficultyLabel: 'عادي',
-        gridCols: 10,
-        gridRows: 11,
+        difficultyLabel: 'صعب',
+        gridCols: 12,
+        gridRows: 14,
+        isCustomShape: false,
         arrows: [
-          ArrowItem(id: 'l11_1', cells: const [Point(3, 10), Point(2, 10), Point(1, 10), Point(0, 10), Point(0, 9), Point(1, 9)]),
-          ArrowItem(id: 'l11_2', cells: const [Point(7, 9), Point(6, 9), Point(6, 8), Point(6, 7), Point(5, 7), Point(5, 6)]),
-          ArrowItem(id: 'l11_3', cells: const [Point(5, 3), Point(6, 3), Point(7, 3), Point(7, 2), Point(8, 2), Point(8, 3)]),
-          ArrowItem(id: 'l11_4', cells: const [Point(8, 6), Point(9, 6), Point(9, 5), Point(8, 5)]),
-          ArrowItem(id: 'l11_5', cells: const [Point(7, 4), Point(7, 5), Point(7, 6), Point(6, 6), Point(6, 5), Point(5, 5)]),
-          ArrowItem(id: 'l11_6', cells: const [Point(3, 6), Point(3, 7), Point(2, 7), Point(2, 6), Point(1, 6), Point(1, 5)]),
-          ArrowItem(id: 'l11_7', cells: const [Point(0, 0), Point(0, 1), Point(1, 1), Point(1, 0), Point(2, 0)]),
-          ArrowItem(id: 'l11_8', cells: const [Point(6, 1), Point(5, 1), Point(5, 0), Point(4, 0), Point(4, 1)]),
-          ArrowItem(id: 'l11_9', cells: const [Point(3, 2), Point(3, 3), Point(4, 3), Point(4, 4)]),
-          ArrowItem(id: 'l11_10', cells: const [Point(3, 5), Point(4, 5), Point(4, 6)]),
-          ArrowItem(id: 'l11_11', cells: const [Point(4, 9), Point(4, 10), Point(5, 10)]),
-          ArrowItem(id: 'l11_12', cells: const [Point(6, 10), Point(7, 10)]),
-          ArrowItem(id: 'l11_13', cells: const [Point(8, 10), Point(8, 9), Point(8, 8), Point(7, 8), Point(7, 7), Point(8, 7)]),
-          ArrowItem(id: 'l11_14', cells: const [Point(9, 7), Point(9, 8)]),
-          ArrowItem(id: 'l11_15', cells: const [Point(9, 9), Point(9, 10)]),
-          ArrowItem(id: 'l11_16', cells: const [Point(5, 8), Point(4, 8)]),
-          ArrowItem(id: 'l11_17', cells: const [Point(3, 9), Point(3, 8), Point(2, 8)]),
-          ArrowItem(id: 'l11_18', cells: const [Point(0, 7), Point(1, 7), Point(1, 8), Point(0, 8)]),
-          ArrowItem(id: 'l11_19', cells: const [Point(9, 4), Point(9, 3)]),
-          ArrowItem(id: 'l11_20', cells: const [Point(9, 0), Point(8, 0), Point(7, 0), Point(7, 1), Point(8, 1)]),
-          ArrowItem(id: 'l11_21', cells: const [Point(3, 4), Point(2, 4)]),
-          ArrowItem(id: 'l11_22', cells: const [Point(0, 4), Point(1, 4), Point(1, 3), Point(0, 3)]),
+          ArrowItem(id: 'l11_1', cells: const [Point(11, 13), Point(11, 12), Point(11, 11), Point(11, 10), Point(11, 9), Point(11, 8), Point(11, 7), Point(11, 6), Point(11, 5), Point(11, 4), Point(11, 3), Point(11, 2)]),
+          ArrowItem(id: 'l11_2', cells: const [Point(0, 0), Point(1, 0), Point(2, 0), Point(3, 0), Point(4, 0), Point(5, 0), Point(6, 0), Point(7, 0), Point(8, 0), Point(9, 0), Point(10, 0), Point(11, 0), Point(11, 1), Point(10, 1), Point(9, 1), Point(8, 1), Point(7, 1)]),
+          ArrowItem(id: 'l11_3', cells: const [Point(0, 1), Point(1, 1), Point(2, 1), Point(3, 1), Point(4, 1), Point(5, 1), Point(6, 1), Point(6, 2), Point(6, 3), Point(6, 4), Point(6, 5), Point(6, 6)]),
+          ArrowItem(id: 'l11_4', cells: const [Point(0, 2), Point(1, 2), Point(2, 2), Point(3, 2), Point(4, 2), Point(5, 2), Point(5, 3), Point(5, 4)]),
+          ArrowItem(id: 'l11_5', cells: const [Point(0, 3), Point(0, 4), Point(0, 5), Point(0, 6), Point(0, 7), Point(0, 8), Point(0, 9), Point(0, 10), Point(0, 11), Point(0, 12), Point(0, 13)]),
+          ArrowItem(id: 'l11_6', cells: const [Point(10, 4), Point(10, 5), Point(10, 6), Point(10, 7), Point(10, 8), Point(10, 9), Point(10, 10), Point(10, 11), Point(10, 12), Point(10, 13)]),
+          ArrowItem(id: 'l11_7', cells: const [Point(1, 4), Point(1, 5), Point(1, 6), Point(1, 7), Point(1, 8), Point(1, 9), Point(1, 10), Point(1, 11), Point(1, 12), Point(1, 13)]),
+          ArrowItem(id: 'l11_8', cells: const [Point(1, 3), Point(2, 3), Point(3, 3), Point(4, 3), Point(4, 4), Point(4, 5), Point(5, 5), Point(5, 6), Point(5, 7), Point(5, 8), Point(5, 9), Point(5, 10), Point(5, 11), Point(5, 12)]),
+          ArrowItem(id: 'l11_9', cells: const [Point(3, 7), Point(4, 7), Point(4, 6), Point(3, 6), Point(3, 5), Point(3, 4), Point(2, 4), Point(2, 5), Point(2, 6), Point(2, 7), Point(2, 8), Point(2, 9), Point(2, 10), Point(2, 11), Point(2, 12), Point(2, 13)]),
+          ArrowItem(id: 'l11_10', cells: const [Point(10, 3), Point(9, 3), Point(9, 4), Point(9, 5), Point(9, 6), Point(9, 7), Point(9, 8), Point(9, 9), Point(9, 10), Point(9, 11), Point(9, 12), Point(9, 13)]),
+          ArrowItem(id: 'l11_11', cells: const [Point(10, 2), Point(9, 2), Point(8, 2), Point(7, 2), Point(7, 3), Point(8, 3), Point(8, 4)]),
+          ArrowItem(id: 'l11_12', cells: const [Point(7, 4), Point(7, 5), Point(8, 5), Point(8, 6), Point(7, 6), Point(7, 7), Point(6, 7), Point(6, 8), Point(6, 9), Point(6, 10), Point(6, 11), Point(6, 12), Point(6, 13)]),
+          ArrowItem(id: 'l11_13', cells: const [Point(8, 7), Point(8, 8), Point(7, 8), Point(7, 9), Point(8, 9), Point(8, 10), Point(7, 10), Point(7, 11), Point(8, 11), Point(8, 12), Point(8, 13)]),
+          ArrowItem(id: 'l11_14', cells: const [Point(7, 12), Point(7, 13)]),
+          ArrowItem(id: 'l11_15', cells: const [Point(5, 13), Point(4, 13), Point(4, 12), Point(4, 11), Point(4, 10), Point(4, 9), Point(4, 8), Point(3, 8), Point(3, 9), Point(3, 10), Point(3, 11), Point(3, 12), Point(3, 13)]),
         ],
       ),
-      // المستوى 12 • صعب (cols=11, rows=11, n=20, free0=5, depth=13)
+      // المستوى 12: صعب (12x15 | arrows=20 | max_len=16 | cov=180/180)
       LevelConfig(
         levelNumber: 12,
         difficultyLabel: 'صعب',
-        gridCols: 11,
-        gridRows: 11,
+        gridCols: 12,
+        gridRows: 15,
+        isCustomShape: false,
         arrows: [
-          ArrowItem(id: 'l12_1', cells: const [Point(6, 9), Point(6, 10), Point(7, 10), Point(7, 9), Point(8, 9), Point(8, 8)]),
-          ArrowItem(id: 'l12_2', cells: const [Point(7, 6), Point(8, 6), Point(8, 7), Point(9, 7), Point(10, 7), Point(10, 6)]),
-          ArrowItem(id: 'l12_3', cells: const [Point(9, 4), Point(10, 4), Point(10, 5), Point(9, 5)]),
-          ArrowItem(id: 'l12_4', cells: const [Point(6, 5), Point(7, 5), Point(8, 5), Point(8, 4), Point(7, 4)]),
-          ArrowItem(id: 'l12_5', cells: const [Point(4, 2), Point(5, 2), Point(5, 3), Point(6, 3), Point(6, 4), Point(5, 4)]),
-          ArrowItem(id: 'l12_6', cells: const [Point(1, 4), Point(1, 5), Point(2, 5), Point(2, 4), Point(3, 4), Point(3, 5)]),
-          ArrowItem(id: 'l12_7', cells: const [Point(3, 7), Point(4, 7), Point(5, 7), Point(5, 8), Point(4, 8)]),
-          ArrowItem(id: 'l12_8', cells: const [Point(1, 7), Point(1, 8), Point(0, 8), Point(0, 7)]),
-          ArrowItem(id: 'l12_9', cells: const [Point(0, 3), Point(0, 2), Point(1, 2), Point(1, 1), Point(2, 1)]),
-          ArrowItem(id: 'l12_10', cells: const [Point(3, 1), Point(4, 1), Point(5, 1)]),
-          ArrowItem(id: 'l12_11', cells: const [Point(7, 2), Point(6, 2), Point(6, 1), Point(7, 1)]),
-          ArrowItem(id: 'l12_12', cells: const [Point(9, 2), Point(9, 1), Point(8, 1), Point(8, 2), Point(8, 3), Point(9, 3)]),
-          ArrowItem(id: 'l12_13', cells: const [Point(10, 3), Point(10, 2)]),
-          ArrowItem(id: 'l12_14', cells: const [Point(6, 7), Point(6, 6), Point(5, 6)]),
-          ArrowItem(id: 'l12_15', cells: const [Point(5, 5), Point(4, 5), Point(4, 6), Point(3, 6)]),
-          ArrowItem(id: 'l12_16', cells: const [Point(2, 6), Point(2, 7)]),
-          ArrowItem(id: 'l12_17', cells: const [Point(3, 10), Point(3, 9), Point(2, 9)]),
-          ArrowItem(id: 'l12_18', cells: const [Point(4, 10), Point(4, 9), Point(5, 9), Point(5, 10)]),
-          ArrowItem(id: 'l12_19', cells: const [Point(9, 8), Point(10, 8)]),
-          ArrowItem(id: 'l12_20', cells: const [Point(1, 6), Point(0, 6)]),
+          ArrowItem(id: 'l12_1', cells: const [Point(0, 14), Point(0, 13), Point(0, 12), Point(0, 11), Point(0, 10), Point(0, 9)]),
+          ArrowItem(id: 'l12_2', cells: const [Point(1, 14), Point(1, 13), Point(1, 12), Point(1, 11), Point(1, 10), Point(1, 9), Point(1, 8)]),
+          ArrowItem(id: 'l12_3', cells: const [Point(0, 8), Point(0, 7), Point(0, 6), Point(0, 5), Point(0, 4), Point(0, 3), Point(0, 2), Point(0, 1), Point(0, 0), Point(1, 0), Point(2, 0), Point(3, 0)]),
+          ArrowItem(id: 'l12_4', cells: const [Point(11, 0), Point(10, 0), Point(9, 0), Point(8, 0), Point(7, 0), Point(6, 0), Point(5, 0), Point(4, 0), Point(4, 1), Point(4, 2)]),
+          ArrowItem(id: 'l12_5', cells: const [Point(1, 3), Point(1, 4), Point(1, 5), Point(1, 6), Point(1, 7), Point(2, 7), Point(2, 8), Point(2, 9), Point(2, 10), Point(2, 11), Point(2, 12), Point(2, 13), Point(2, 14)]),
+          ArrowItem(id: 'l12_6', cells: const [Point(2, 2), Point(2, 3), Point(2, 4), Point(2, 5), Point(2, 6), Point(3, 6), Point(3, 7), Point(3, 8), Point(3, 9), Point(3, 10), Point(3, 11), Point(3, 12), Point(3, 13), Point(3, 14)]),
+          ArrowItem(id: 'l12_7', cells: const [Point(1, 2), Point(1, 1), Point(2, 1), Point(3, 1), Point(3, 2), Point(3, 3), Point(3, 4), Point(3, 5), Point(4, 5)]),
+          ArrowItem(id: 'l12_8', cells: const [Point(11, 1), Point(10, 1), Point(9, 1), Point(8, 1), Point(7, 1), Point(6, 1), Point(5, 1), Point(5, 2), Point(5, 3), Point(4, 3), Point(4, 4), Point(5, 4), Point(6, 4), Point(7, 4), Point(8, 4), Point(9, 4)]),
+          ArrowItem(id: 'l12_9', cells: const [Point(4, 6), Point(4, 7), Point(4, 8), Point(4, 9), Point(4, 10), Point(4, 11), Point(4, 12), Point(4, 13), Point(4, 14)]),
+          ArrowItem(id: 'l12_10', cells: const [Point(5, 14), Point(5, 13), Point(5, 12), Point(5, 11), Point(5, 10), Point(5, 9), Point(5, 8), Point(5, 7), Point(5, 6), Point(5, 5), Point(6, 5), Point(7, 5), Point(8, 5), Point(9, 5), Point(10, 5), Point(11, 5)]),
+          ArrowItem(id: 'l12_11', cells: const [Point(11, 2), Point(10, 2), Point(9, 2), Point(8, 2), Point(7, 2), Point(6, 2), Point(6, 3), Point(7, 3), Point(8, 3), Point(9, 3)]),
+          ArrowItem(id: 'l12_12', cells: const [Point(6, 7), Point(6, 8), Point(6, 9), Point(6, 10), Point(6, 11), Point(6, 12), Point(6, 13), Point(6, 14)]),
+          ArrowItem(id: 'l12_13', cells: const [Point(6, 6), Point(7, 6), Point(8, 6), Point(9, 6), Point(10, 6), Point(11, 6), Point(11, 7)]),
+          ArrowItem(id: 'l12_14', cells: const [Point(7, 14), Point(7, 13), Point(7, 12), Point(7, 11), Point(7, 10), Point(7, 9), Point(7, 8), Point(7, 7), Point(8, 7), Point(9, 7), Point(10, 7), Point(10, 8), Point(11, 8), Point(11, 9)]),
+          ArrowItem(id: 'l12_15', cells: const [Point(11, 3), Point(10, 3), Point(10, 4), Point(11, 4)]),
+          ArrowItem(id: 'l12_16', cells: const [Point(11, 10), Point(11, 11), Point(11, 12), Point(11, 13), Point(11, 14)]),
+          ArrowItem(id: 'l12_17', cells: const [Point(9, 9), Point(10, 9), Point(10, 10), Point(10, 11), Point(10, 12), Point(10, 13), Point(10, 14)]),
+          ArrowItem(id: 'l12_18', cells: const [Point(9, 8), Point(8, 8), Point(8, 9), Point(8, 10), Point(9, 10), Point(9, 11)]),
+          ArrowItem(id: 'l12_19', cells: const [Point(8, 11), Point(8, 12), Point(9, 12), Point(9, 13), Point(9, 14)]),
+          ArrowItem(id: 'l12_20', cells: const [Point(8, 13), Point(8, 14)]),
         ],
       ),
-      // المستوى 13 • صعب (cols=10, rows=12, n=23, free0=4, depth=16)
+      // المستوى 13: صعب (13x15 | arrows=20 | max_len=15 | cov=195/195)
       LevelConfig(
         levelNumber: 13,
         difficultyLabel: 'صعب',
-        gridCols: 10,
-        gridRows: 12,
+        gridCols: 13,
+        gridRows: 15,
+        isCustomShape: false,
         arrows: [
-          ArrowItem(id: 'l13_1', cells: const [Point(1, 9), Point(2, 9), Point(2, 8), Point(3, 8), Point(3, 7), Point(4, 7)]),
-          ArrowItem(id: 'l13_2', cells: const [Point(6, 8), Point(6, 7), Point(7, 7), Point(7, 6), Point(6, 6)]),
-          ArrowItem(id: 'l13_3', cells: const [Point(2, 7), Point(2, 6), Point(1, 6), Point(1, 7), Point(0, 7), Point(0, 6)]),
-          ArrowItem(id: 'l13_4', cells: const [Point(1, 3), Point(1, 4), Point(0, 4), Point(0, 5), Point(1, 5)]),
-          ArrowItem(id: 'l13_5', cells: const [Point(9, 8), Point(9, 7), Point(8, 7), Point(8, 6), Point(9, 6), Point(9, 5)]),
-          ArrowItem(id: 'l13_6', cells: const [Point(8, 0), Point(9, 0), Point(9, 1), Point(8, 1), Point(7, 1)]),
-          ArrowItem(id: 'l13_7', cells: const [Point(0, 2), Point(1, 2), Point(1, 1), Point(2, 1), Point(2, 2), Point(3, 2)]),
-          ArrowItem(id: 'l13_8', cells: const [Point(6, 2), Point(6, 1), Point(6, 0), Point(5, 0), Point(5, 1)]),
-          ArrowItem(id: 'l13_9', cells: const [Point(3, 4), Point(3, 3), Point(4, 3), Point(4, 2), Point(5, 2), Point(5, 3)]),
-          ArrowItem(id: 'l13_10', cells: const [Point(5, 10), Point(4, 10), Point(3, 10), Point(3, 9), Point(4, 9)]),
-          ArrowItem(id: 'l13_11', cells: const [Point(8, 9), Point(8, 10), Point(8, 11), Point(7, 11)]),
-          ArrowItem(id: 'l13_12', cells: const [Point(7, 10), Point(6, 10), Point(6, 11), Point(5, 11)]),
-          ArrowItem(id: 'l13_13', cells: const [Point(4, 11), Point(3, 11)]),
-          ArrowItem(id: 'l13_14', cells: const [Point(2, 11), Point(2, 10), Point(1, 10)]),
-          ArrowItem(id: 'l13_15', cells: const [Point(0, 9), Point(0, 10)]),
-          ArrowItem(id: 'l13_16', cells: const [Point(1, 11), Point(0, 11)]),
-          ArrowItem(id: 'l13_17', cells: const [Point(4, 5), Point(4, 4), Point(5, 4)]),
-          ArrowItem(id: 'l13_18', cells: const [Point(6, 3), Point(6, 4), Point(7, 4)]),
-          ArrowItem(id: 'l13_19', cells: const [Point(9, 3), Point(9, 4), Point(8, 4), Point(8, 3), Point(8, 2), Point(9, 2)]),
-          ArrowItem(id: 'l13_20', cells: const [Point(4, 1), Point(4, 0), Point(3, 0)]),
-          ArrowItem(id: 'l13_21', cells: const [Point(2, 0), Point(1, 0)]),
-          ArrowItem(id: 'l13_22', cells: const [Point(0, 1), Point(0, 0)]),
-          ArrowItem(id: 'l13_23', cells: const [Point(9, 9), Point(9, 10)]),
+          ArrowItem(id: 'l13_1', cells: const [Point(0, 14), Point(0, 13), Point(0, 12), Point(0, 11), Point(0, 10), Point(0, 9), Point(0, 8), Point(0, 7), Point(0, 6), Point(0, 5), Point(0, 4)]),
+          ArrowItem(id: 'l13_2', cells: const [Point(1, 14), Point(1, 13), Point(1, 12), Point(1, 11), Point(1, 10), Point(1, 9), Point(1, 8), Point(1, 7), Point(1, 6), Point(1, 5), Point(1, 4), Point(1, 3), Point(0, 3)]),
+          ArrowItem(id: 'l13_3', cells: const [Point(2, 14), Point(2, 13), Point(2, 12), Point(2, 11), Point(2, 10)]),
+          ArrowItem(id: 'l13_4', cells: const [Point(3, 14), Point(3, 13), Point(3, 12), Point(3, 11), Point(3, 10), Point(3, 9), Point(2, 9), Point(2, 8), Point(2, 7), Point(2, 6), Point(2, 5)]),
+          ArrowItem(id: 'l13_5', cells: const [Point(0, 2), Point(1, 2), Point(2, 2), Point(3, 2), Point(4, 2), Point(5, 2), Point(6, 2), Point(7, 2), Point(8, 2), Point(9, 2), Point(10, 2), Point(11, 2), Point(12, 2)]),
+          ArrowItem(id: 'l13_6', cells: const [Point(0, 1), Point(0, 0), Point(1, 0), Point(1, 1), Point(2, 1), Point(2, 0), Point(3, 0), Point(3, 1), Point(4, 1), Point(4, 0), Point(5, 0), Point(5, 1), Point(6, 1), Point(6, 0), Point(7, 0)]),
+          ArrowItem(id: 'l13_7', cells: const [Point(7, 1), Point(8, 1), Point(8, 0), Point(9, 0), Point(9, 1), Point(10, 1), Point(10, 0), Point(11, 0), Point(12, 0)]),
+          ArrowItem(id: 'l13_8', cells: const [Point(11, 1), Point(12, 1)]),
+          ArrowItem(id: 'l13_9', cells: const [Point(5, 3), Point(6, 3), Point(7, 3), Point(8, 3), Point(9, 3), Point(10, 3), Point(11, 3), Point(12, 3)]),
+          ArrowItem(id: 'l13_10', cells: const [Point(2, 4), Point(3, 4), Point(3, 5), Point(3, 6), Point(3, 7), Point(3, 8), Point(4, 8), Point(4, 9), Point(4, 10), Point(4, 11), Point(4, 12), Point(4, 13), Point(4, 14)]),
+          ArrowItem(id: 'l13_11', cells: const [Point(2, 3), Point(3, 3), Point(4, 3), Point(4, 4), Point(4, 5), Point(4, 6), Point(4, 7), Point(5, 7), Point(6, 7), Point(7, 7), Point(8, 7), Point(9, 7), Point(10, 7)]),
+          ArrowItem(id: 'l13_12', cells: const [Point(12, 4), Point(11, 4), Point(10, 4), Point(9, 4), Point(8, 4), Point(7, 4), Point(6, 4), Point(5, 4), Point(5, 5), Point(5, 6), Point(6, 6), Point(6, 5), Point(7, 5), Point(7, 6), Point(8, 6)]),
+          ArrowItem(id: 'l13_13', cells: const [Point(8, 5), Point(9, 5), Point(9, 6), Point(10, 6), Point(10, 5), Point(11, 5)]),
+          ArrowItem(id: 'l13_14', cells: const [Point(12, 5), Point(12, 6), Point(11, 6), Point(11, 7), Point(12, 7), Point(12, 8), Point(12, 9), Point(12, 10)]),
+          ArrowItem(id: 'l13_15', cells: const [Point(5, 10), Point(5, 11), Point(5, 12), Point(5, 13), Point(5, 14)]),
+          ArrowItem(id: 'l13_16', cells: const [Point(8, 8), Point(7, 8), Point(6, 8), Point(5, 8), Point(5, 9), Point(6, 9), Point(6, 10), Point(6, 11), Point(6, 12), Point(6, 13), Point(6, 14)]),
+          ArrowItem(id: 'l13_17', cells: const [Point(11, 10), Point(10, 10), Point(10, 9), Point(11, 9), Point(11, 8), Point(10, 8), Point(9, 8), Point(9, 9), Point(8, 9), Point(7, 9), Point(7, 10), Point(7, 11), Point(7, 12), Point(7, 13), Point(7, 14)]),
+          ArrowItem(id: 'l13_18', cells: const [Point(12, 11), Point(12, 12), Point(12, 13), Point(12, 14)]),
+          ArrowItem(id: 'l13_19', cells: const [Point(8, 14), Point(8, 13), Point(8, 12), Point(8, 11), Point(8, 10), Point(9, 10), Point(9, 11), Point(9, 12), Point(9, 13)]),
+          ArrowItem(id: 'l13_20', cells: const [Point(9, 14), Point(10, 14), Point(10, 13), Point(10, 12), Point(10, 11), Point(11, 11), Point(11, 12), Point(11, 13), Point(11, 14)]),
         ],
       ),
-      // المستوى 14 • صعب (cols=10, rows=12, n=25, free0=4, depth=13)
+      // المستوى 14: صعب (13x16 | arrows=18 | max_len=19 | cov=208/208)
       LevelConfig(
         levelNumber: 14,
         difficultyLabel: 'صعب',
-        gridCols: 10,
-        gridRows: 12,
+        gridCols: 13,
+        gridRows: 16,
+        isCustomShape: false,
         arrows: [
-          ArrowItem(id: 'l14_1', cells: const [Point(6, 9), Point(5, 9), Point(5, 10), Point(6, 10), Point(6, 11), Point(5, 11)]),
-          ArrowItem(id: 'l14_2', cells: const [Point(1, 11), Point(1, 10), Point(1, 9), Point(0, 9), Point(0, 8), Point(1, 8)]),
-          ArrowItem(id: 'l14_3', cells: const [Point(9, 8), Point(9, 9), Point(9, 10), Point(9, 11), Point(8, 11), Point(8, 10)]),
-          ArrowItem(id: 'l14_4', cells: const [Point(9, 5), Point(8, 5), Point(8, 6), Point(7, 6), Point(7, 5)]),
-          ArrowItem(id: 'l14_5', cells: const [Point(8, 3), Point(7, 3), Point(7, 2), Point(8, 2), Point(8, 1), Point(7, 1)]),
-          ArrowItem(id: 'l14_6', cells: const [Point(5, 0), Point(5, 1), Point(6, 1), Point(6, 2), Point(5, 2)]),
-          ArrowItem(id: 'l14_7', cells: const [Point(3, 1), Point(3, 2), Point(4, 2), Point(4, 3)]),
-          ArrowItem(id: 'l14_8', cells: const [Point(4, 5), Point(5, 5), Point(6, 5), Point(6, 6), Point(5, 6)]),
-          ArrowItem(id: 'l14_9', cells: const [Point(2, 5), Point(2, 6), Point(1, 6), Point(1, 7), Point(2, 7)]),
-          ArrowItem(id: 'l14_10', cells: const [Point(4, 6), Point(3, 6), Point(3, 7), Point(4, 7)]),
-          ArrowItem(id: 'l14_11', cells: const [Point(5, 8), Point(5, 7), Point(6, 7)]),
-          ArrowItem(id: 'l14_12', cells: const [Point(7, 7), Point(7, 8)]),
-          ArrowItem(id: 'l14_13', cells: const [Point(8, 9), Point(7, 9), Point(7, 10)]),
-          ArrowItem(id: 'l14_14', cells: const [Point(2, 2), Point(2, 3), Point(1, 3), Point(1, 4), Point(2, 4)]),
-          ArrowItem(id: 'l14_15', cells: const [Point(3, 5), Point(3, 4), Point(4, 4)]),
-          ArrowItem(id: 'l14_16', cells: const [Point(6, 3), Point(5, 3), Point(5, 4), Point(6, 4)]),
-          ArrowItem(id: 'l14_17', cells: const [Point(7, 4), Point(8, 4), Point(9, 4), Point(9, 3)]),
-          ArrowItem(id: 'l14_18', cells: const [Point(9, 2), Point(9, 1)]),
-          ArrowItem(id: 'l14_19', cells: const [Point(6, 0), Point(7, 0), Point(8, 0), Point(9, 0)]),
-          ArrowItem(id: 'l14_20', cells: const [Point(0, 7), Point(0, 6), Point(0, 5)]),
-          ArrowItem(id: 'l14_21', cells: const [Point(0, 4), Point(0, 3)]),
-          ArrowItem(id: 'l14_22', cells: const [Point(1, 1), Point(1, 2), Point(0, 2), Point(0, 1)]),
-          ArrowItem(id: 'l14_23', cells: const [Point(1, 0), Point(0, 0)]),
-          ArrowItem(id: 'l14_24', cells: const [Point(2, 9), Point(3, 9), Point(3, 8), Point(4, 8), Point(4, 9)]),
-          ArrowItem(id: 'l14_25', cells: const [Point(3, 11), Point(3, 10), Point(4, 10), Point(4, 11)]),
+          ArrowItem(id: 'l14_1', cells: const [Point(0, 0), Point(1, 0), Point(2, 0), Point(3, 0), Point(4, 0), Point(5, 0), Point(6, 0), Point(7, 0), Point(8, 0), Point(9, 0), Point(10, 0), Point(11, 0), Point(12, 0), Point(12, 1)]),
+          ArrowItem(id: 'l14_2', cells: const [Point(0, 1), Point(1, 1), Point(2, 1), Point(3, 1), Point(4, 1), Point(5, 1), Point(6, 1), Point(7, 1), Point(8, 1), Point(9, 1), Point(10, 1), Point(11, 1), Point(11, 2), Point(12, 2), Point(12, 3)]),
+          ArrowItem(id: 'l14_3', cells: const [Point(12, 6), Point(12, 7), Point(12, 8), Point(12, 9), Point(12, 10), Point(12, 11), Point(12, 12), Point(12, 13), Point(12, 14), Point(12, 15)]),
+          ArrowItem(id: 'l14_4', cells: const [Point(0, 2), Point(1, 2), Point(2, 2), Point(3, 2), Point(4, 2), Point(5, 2), Point(6, 2), Point(7, 2), Point(8, 2), Point(9, 2), Point(10, 2), Point(10, 3), Point(11, 3), Point(11, 4), Point(12, 4), Point(12, 5), Point(11, 5)]),
+          ArrowItem(id: 'l14_5', cells: const [Point(11, 8), Point(11, 9), Point(11, 10), Point(11, 11), Point(11, 12), Point(11, 13), Point(11, 14), Point(11, 15)]),
+          ArrowItem(id: 'l14_6', cells: const [Point(6, 3), Point(5, 3), Point(4, 3), Point(3, 3), Point(2, 3), Point(1, 3), Point(0, 3), Point(0, 4), Point(0, 5), Point(0, 6), Point(0, 7), Point(0, 8), Point(0, 9), Point(0, 10), Point(0, 11), Point(0, 12), Point(0, 13), Point(0, 14), Point(0, 15)]),
+          ArrowItem(id: 'l14_7', cells: const [Point(1, 9), Point(1, 10), Point(1, 11), Point(1, 12), Point(1, 13), Point(1, 14), Point(1, 15)]),
+          ArrowItem(id: 'l14_8', cells: const [Point(1, 6), Point(1, 7), Point(1, 8), Point(2, 8), Point(2, 9), Point(2, 10), Point(2, 11), Point(2, 12), Point(2, 13), Point(2, 14), Point(2, 15)]),
+          ArrowItem(id: 'l14_9', cells: const [Point(1, 5), Point(2, 5), Point(2, 6), Point(2, 7), Point(3, 7), Point(3, 8), Point(3, 9), Point(3, 10), Point(3, 11), Point(3, 12), Point(3, 13), Point(3, 14), Point(3, 15)]),
+          ArrowItem(id: 'l14_10', cells: const [Point(1, 4), Point(2, 4), Point(3, 4), Point(4, 4), Point(5, 4), Point(6, 4), Point(7, 4), Point(7, 3), Point(8, 3), Point(9, 3), Point(9, 4), Point(10, 4), Point(10, 5), Point(10, 6)]),
+          ArrowItem(id: 'l14_11', cells: const [Point(8, 4), Point(8, 5), Point(9, 5), Point(9, 6), Point(9, 7), Point(9, 8), Point(9, 9), Point(9, 10), Point(9, 11), Point(9, 12), Point(9, 13), Point(9, 14), Point(9, 15)]),
+          ArrowItem(id: 'l14_12', cells: const [Point(11, 6), Point(11, 7), Point(10, 7), Point(10, 8), Point(10, 9), Point(10, 10), Point(10, 11), Point(10, 12), Point(10, 13), Point(10, 14), Point(10, 15)]),
+          ArrowItem(id: 'l14_13', cells: const [Point(6, 5), Point(7, 5), Point(7, 6), Point(8, 6), Point(8, 7), Point(8, 8), Point(8, 9), Point(8, 10), Point(8, 11), Point(8, 12), Point(8, 13), Point(8, 14), Point(8, 15)]),
+          ArrowItem(id: 'l14_14', cells: const [Point(7, 15), Point(7, 14), Point(7, 13), Point(7, 12), Point(7, 11), Point(7, 10), Point(7, 9), Point(7, 8), Point(7, 7), Point(6, 7), Point(6, 6), Point(5, 6), Point(5, 5), Point(4, 5), Point(3, 5), Point(3, 6), Point(4, 6), Point(4, 7)]),
+          ArrowItem(id: 'l14_15', cells: const [Point(5, 7), Point(5, 8), Point(6, 8), Point(6, 9), Point(6, 10), Point(6, 11), Point(6, 12), Point(6, 13), Point(6, 14), Point(6, 15)]),
+          ArrowItem(id: 'l14_16', cells: const [Point(4, 8), Point(4, 9), Point(5, 9), Point(5, 10), Point(4, 10), Point(4, 11), Point(5, 11), Point(5, 12), Point(4, 12), Point(4, 13)]),
+          ArrowItem(id: 'l14_17', cells: const [Point(5, 13), Point(5, 14), Point(5, 15)]),
+          ArrowItem(id: 'l14_18', cells: const [Point(4, 14), Point(4, 15)]),
         ],
       ),
-      // المستوى 15 • صعب (cols=11, rows=11, n=11, free0=4, depth=7)
+      // المستوى 15: الماسة 💎 (19x19 | arrows=18 | max_len=17 | cov=164/181)
       LevelConfig(
         levelNumber: 15,
-        difficultyLabel: 'صعب',
-        gridCols: 11,
-        gridRows: 11,
+        difficultyLabel: 'الماسة 💎',
+        gridCols: 19,
+        gridRows: 19,
+        isCustomShape: true,
         arrows: [
-          ArrowItem(id: 'l15_1', cells: const [Point(9, 4), Point(8, 4), Point(8, 3), Point(7, 3), Point(7, 4), Point(6, 4)]),
-          ArrowItem(id: 'l15_2', cells: const [Point(0, 5), Point(1, 5), Point(1, 4), Point(2, 4), Point(2, 5), Point(3, 5)]),
-          ArrowItem(id: 'l15_3', cells: const [Point(7, 5), Point(6, 5), Point(6, 6), Point(5, 6), Point(5, 5)]),
-          ArrowItem(id: 'l15_4', cells: const [Point(6, 1), Point(5, 1), Point(5, 2), Point(6, 2), Point(6, 3), Point(5, 3)]),
-          ArrowItem(id: 'l15_5', cells: const [Point(2, 3), Point(3, 3), Point(3, 2), Point(4, 2), Point(4, 3)]),
-          ArrowItem(id: 'l15_6', cells: const [Point(7, 7), Point(6, 7), Point(5, 7), Point(4, 7), Point(4, 8), Point(5, 8)]),
-          ArrowItem(id: 'l15_7', cells: const [Point(7, 8), Point(6, 8), Point(6, 9), Point(5, 9)]),
-          ArrowItem(id: 'l15_8', cells: const [Point(9, 6), Point(9, 5), Point(8, 5), Point(8, 6)]),
-          ArrowItem(id: 'l15_9', cells: const [Point(4, 4), Point(4, 5), Point(4, 6), Point(3, 6)]),
-          ArrowItem(id: 'l15_10', cells: const [Point(1, 6), Point(2, 6), Point(2, 7)]),
-          ArrowItem(id: 'l15_11', cells: const [Point(3, 7), Point(3, 8)]),
+          ArrowItem(id: 'l15_1', cells: const [Point(9, 0), Point(9, 1), Point(10, 1), Point(10, 2)]),
+          ArrowItem(id: 'l15_2', cells: const [Point(9, 18), Point(9, 17), Point(10, 17), Point(10, 16), Point(11, 16), Point(11, 15), Point(12, 15), Point(12, 14), Point(13, 14), Point(13, 13), Point(14, 13), Point(14, 12), Point(15, 12), Point(15, 11), Point(16, 11), Point(16, 10), Point(17, 10)]),
+          ArrowItem(id: 'l15_3', cells: const [Point(9, 7), Point(9, 6), Point(9, 5), Point(9, 4), Point(9, 3), Point(9, 2), Point(8, 2), Point(8, 1)]),
+          ArrowItem(id: 'l15_4', cells: const [Point(10, 12), Point(10, 11), Point(10, 10), Point(10, 9), Point(10, 8), Point(10, 7), Point(10, 6), Point(10, 5), Point(10, 4), Point(10, 3), Point(11, 3), Point(11, 2)]),
+          ArrowItem(id: 'l15_5', cells: const [Point(2, 10), Point(1, 10), Point(1, 9), Point(0, 9)]),
+          ArrowItem(id: 'l15_6', cells: const [Point(2, 11), Point(3, 11), Point(3, 12), Point(4, 12), Point(4, 13)]),
+          ArrowItem(id: 'l15_7', cells: const [Point(10, 13), Point(11, 13), Point(11, 14), Point(10, 14), Point(10, 15), Point(9, 15), Point(9, 16), Point(8, 16), Point(8, 17)]),
+          ArrowItem(id: 'l15_8', cells: const [Point(7, 16), Point(7, 15), Point(8, 15), Point(8, 14), Point(9, 14), Point(9, 13), Point(9, 12), Point(9, 11), Point(9, 10), Point(9, 9), Point(9, 8), Point(8, 8), Point(7, 8), Point(6, 8), Point(5, 8), Point(4, 8), Point(3, 8)]),
+          ArrowItem(id: 'l15_9', cells: const [Point(5, 9), Point(6, 9), Point(7, 9), Point(8, 9), Point(8, 10), Point(8, 11), Point(8, 12), Point(8, 13), Point(7, 13), Point(7, 14), Point(6, 14), Point(6, 15)]),
+          ArrowItem(id: 'l15_10', cells: const [Point(11, 5), Point(11, 4), Point(12, 4), Point(12, 3)]),
+          ArrowItem(id: 'l15_11', cells: const [Point(7, 12), Point(6, 12), Point(6, 13), Point(5, 13), Point(5, 14)]),
+          ArrowItem(id: 'l15_12', cells: const [Point(5, 5), Point(5, 4), Point(6, 4), Point(6, 3), Point(7, 3), Point(7, 2)]),
+          ArrowItem(id: 'l15_13', cells: const [Point(6, 11), Point(7, 11), Point(7, 10), Point(6, 10), Point(5, 10), Point(5, 11), Point(4, 11), Point(4, 10), Point(4, 9), Point(3, 9), Point(2, 9), Point(2, 8), Point(1, 8)]),
+          ArrowItem(id: 'l15_14', cells: const [Point(13, 11), Point(14, 11), Point(14, 10), Point(15, 10), Point(15, 9), Point(16, 9), Point(16, 8), Point(17, 8), Point(17, 9), Point(18, 9)]),
+          ArrowItem(id: 'l15_15', cells: const [Point(7, 5), Point(7, 6), Point(8, 6), Point(8, 7), Point(7, 7), Point(6, 7), Point(6, 6), Point(5, 6), Point(5, 7), Point(4, 7), Point(3, 7), Point(3, 6), Point(4, 6), Point(4, 5)]),
+          ArrowItem(id: 'l15_16', cells: const [Point(13, 8), Point(12, 8), Point(12, 9), Point(11, 9), Point(11, 10), Point(12, 10), Point(13, 10), Point(13, 9), Point(14, 9), Point(14, 8), Point(15, 8), Point(15, 7), Point(16, 7)]),
+          ArrowItem(id: 'l15_17', cells: const [Point(11, 8), Point(11, 7), Point(11, 6), Point(12, 6), Point(12, 5), Point(13, 5), Point(13, 4)]),
+          ArrowItem(id: 'l15_18', cells: const [Point(13, 7), Point(14, 7), Point(14, 6), Point(14, 5)]),
         ],
       ),
-      // المستوى 16 • صعب (cols=11, rows=12, n=25, free0=4, depth=17)
+      // المستوى 16: صعب (14x16 | arrows=24 | max_len=17 | cov=223/224)
       LevelConfig(
         levelNumber: 16,
         difficultyLabel: 'صعب',
-        gridCols: 11,
-        gridRows: 12,
+        gridCols: 14,
+        gridRows: 16,
+        isCustomShape: false,
         arrows: [
-          ArrowItem(id: 'l16_1', cells: const [Point(4, 0), Point(4, 1), Point(5, 1), Point(5, 0), Point(6, 0), Point(6, 1)]),
-          ArrowItem(id: 'l16_2', cells: const [Point(6, 7), Point(5, 7), Point(4, 7), Point(4, 8), Point(5, 8)]),
-          ArrowItem(id: 'l16_3', cells: const [Point(6, 8), Point(6, 9), Point(6, 10), Point(7, 10), Point(7, 9)]),
-          ArrowItem(id: 'l16_4', cells: const [Point(5, 3), Point(6, 3), Point(6, 4), Point(7, 4), Point(7, 5), Point(6, 5)]),
-          ArrowItem(id: 'l16_5', cells: const [Point(3, 5), Point(3, 6), Point(2, 6), Point(2, 5), Point(1, 5), Point(1, 6)]),
-          ArrowItem(id: 'l16_6', cells: const [Point(1, 8), Point(1, 7), Point(0, 7), Point(0, 6), Point(0, 5)]),
-          ArrowItem(id: 'l16_7', cells: const [Point(0, 4), Point(1, 4), Point(1, 3)]),
-          ArrowItem(id: 'l16_8', cells: const [Point(1, 1), Point(0, 1), Point(0, 2), Point(1, 2)]),
-          ArrowItem(id: 'l16_9', cells: const [Point(3, 3), Point(4, 3), Point(4, 2), Point(5, 2)]),
-          ArrowItem(id: 'l16_10', cells: const [Point(8, 1), Point(9, 1), Point(9, 2), Point(10, 2), Point(10, 3)]),
-          ArrowItem(id: 'l16_11', cells: const [Point(10, 7), Point(10, 6), Point(10, 5), Point(10, 4), Point(9, 4), Point(9, 5)]),
-          ArrowItem(id: 'l16_12', cells: const [Point(8, 9), Point(9, 9), Point(9, 10), Point(10, 10), Point(10, 11), Point(9, 11)]),
-          ArrowItem(id: 'l16_13', cells: const [Point(8, 10), Point(8, 11), Point(7, 11), Point(6, 11)]),
-          ArrowItem(id: 'l16_14', cells: const [Point(4, 11), Point(5, 11), Point(5, 10), Point(4, 10)]),
-          ArrowItem(id: 'l16_15', cells: const [Point(3, 10), Point(3, 9), Point(3, 8), Point(2, 8), Point(2, 9)]),
-          ArrowItem(id: 'l16_16', cells: const [Point(3, 11), Point(2, 11)]),
-          ArrowItem(id: 'l16_17', cells: const [Point(1, 11), Point(1, 10), Point(0, 10), Point(0, 11)]),
-          ArrowItem(id: 'l16_18', cells: const [Point(4, 5), Point(4, 4), Point(3, 4), Point(2, 4), Point(2, 3)]),
-          ArrowItem(id: 'l16_19', cells: const [Point(3, 1), Point(3, 0), Point(2, 0)]),
-          ArrowItem(id: 'l16_20', cells: const [Point(1, 0), Point(0, 0)]),
-          ArrowItem(id: 'l16_21', cells: const [Point(8, 3), Point(7, 3), Point(7, 2)]),
-          ArrowItem(id: 'l16_22', cells: const [Point(7, 1), Point(7, 0), Point(8, 0)]),
-          ArrowItem(id: 'l16_23', cells: const [Point(9, 0), Point(10, 0)]),
-          ArrowItem(id: 'l16_24', cells: const [Point(8, 7), Point(7, 7), Point(7, 8), Point(8, 8)]),
-          ArrowItem(id: 'l16_25', cells: const [Point(9, 7), Point(9, 8), Point(10, 8)]),
+          ArrowItem(id: 'l16_1', cells: const [Point(0, 0), Point(1, 0), Point(2, 0), Point(3, 0), Point(4, 0), Point(5, 0), Point(6, 0), Point(7, 0), Point(8, 0), Point(9, 0), Point(10, 0), Point(11, 0), Point(12, 0), Point(13, 0), Point(13, 1)]),
+          ArrowItem(id: 'l16_2', cells: const [Point(7, 1), Point(6, 1), Point(5, 1), Point(4, 1), Point(3, 1), Point(2, 1), Point(1, 1), Point(0, 1)]),
+          ArrowItem(id: 'l16_3', cells: const [Point(0, 2), Point(1, 2), Point(2, 2), Point(3, 2), Point(4, 2), Point(5, 2), Point(6, 2), Point(7, 2), Point(8, 2), Point(8, 1), Point(9, 1), Point(10, 1), Point(11, 1), Point(12, 1), Point(12, 2), Point(13, 2), Point(13, 3)]),
+          ArrowItem(id: 'l16_4', cells: const [Point(13, 8), Point(13, 9), Point(13, 10), Point(13, 11), Point(13, 12), Point(13, 13), Point(13, 14), Point(13, 15)]),
+          ArrowItem(id: 'l16_5', cells: const [Point(13, 7), Point(12, 7), Point(11, 7), Point(10, 7), Point(9, 7), Point(8, 7), Point(7, 7), Point(6, 7), Point(5, 7), Point(4, 7), Point(3, 7), Point(2, 7), Point(1, 7), Point(0, 7), Point(0, 8), Point(0, 9), Point(0, 10)]),
+          ArrowItem(id: 'l16_6', cells: const [Point(13, 6), Point(12, 6), Point(11, 6), Point(10, 6), Point(9, 6), Point(8, 6), Point(7, 6), Point(6, 6), Point(5, 6), Point(4, 6), Point(3, 6), Point(2, 6), Point(1, 6), Point(0, 6)]),
+          ArrowItem(id: 'l16_7', cells: const [Point(0, 11), Point(0, 12), Point(0, 13), Point(0, 14), Point(0, 15)]),
+          ArrowItem(id: 'l16_8', cells: const [Point(13, 5), Point(13, 4), Point(12, 4), Point(12, 3), Point(11, 3)]),
+          ArrowItem(id: 'l16_9', cells: const [Point(12, 5), Point(11, 5), Point(11, 4), Point(10, 4), Point(10, 5), Point(9, 5)]),
+          ArrowItem(id: 'l16_10', cells: const [Point(11, 2), Point(10, 2), Point(9, 2), Point(9, 3), Point(9, 4), Point(8, 4), Point(8, 5), Point(7, 5)]),
+          ArrowItem(id: 'l16_11', cells: const [Point(8, 3), Point(7, 3), Point(7, 4), Point(6, 4), Point(6, 5), Point(5, 5), Point(4, 5), Point(3, 5), Point(2, 5), Point(1, 5), Point(0, 5)]),
+          ArrowItem(id: 'l16_12', cells: const [Point(6, 3), Point(5, 3), Point(5, 4), Point(4, 4), Point(4, 3), Point(3, 3), Point(3, 4), Point(2, 4)]),
+          ArrowItem(id: 'l16_13', cells: const [Point(2, 3), Point(1, 3), Point(0, 3)]),
+          ArrowItem(id: 'l16_14', cells: const [Point(1, 4), Point(0, 4)]),
+          ArrowItem(id: 'l16_15', cells: const [Point(1, 8), Point(1, 9), Point(1, 10), Point(1, 11), Point(1, 12), Point(1, 13), Point(1, 14), Point(1, 15)]),
+          ArrowItem(id: 'l16_16', cells: const [Point(3, 8), Point(4, 8), Point(5, 8), Point(6, 8), Point(7, 8), Point(8, 8), Point(9, 8), Point(10, 8), Point(11, 8), Point(12, 8), Point(12, 9), Point(12, 10), Point(12, 11), Point(12, 12), Point(12, 13), Point(12, 14), Point(12, 15)]),
+          ArrowItem(id: 'l16_17', cells: const [Point(2, 8), Point(2, 9), Point(2, 10), Point(2, 11), Point(2, 12), Point(2, 13), Point(2, 14), Point(2, 15)]),
+          ArrowItem(id: 'l16_18', cells: const [Point(6, 9), Point(7, 9), Point(8, 9), Point(9, 9), Point(10, 9), Point(11, 9), Point(11, 10), Point(11, 11), Point(11, 12), Point(11, 13), Point(11, 14), Point(11, 15)]),
+          ArrowItem(id: 'l16_19', cells: const [Point(5, 9), Point(5, 10), Point(6, 10), Point(7, 10), Point(8, 10), Point(9, 10), Point(10, 10), Point(10, 11), Point(10, 12), Point(10, 13), Point(10, 14), Point(10, 15)]),
+          ArrowItem(id: 'l16_20', cells: const [Point(5, 15), Point(4, 15), Point(4, 14), Point(4, 13), Point(4, 12), Point(4, 11), Point(4, 10), Point(4, 9), Point(3, 9), Point(3, 10), Point(3, 11), Point(3, 12), Point(3, 13), Point(3, 14), Point(3, 15)]),
+          ArrowItem(id: 'l16_21', cells: const [Point(8, 11), Point(7, 11), Point(6, 11), Point(5, 11), Point(5, 12), Point(5, 13), Point(5, 14), Point(6, 14), Point(6, 15)]),
+          ArrowItem(id: 'l16_22', cells: const [Point(9, 11), Point(9, 12), Point(9, 13), Point(9, 14), Point(9, 15)]),
+          ArrowItem(id: 'l16_23', cells: const [Point(6, 13), Point(6, 12), Point(7, 12), Point(8, 12), Point(8, 13), Point(7, 13), Point(7, 14), Point(7, 15)]),
+          ArrowItem(id: 'l16_24', cells: const [Point(8, 14), Point(8, 15)]),
         ],
       ),
-      // المستوى 17 • صعب (cols=11, rows=12, n=25, free0=4, depth=14)
+      // المستوى 17: صعب جداً (14x17 | arrows=24 | max_len=20 | cov=238/238)
       LevelConfig(
         levelNumber: 17,
-        difficultyLabel: 'صعب',
-        gridCols: 11,
-        gridRows: 12,
+        difficultyLabel: 'صعب جداً',
+        gridCols: 14,
+        gridRows: 17,
+        isCustomShape: false,
         arrows: [
-          ArrowItem(id: 'l17_1', cells: const [Point(5, 0), Point(6, 0), Point(7, 0), Point(8, 0), Point(8, 1), Point(7, 1)]),
-          ArrowItem(id: 'l17_2', cells: const [Point(4, 1), Point(3, 1), Point(3, 0), Point(2, 0), Point(2, 1)]),
-          ArrowItem(id: 'l17_3', cells: const [Point(2, 3), Point(3, 3), Point(3, 4), Point(2, 4), Point(2, 5), Point(3, 5)]),
-          ArrowItem(id: 'l17_4', cells: const [Point(4, 4), Point(5, 4), Point(5, 5), Point(4, 5), Point(4, 6)]),
-          ArrowItem(id: 'l17_5', cells: const [Point(4, 9), Point(3, 9), Point(2, 9), Point(2, 10), Point(3, 10)]),
-          ArrowItem(id: 'l17_6', cells: const [Point(9, 10), Point(10, 10), Point(10, 9), Point(10, 8), Point(9, 8), Point(9, 7)]),
-          ArrowItem(id: 'l17_7', cells: const [Point(7, 2), Point(8, 2), Point(9, 2), Point(9, 3), Point(8, 3), Point(8, 4)]),
-          ArrowItem(id: 'l17_8', cells: const [Point(7, 6), Point(8, 6), Point(8, 5), Point(7, 5), Point(6, 5), Point(6, 6)]),
-          ArrowItem(id: 'l17_9', cells: const [Point(6, 10), Point(7, 10), Point(7, 11), Point(6, 11)]),
-          ArrowItem(id: 'l17_10', cells: const [Point(3, 11), Point(2, 11), Point(1, 11), Point(1, 10), Point(1, 9)]),
-          ArrowItem(id: 'l17_11', cells: const [Point(1, 3), Point(1, 4), Point(1, 5), Point(1, 6), Point(0, 6), Point(0, 5)]),
-          ArrowItem(id: 'l17_12', cells: const [Point(0, 4), Point(0, 3)]),
-          ArrowItem(id: 'l17_13', cells: const [Point(1, 1), Point(1, 2), Point(0, 2), Point(0, 1)]),
-          ArrowItem(id: 'l17_14', cells: const [Point(1, 0), Point(0, 0)]),
-          ArrowItem(id: 'l17_15', cells: const [Point(9, 4), Point(9, 5), Point(9, 6), Point(10, 6), Point(10, 5)]),
-          ArrowItem(id: 'l17_16', cells: const [Point(10, 4), Point(10, 3)]),
-          ArrowItem(id: 'l17_17', cells: const [Point(10, 2), Point(10, 1)]),
-          ArrowItem(id: 'l17_18', cells: const [Point(9, 1), Point(9, 0), Point(10, 0)]),
-          ArrowItem(id: 'l17_19', cells: const [Point(5, 6), Point(5, 7), Point(6, 7), Point(6, 8), Point(5, 8)]),
-          ArrowItem(id: 'l17_20', cells: const [Point(2, 8), Point(3, 8), Point(4, 8), Point(4, 7), Point(3, 7)]),
-          ArrowItem(id: 'l17_21', cells: const [Point(1, 7), Point(0, 7), Point(0, 8)]),
-          ArrowItem(id: 'l17_22', cells: const [Point(0, 9), Point(0, 10)]),
-          ArrowItem(id: 'l17_23', cells: const [Point(7, 9), Point(7, 8), Point(7, 7), Point(8, 7), Point(8, 8)]),
-          ArrowItem(id: 'l17_24', cells: const [Point(9, 9), Point(8, 9), Point(8, 10)]),
-          ArrowItem(id: 'l17_25', cells: const [Point(8, 11), Point(9, 11)]),
+          ArrowItem(id: 'l17_1', cells: const [Point(0, 0), Point(1, 0), Point(2, 0), Point(3, 0), Point(4, 0), Point(5, 0), Point(6, 0), Point(7, 0), Point(8, 0), Point(9, 0)]),
+          ArrowItem(id: 'l17_2', cells: const [Point(0, 1), Point(1, 1), Point(2, 1), Point(3, 1), Point(4, 1)]),
+          ArrowItem(id: 'l17_3', cells: const [Point(10, 0), Point(11, 0), Point(12, 0), Point(13, 0), Point(13, 1), Point(13, 2), Point(13, 3), Point(13, 4), Point(13, 5), Point(13, 6), Point(13, 7), Point(13, 8), Point(13, 9), Point(13, 10), Point(13, 11), Point(13, 12), Point(13, 13)]),
+          ArrowItem(id: 'l17_4', cells: const [Point(0, 2), Point(1, 2), Point(2, 2), Point(3, 2), Point(4, 2), Point(5, 2), Point(5, 1), Point(6, 1), Point(7, 1), Point(8, 1), Point(9, 1), Point(10, 1), Point(11, 1), Point(12, 1), Point(12, 2), Point(12, 3), Point(12, 4)]),
+          ArrowItem(id: 'l17_5', cells: const [Point(6, 3), Point(5, 3), Point(4, 3), Point(3, 3), Point(2, 3), Point(1, 3), Point(0, 3)]),
+          ArrowItem(id: 'l17_6', cells: const [Point(6, 2), Point(7, 2), Point(8, 2), Point(9, 2), Point(10, 2), Point(11, 2), Point(11, 3), Point(11, 4), Point(11, 5), Point(12, 5), Point(12, 6), Point(12, 7), Point(12, 8), Point(12, 9), Point(12, 10), Point(12, 11), Point(12, 12)]),
+          ArrowItem(id: 'l17_7', cells: const [Point(9, 3), Point(8, 3), Point(7, 3), Point(7, 4), Point(6, 4), Point(5, 4), Point(4, 4), Point(3, 4), Point(2, 4), Point(1, 4), Point(0, 4)]),
+          ArrowItem(id: 'l17_8', cells: const [Point(10, 3), Point(10, 4), Point(10, 5), Point(10, 6), Point(11, 6), Point(11, 7), Point(11, 8), Point(11, 9), Point(11, 10), Point(11, 11), Point(11, 12), Point(11, 13)]),
+          ArrowItem(id: 'l17_9', cells: const [Point(12, 13), Point(12, 14), Point(13, 14), Point(13, 15), Point(13, 16), Point(12, 16), Point(12, 15), Point(11, 15), Point(11, 14), Point(10, 14), Point(9, 14), Point(8, 14), Point(7, 14)]),
+          ArrowItem(id: 'l17_10', cells: const [Point(11, 16), Point(10, 16), Point(10, 15), Point(9, 15), Point(9, 16), Point(8, 16), Point(8, 15), Point(7, 15), Point(7, 16), Point(6, 16), Point(5, 16), Point(4, 16), Point(3, 16), Point(2, 16)]),
+          ArrowItem(id: 'l17_11', cells: const [Point(8, 5), Point(7, 5), Point(6, 5), Point(5, 5), Point(4, 5), Point(3, 5), Point(2, 5), Point(1, 5), Point(0, 5)]),
+          ArrowItem(id: 'l17_12', cells: const [Point(8, 4), Point(9, 4), Point(9, 5), Point(9, 6), Point(9, 7), Point(10, 7), Point(10, 8), Point(10, 9), Point(10, 10), Point(10, 11), Point(10, 12), Point(10, 13), Point(9, 13), Point(8, 13), Point(7, 13), Point(6, 13), Point(5, 13), Point(4, 13)]),
+          ArrowItem(id: 'l17_13', cells: const [Point(1, 16), Point(0, 16)]),
+          ArrowItem(id: 'l17_14', cells: const [Point(8, 6), Point(7, 6), Point(6, 6), Point(5, 6), Point(4, 6), Point(3, 6), Point(2, 6), Point(1, 6), Point(0, 6)]),
+          ArrowItem(id: 'l17_15', cells: const [Point(4, 7), Point(3, 7), Point(2, 7), Point(1, 7), Point(0, 7)]),
+          ArrowItem(id: 'l17_16', cells: const [Point(0, 8), Point(1, 8), Point(2, 8), Point(3, 8), Point(4, 8), Point(5, 8), Point(5, 7), Point(6, 7), Point(7, 7), Point(8, 7), Point(8, 8), Point(9, 8), Point(9, 9), Point(9, 10), Point(9, 11), Point(9, 12), Point(8, 12), Point(7, 12), Point(6, 12), Point(5, 12)]),
+          ArrowItem(id: 'l17_17', cells: const [Point(7, 8), Point(6, 8), Point(6, 9), Point(5, 9), Point(4, 9), Point(3, 9), Point(2, 9), Point(1, 9), Point(0, 9)]),
+          ArrowItem(id: 'l17_18', cells: const [Point(6, 14), Point(6, 15), Point(5, 15), Point(5, 14), Point(4, 14), Point(4, 15), Point(3, 15), Point(2, 15), Point(1, 15), Point(0, 15)]),
+          ArrowItem(id: 'l17_19', cells: const [Point(8, 9), Point(7, 9), Point(7, 10), Point(8, 10), Point(8, 11), Point(7, 11), Point(6, 11)]),
+          ArrowItem(id: 'l17_20', cells: const [Point(6, 10), Point(5, 10), Point(5, 11), Point(4, 11), Point(4, 12), Point(3, 12), Point(2, 12), Point(1, 12), Point(0, 12)]),
+          ArrowItem(id: 'l17_21', cells: const [Point(4, 10), Point(3, 10), Point(3, 11), Point(2, 11), Point(2, 10), Point(1, 10), Point(0, 10)]),
+          ArrowItem(id: 'l17_22', cells: const [Point(1, 11), Point(0, 11)]),
+          ArrowItem(id: 'l17_23', cells: const [Point(3, 14), Point(3, 13), Point(2, 13), Point(2, 14), Point(1, 14), Point(0, 14)]),
+          ArrowItem(id: 'l17_24', cells: const [Point(1, 13), Point(0, 13)]),
         ],
       ),
-      // المستوى 18 • صعب (cols=12, rows=12, n=13, free0=7, depth=4)
+      // المستوى 18: النجمة ⭐ (19x15 | arrows=18 | max_len=15 | cov=149/149)
       LevelConfig(
         levelNumber: 18,
-        difficultyLabel: 'صعب',
-        gridCols: 12,
-        gridRows: 12,
+        difficultyLabel: 'النجمة ⭐',
+        gridCols: 19,
+        gridRows: 15,
+        isCustomShape: true,
         arrows: [
-          ArrowItem(id: 'l18_1', cells: const [Point(8, 10), Point(8, 9), Point(7, 9), Point(7, 8), Point(8, 8), Point(8, 7)]),
-          ArrowItem(id: 'l18_2', cells: const [Point(7, 6), Point(7, 5), Point(8, 5), Point(8, 4), Point(9, 4), Point(9, 5)]),
-          ArrowItem(id: 'l18_3', cells: const [Point(9, 9), Point(9, 10)]),
-          ArrowItem(id: 'l18_4', cells: const [Point(5, 1), Point(6, 1), Point(6, 2), Point(5, 2), Point(5, 3), Point(6, 3)]),
-          ArrowItem(id: 'l18_5', cells: const [Point(4, 7), Point(3, 7), Point(3, 6), Point(4, 6), Point(4, 5)]),
-          ArrowItem(id: 'l18_6', cells: const [Point(4, 4), Point(5, 4), Point(6, 4), Point(6, 5)]),
-          ArrowItem(id: 'l18_7', cells: const [Point(7, 7), Point(6, 7), Point(6, 8), Point(5, 8)]),
-          ArrowItem(id: 'l18_8', cells: const [Point(3, 9), Point(4, 9), Point(4, 8), Point(3, 8)]),
-          ArrowItem(id: 'l18_9', cells: const [Point(3, 5), Point(3, 4), Point(2, 4), Point(2, 5)]),
-          ArrowItem(id: 'l18_10', cells: const [Point(3, 10), Point(2, 10)]),
-          ArrowItem(id: 'l18_11', cells: const [Point(11, 4), Point(10, 4), Point(10, 5)]),
-          ArrowItem(id: 'l18_12', cells: const [Point(0, 4), Point(1, 4), Point(1, 5)]),
-          ArrowItem(id: 'l18_13', cells: const [Point(6, 0), Point(5, 0)]),
+          ArrowItem(id: 'l18_1', cells: const [Point(9, 0), Point(9, 1), Point(8, 1), Point(8, 2), Point(8, 3), Point(7, 3), Point(7, 4), Point(7, 5), Point(7, 6), Point(7, 7), Point(7, 8)]),
+          ArrowItem(id: 'l18_2', cells: const [Point(14, 7), Point(15, 7), Point(15, 6), Point(16, 6), Point(16, 5), Point(17, 5), Point(17, 4), Point(18, 4)]),
+          ArrowItem(id: 'l18_3', cells: const [Point(16, 4), Point(15, 4), Point(15, 5), Point(14, 5), Point(14, 4), Point(13, 4), Point(12, 4), Point(11, 4), Point(11, 3), Point(10, 3), Point(9, 3), Point(9, 2), Point(10, 2), Point(10, 1)]),
+          ArrowItem(id: 'l18_4', cells: const [Point(0, 4), Point(1, 4), Point(1, 5), Point(2, 5), Point(2, 4)]),
+          ArrowItem(id: 'l18_5', cells: const [Point(5, 7), Point(4, 7), Point(3, 7), Point(3, 6), Point(2, 6)]),
+          ArrowItem(id: 'l18_6', cells: const [Point(10, 6), Point(9, 6), Point(9, 5), Point(8, 5), Point(8, 4), Point(9, 4), Point(10, 4), Point(10, 5), Point(11, 5), Point(11, 6), Point(11, 7), Point(11, 8), Point(11, 9), Point(11, 10), Point(11, 11)]),
+          ArrowItem(id: 'l18_7', cells: const [Point(8, 6), Point(8, 7), Point(8, 8), Point(8, 9)]),
+          ArrowItem(id: 'l18_8', cells: const [Point(14, 6), Point(13, 6), Point(13, 5), Point(12, 5), Point(12, 6), Point(12, 7), Point(13, 7), Point(13, 8), Point(14, 8), Point(14, 9), Point(15, 9)]),
+          ArrowItem(id: 'l18_9', cells: const [Point(12, 8), Point(12, 9), Point(13, 9), Point(13, 10), Point(12, 10), Point(12, 11), Point(12, 12), Point(13, 12)]),
+          ArrowItem(id: 'l18_10', cells: const [Point(13, 11), Point(14, 11), Point(14, 10), Point(15, 10), Point(15, 11), Point(16, 11), Point(16, 12), Point(16, 13), Point(17, 13)]),
+          ArrowItem(id: 'l18_11', cells: const [Point(17, 14), Point(16, 14), Point(15, 14), Point(15, 13), Point(15, 12), Point(14, 12), Point(14, 13)]),
+          ArrowItem(id: 'l18_12', cells: const [Point(6, 4), Point(5, 4), Point(4, 4), Point(4, 5), Point(3, 5), Point(3, 4)]),
+          ArrowItem(id: 'l18_13', cells: const [Point(4, 6), Point(5, 6), Point(5, 5), Point(6, 5), Point(6, 6), Point(6, 7), Point(6, 8), Point(6, 9), Point(7, 9), Point(7, 10)]),
+          ArrowItem(id: 'l18_14', cells: const [Point(7, 11), Point(6, 11), Point(6, 12), Point(5, 12), Point(4, 12), Point(4, 13), Point(3, 13), Point(3, 14), Point(2, 14), Point(1, 14)]),
+          ArrowItem(id: 'l18_15', cells: const [Point(3, 12), Point(3, 11), Point(2, 11), Point(2, 12), Point(2, 13), Point(1, 13)]),
+          ArrowItem(id: 'l18_16', cells: const [Point(6, 10), Point(5, 10), Point(5, 11), Point(4, 11), Point(4, 10), Point(3, 10)]),
+          ArrowItem(id: 'l18_17', cells: const [Point(3, 9), Point(4, 9), Point(5, 9), Point(5, 8), Point(4, 8)]),
+          ArrowItem(id: 'l18_18', cells: const [Point(8, 10), Point(9, 10), Point(9, 9), Point(9, 8), Point(9, 7), Point(10, 7), Point(10, 8), Point(10, 9), Point(10, 10)]),
         ],
       ),
-      // المستوى 19 • صعب جداً (cols=11, rows=13, n=28, free0=4, depth=18)
+      // المستوى 19: صعب جداً (15x17 | arrows=23 | max_len=22 | cov=254/255)
       LevelConfig(
         levelNumber: 19,
         difficultyLabel: 'صعب جداً',
-        gridCols: 11,
-        gridRows: 13,
+        gridCols: 15,
+        gridRows: 17,
+        isCustomShape: false,
         arrows: [
-          ArrowItem(id: 'l19_1', cells: const [Point(1, 12), Point(1, 11), Point(2, 11), Point(2, 10), Point(1, 10), Point(1, 9)]),
-          ArrowItem(id: 'l19_2', cells: const [Point(2, 6), Point(1, 6), Point(1, 5), Point(0, 5), Point(0, 4), Point(1, 4)]),
-          ArrowItem(id: 'l19_3', cells: const [Point(6, 4), Point(6, 5), Point(5, 5), Point(5, 4), Point(4, 4), Point(4, 5)]),
-          ArrowItem(id: 'l19_4', cells: const [Point(4, 7), Point(5, 7), Point(5, 8), Point(4, 8), Point(4, 9), Point(5, 9)]),
-          ArrowItem(id: 'l19_5', cells: const [Point(6, 10), Point(6, 9), Point(7, 9), Point(7, 10), Point(8, 10), Point(8, 9)]),
-          ArrowItem(id: 'l19_6', cells: const [Point(8, 8), Point(8, 7), Point(7, 7), Point(7, 6), Point(8, 6), Point(8, 5)]),
-          ArrowItem(id: 'l19_7', cells: const [Point(7, 5), Point(7, 4), Point(8, 4), Point(9, 4), Point(9, 3), Point(8, 3)]),
-          ArrowItem(id: 'l19_8', cells: const [Point(4, 3), Point(4, 2), Point(3, 2), Point(3, 3)]),
-          ArrowItem(id: 'l19_9', cells: const [Point(2, 4), Point(2, 5), Point(3, 5), Point(3, 6)]),
-          ArrowItem(id: 'l19_10', cells: const [Point(3, 12), Point(4, 12), Point(5, 12)]),
-          ArrowItem(id: 'l19_11', cells: const [Point(8, 12), Point(7, 12), Point(6, 12), Point(6, 11), Point(7, 11)]),
-          ArrowItem(id: 'l19_12', cells: const [Point(10, 11), Point(10, 10), Point(10, 9)]),
-          ArrowItem(id: 'l19_13', cells: const [Point(10, 1), Point(9, 1), Point(8, 1)]),
-          ArrowItem(id: 'l19_14', cells: const [Point(1, 1), Point(0, 1), Point(0, 0), Point(1, 0)]),
-          ArrowItem(id: 'l19_15', cells: const [Point(2, 1), Point(2, 0), Point(3, 0)]),
-          ArrowItem(id: 'l19_16', cells: const [Point(4, 0), Point(5, 0)]),
-          ArrowItem(id: 'l19_17', cells: const [Point(6, 0), Point(7, 0)]),
-          ArrowItem(id: 'l19_18', cells: const [Point(8, 0), Point(9, 0)]),
-          ArrowItem(id: 'l19_19', cells: const [Point(10, 6), Point(9, 6), Point(9, 7)]),
-          ArrowItem(id: 'l19_20', cells: const [Point(10, 7), Point(10, 8), Point(9, 8), Point(9, 9)]),
-          ArrowItem(id: 'l19_21', cells: const [Point(9, 10), Point(9, 11)]),
-          ArrowItem(id: 'l19_22', cells: const [Point(9, 12), Point(10, 12)]),
-          ArrowItem(id: 'l19_23', cells: const [Point(0, 6), Point(0, 7)]),
-          ArrowItem(id: 'l19_24', cells: const [Point(2, 8), Point(2, 7), Point(1, 7), Point(1, 8), Point(0, 8), Point(0, 9)]),
-          ArrowItem(id: 'l19_25', cells: const [Point(0, 10), Point(0, 11)]),
-          ArrowItem(id: 'l19_26', cells: const [Point(7, 3), Point(6, 3), Point(5, 3), Point(5, 2), Point(6, 2)]),
-          ArrowItem(id: 'l19_27', cells: const [Point(4, 1), Point(5, 1), Point(6, 1), Point(7, 1), Point(7, 2), Point(8, 2)]),
-          ArrowItem(id: 'l19_28', cells: const [Point(9, 2), Point(10, 2)]),
+          ArrowItem(id: 'l19_1', cells: const [Point(0, 0), Point(1, 0), Point(2, 0), Point(3, 0), Point(4, 0), Point(5, 0), Point(6, 0), Point(7, 0), Point(8, 0), Point(9, 0), Point(10, 0), Point(11, 0), Point(12, 0)]),
+          ArrowItem(id: 'l19_2', cells: const [Point(0, 1), Point(1, 1), Point(2, 1), Point(3, 1), Point(4, 1), Point(5, 1), Point(6, 1), Point(7, 1), Point(8, 1), Point(9, 1), Point(10, 1)]),
+          ArrowItem(id: 'l19_3', cells: const [Point(0, 12), Point(0, 13), Point(0, 14), Point(0, 15), Point(0, 16)]),
+          ArrowItem(id: 'l19_4', cells: const [Point(0, 11), Point(0, 10), Point(0, 9), Point(0, 8), Point(0, 7), Point(0, 6), Point(0, 5), Point(0, 4), Point(0, 3), Point(0, 2), Point(1, 2), Point(2, 2)]),
+          ArrowItem(id: 'l19_5', cells: const [Point(13, 0), Point(14, 0), Point(14, 1), Point(14, 2), Point(14, 3), Point(14, 4), Point(14, 5), Point(14, 6), Point(14, 7), Point(14, 8), Point(14, 9), Point(14, 10), Point(14, 11), Point(14, 12), Point(14, 13)]),
+          ArrowItem(id: 'l19_6', cells: const [Point(14, 14), Point(14, 15), Point(14, 16)]),
+          ArrowItem(id: 'l19_7', cells: const [Point(1, 7), Point(1, 8), Point(1, 9), Point(1, 10), Point(1, 11), Point(1, 12), Point(1, 13), Point(1, 14), Point(1, 15), Point(1, 16)]),
+          ArrowItem(id: 'l19_8', cells: const [Point(13, 6), Point(13, 7), Point(13, 8), Point(13, 9), Point(13, 10), Point(13, 11), Point(13, 12), Point(13, 13), Point(13, 14), Point(13, 15), Point(13, 16)]),
+          ArrowItem(id: 'l19_9', cells: const [Point(11, 1), Point(12, 1), Point(13, 1), Point(13, 2), Point(13, 3), Point(13, 4), Point(13, 5), Point(12, 5), Point(12, 6), Point(12, 7), Point(12, 8), Point(12, 9), Point(12, 10), Point(12, 11), Point(12, 12), Point(12, 13), Point(12, 14), Point(12, 15), Point(12, 16)]),
+          ArrowItem(id: 'l19_10', cells: const [Point(11, 10), Point(11, 11), Point(11, 12), Point(11, 13), Point(11, 14), Point(11, 15), Point(11, 16)]),
+          ArrowItem(id: 'l19_11', cells: const [Point(1, 3), Point(1, 4), Point(1, 5), Point(1, 6), Point(2, 6), Point(2, 7), Point(2, 8), Point(2, 9), Point(2, 10), Point(2, 11), Point(2, 12), Point(2, 13), Point(2, 14), Point(2, 15), Point(2, 16)]),
+          ArrowItem(id: 'l19_12', cells: const [Point(3, 12), Point(3, 13), Point(3, 14), Point(3, 15), Point(3, 16)]),
+          ArrowItem(id: 'l19_13', cells: const [Point(3, 4), Point(3, 3), Point(2, 3), Point(2, 4), Point(2, 5), Point(3, 5), Point(3, 6), Point(3, 7), Point(3, 8), Point(3, 9), Point(3, 10), Point(3, 11), Point(4, 11), Point(4, 12), Point(4, 13), Point(4, 14), Point(4, 15), Point(4, 16)]),
+          ArrowItem(id: 'l19_14', cells: const [Point(9, 2), Point(10, 2), Point(10, 3), Point(11, 3), Point(11, 2), Point(12, 2), Point(12, 3), Point(12, 4), Point(11, 4), Point(11, 5), Point(11, 6), Point(11, 7), Point(11, 8), Point(11, 9), Point(10, 9), Point(10, 10), Point(10, 11), Point(10, 12), Point(10, 13), Point(10, 14), Point(10, 15), Point(10, 16)]),
+          ArrowItem(id: 'l19_15', cells: const [Point(3, 2), Point(4, 2), Point(5, 2), Point(6, 2), Point(7, 2), Point(8, 2), Point(8, 3)]),
+          ArrowItem(id: 'l19_16', cells: const [Point(9, 3), Point(9, 4)]),
+          ArrowItem(id: 'l19_17', cells: const [Point(4, 8), Point(4, 9), Point(4, 10), Point(5, 10), Point(5, 11), Point(5, 12), Point(5, 13), Point(5, 14), Point(5, 15), Point(5, 16)]),
+          ArrowItem(id: 'l19_18', cells: const [Point(6, 16), Point(6, 15), Point(6, 14), Point(6, 13), Point(6, 12), Point(6, 11), Point(6, 10), Point(6, 9), Point(5, 9), Point(5, 8), Point(5, 7), Point(4, 7), Point(4, 6), Point(4, 5), Point(4, 4), Point(4, 3), Point(5, 3), Point(6, 3), Point(7, 3), Point(7, 4), Point(8, 4), Point(8, 5)]),
+          ArrowItem(id: 'l19_19', cells: const [Point(10, 4), Point(10, 5), Point(9, 5), Point(9, 6)]),
+          ArrowItem(id: 'l19_20', cells: const [Point(10, 6), Point(10, 7), Point(10, 8), Point(9, 8), Point(9, 7), Point(8, 7), Point(8, 6), Point(7, 6), Point(7, 5), Point(6, 5), Point(6, 4), Point(5, 4), Point(5, 5), Point(5, 6), Point(6, 6), Point(6, 7), Point(6, 8), Point(7, 8), Point(8, 8), Point(8, 9)]),
+          ArrowItem(id: 'l19_21', cells: const [Point(7, 9), Point(7, 10), Point(7, 11), Point(7, 12), Point(7, 13), Point(7, 14), Point(7, 15), Point(7, 16)]),
+          ArrowItem(id: 'l19_22', cells: const [Point(9, 9), Point(9, 10), Point(8, 10), Point(8, 11), Point(9, 11), Point(9, 12), Point(8, 12), Point(8, 13), Point(9, 13), Point(9, 14), Point(8, 14), Point(8, 15), Point(8, 16)]),
+          ArrowItem(id: 'l19_23', cells: const [Point(9, 15), Point(9, 16)]),
         ],
       ),
-      // المستوى 20 • تحدي التاج (cols=12, rows=12, n=12, free0=6, depth=7)
+      // المستوى 20: التاج الملكي 👑 (19x13 | arrows=20 | max_len=17 | cov=185/187)
       LevelConfig(
         levelNumber: 20,
-        difficultyLabel: 'تحدي التاج',
-        gridCols: 12,
-        gridRows: 12,
+        difficultyLabel: 'التاج الملكي 👑',
+        gridCols: 19,
+        gridRows: 13,
+        isCustomShape: true,
         arrows: [
-          ArrowItem(id: 'l20_1', cells: const [Point(3, 6), Point(4, 6), Point(4, 7), Point(5, 7), Point(5, 6), Point(6, 6)]),
-          ArrowItem(id: 'l20_2', cells: const [Point(8, 6), Point(7, 6), Point(7, 7), Point(6, 7), Point(6, 8), Point(5, 8)]),
-          ArrowItem(id: 'l20_3', cells: const [Point(3, 7), Point(3, 8), Point(4, 8), Point(4, 9), Point(5, 9), Point(6, 9)]),
-          ArrowItem(id: 'l20_4', cells: const [Point(9, 9), Point(9, 8), Point(9, 7), Point(10, 7), Point(10, 6)]),
-          ArrowItem(id: 'l20_5', cells: const [Point(9, 4), Point(10, 4), Point(10, 5), Point(9, 5)]),
-          ArrowItem(id: 'l20_6', cells: const [Point(1, 7), Point(2, 7), Point(2, 6), Point(1, 6), Point(1, 5)]),
-          ArrowItem(id: 'l20_7', cells: const [Point(3, 5), Point(2, 5), Point(2, 4), Point(1, 4)]),
-          ArrowItem(id: 'l20_8', cells: const [Point(6, 4), Point(6, 5), Point(5, 5), Point(5, 4)]),
-          ArrowItem(id: 'l20_9', cells: const [Point(8, 7), Point(8, 8)]),
-          ArrowItem(id: 'l20_10', cells: const [Point(1, 9), Point(1, 8), Point(2, 8), Point(2, 9)]),
-          ArrowItem(id: 'l20_11', cells: const [Point(7, 8), Point(7, 9)]),
-          ArrowItem(id: 'l20_12', cells: const [Point(10, 8), Point(10, 9)]),
+          ArrowItem(id: 'l20_1', cells: const [Point(18, 0), Point(18, 1), Point(17, 1), Point(17, 2), Point(16, 2), Point(16, 3), Point(15, 3), Point(15, 4), Point(14, 4), Point(14, 5), Point(14, 6), Point(14, 7)]),
+          ArrowItem(id: 'l20_2', cells: const [Point(9, 0), Point(9, 1), Point(8, 1), Point(8, 2), Point(7, 2), Point(7, 3), Point(6, 3), Point(6, 4), Point(6, 5), Point(6, 6), Point(6, 7), Point(6, 8), Point(6, 9), Point(6, 10), Point(6, 11), Point(6, 12), Point(7, 12)]),
+          ArrowItem(id: 'l20_3', cells: const [Point(7, 8), Point(7, 7), Point(7, 6), Point(7, 5), Point(7, 4), Point(8, 4), Point(8, 3), Point(9, 3), Point(9, 2), Point(10, 2), Point(10, 1)]),
+          ArrowItem(id: 'l20_4', cells: const [Point(11, 2), Point(11, 3), Point(12, 3), Point(12, 4), Point(12, 5), Point(13, 5), Point(13, 6), Point(13, 7), Point(13, 8), Point(13, 9), Point(13, 10), Point(13, 11), Point(13, 12)]),
+          ArrowItem(id: 'l20_5', cells: const [Point(18, 2), Point(18, 3), Point(17, 3), Point(17, 4), Point(16, 4), Point(16, 5), Point(15, 5), Point(15, 6), Point(15, 7)]),
+          ArrowItem(id: 'l20_6', cells: const [Point(0, 0), Point(0, 1), Point(1, 1), Point(1, 2), Point(0, 2), Point(0, 3)]),
+          ArrowItem(id: 'l20_7', cells: const [Point(18, 4), Point(18, 5), Point(17, 5), Point(17, 6), Point(18, 6), Point(18, 7)]),
+          ArrowItem(id: 'l20_8', cells: const [Point(2, 2), Point(2, 3), Point(1, 3), Point(1, 4), Point(0, 4), Point(0, 5), Point(0, 6), Point(0, 7)]),
+          ArrowItem(id: 'l20_9', cells: const [Point(2, 9), Point(1, 9), Point(1, 8), Point(1, 7), Point(1, 6), Point(1, 5), Point(2, 5), Point(2, 4), Point(3, 4), Point(3, 3)]),
+          ArrowItem(id: 'l20_10', cells: const [Point(4, 8), Point(4, 9), Point(4, 10), Point(4, 11), Point(3, 11), Point(3, 12), Point(4, 12), Point(5, 12), Point(5, 11), Point(5, 10), Point(5, 9), Point(5, 8), Point(5, 7), Point(5, 6), Point(5, 5), Point(4, 5), Point(4, 4)]),
+          ArrowItem(id: 'l20_11', cells: const [Point(3, 7), Point(4, 7), Point(4, 6), Point(3, 6), Point(2, 6), Point(2, 7), Point(2, 8), Point(3, 8), Point(3, 9), Point(3, 10), Point(2, 10), Point(2, 11)]),
+          ArrowItem(id: 'l20_12', cells: const [Point(10, 3), Point(10, 4), Point(9, 4), Point(9, 5), Point(8, 5), Point(8, 6), Point(8, 7), Point(8, 8), Point(8, 9)]),
+          ArrowItem(id: 'l20_13', cells: const [Point(16, 6), Point(16, 7), Point(17, 7), Point(17, 8), Point(17, 9)]),
+          ArrowItem(id: 'l20_14', cells: const [Point(11, 4), Point(11, 5), Point(10, 5), Point(10, 6), Point(9, 6), Point(9, 7)]),
+          ArrowItem(id: 'l20_15', cells: const [Point(7, 9), Point(7, 10), Point(7, 11), Point(8, 11), Point(8, 12)]),
+          ArrowItem(id: 'l20_16', cells: const [Point(8, 10), Point(9, 10), Point(9, 9), Point(9, 8), Point(10, 8), Point(10, 7), Point(11, 7), Point(11, 6), Point(12, 6), Point(12, 7), Point(12, 8), Point(12, 9), Point(12, 10), Point(12, 11), Point(12, 12)]),
+          ArrowItem(id: 'l20_17', cells: const [Point(11, 8), Point(11, 9), Point(10, 9), Point(10, 10), Point(11, 10), Point(11, 11), Point(11, 12)]),
+          ArrowItem(id: 'l20_18', cells: const [Point(9, 12), Point(9, 11), Point(10, 11), Point(10, 12)]),
+          ArrowItem(id: 'l20_19', cells: const [Point(16, 11), Point(16, 10), Point(16, 9), Point(16, 8), Point(15, 8), Point(14, 8), Point(14, 9), Point(15, 9), Point(15, 10), Point(14, 10), Point(14, 11)]),
+          ArrowItem(id: 'l20_20', cells: const [Point(14, 12), Point(15, 12)]),
         ],
       ),
     ];
@@ -785,6 +810,8 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
   double _blockedMaxSteps = 0.25;
   late AnimationController _moveController;
   late AnimationController _sunburstController;
+  final TransformationController _zoomController = TransformationController();
+  bool _showZoomBanner = false;
 
   bool _isLevelCompleted = false;
   bool _soundEnabled = true;
@@ -813,6 +840,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
   void dispose() {
     _moveController.dispose();
     _sunburstController.dispose();
+    _zoomController.dispose();
     GameAudioService.instance.dispose();
     super.dispose();
   }
@@ -822,6 +850,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
     _moveController.reset();
     _sunburstController.stop();
     final config = _allLevels[index];
+    _zoomController.value = Matrix4.identity();
     setState(() {
       _currentLevelIndex = index;
       _activeArrows = config.arrows.map((a) => a.copy()).toList();
@@ -831,6 +860,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
       _animatingArrowId = null;
       _isBlockedAnimation = false;
       _isLevelCompleted = false;
+      _showZoomBanner = config.gridCols >= 12 || config.gridRows >= 12;
       if (!stayInHome) {
         _isInHomeScreen = false;
       }
@@ -1142,15 +1172,30 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                           ),
                         ),
                         alignment: Alignment.center,
-                        child: Text(
-                          '${idx + 1}',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w800,
-                            color: isCurrent
-                                ? Colors.white
-                                : const Color(0xFF1E3A8A),
-                          ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              '${idx + 1}',
+                              style: TextStyle(
+                                fontSize: 17,
+                                fontWeight: FontWeight.w800,
+                                height: 1.1,
+                                color: isCurrent
+                                    ? Colors.white
+                                    : const Color(0xFF1E3A8A),
+                              ),
+                            ),
+                            if (_allLevels[idx].isCustomShape)
+                              Text(
+                                idx + 1 == 10
+                                    ? '❤️'
+                                    : (idx + 1 == 15
+                                        ? '💎'
+                                        : (idx + 1 == 18 ? '⭐' : '👑')),
+                                style: const TextStyle(fontSize: 11),
+                              ),
+                          ],
                         ),
                       ),
                     );
@@ -1350,49 +1395,175 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                 ),
               ),
 
-              // 4. مساحة شبكة اللعب (خلفية بيضاء نقية مباشرة كما في الصور الأصلية تماماً)
+              // 4. مساحة شبكة اللعب التفاعلية مع دعم التكبير والتصغير بإصبعين (Pinch to Zoom & Pan)
               Expanded(
-                child: Center(
-                  child: AspectRatio(
-                    aspectRatio: 1,
-                    child: Padding(
-                      padding: const EdgeInsets.all(24.0),
-                      child: LayoutBuilder(
-                        builder: (context, constraints) {
-                          final boardSize = constraints.biggest.shortestSide;
-                          return RepaintBoundary(
-                            child: GestureDetector(
-                              behavior: HitTestBehavior.opaque,
-                              onTapUp: (details) => _handleBoardTap(
-                                details.localPosition,
-                                boardSize,
-                              ),
-                              child: AnimatedBuilder(
-                                animation: _moveController,
-                                builder: (context, _) {
-                                  return CustomPaint(
-                                    size: Size(boardSize, boardSize),
-                                    painter: ArrowBoardPainter(
-                                      gridCols: _currentConfig.gridCols,
-                                      gridRows: _currentConfig.gridRows,
-                                      arrows: _activeArrows,
-                                      rulerEnabled: _rulerEnabled,
-                                      hintedArrowId: _hintedArrowId,
-                                      animatingArrowId: _animatingArrowId,
-                                      isBlockedAnimation: _isBlockedAnimation,
-                                      blockedMaxSteps: _blockedMaxSteps,
-                                      animationValue: Curves.easeInOutCubic
-                                          .transform(_moveController.value),
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    InteractiveViewer(
+                      transformationController: _zoomController,
+                      minScale: 1.0,
+                      maxScale: 3.8,
+                      panEnabled: true,
+                      scaleEnabled: true,
+                      boundaryMargin: const EdgeInsets.all(140),
+                      onInteractionStart: (_) {
+                        if (_showZoomBanner) {
+                          setState(() => _showZoomBanner = false);
+                        }
+                      },
+                      child: Center(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14.0,
+                            vertical: 10.0,
+                          ),
+                          child: AspectRatio(
+                            aspectRatio: _currentConfig.gridCols /
+                                _currentConfig.gridRows,
+                            child: LayoutBuilder(
+                              builder: (context, constraints) {
+                                final boardW = constraints.maxWidth;
+                                final boardH = constraints.maxHeight;
+                                return RepaintBoundary(
+                                  child: GestureDetector(
+                                    behavior: HitTestBehavior.opaque,
+                                    onTapUp: (details) {
+                                      if (_showZoomBanner) {
+                                        setState(() => _showZoomBanner = false);
+                                      }
+                                      _handleBoardTap(
+                                        details.localPosition,
+                                        Size(boardW, boardH),
+                                      );
+                                    },
+                                    child: AnimatedBuilder(
+                                      animation: _moveController,
+                                      builder: (context, _) {
+                                        return CustomPaint(
+                                          size: Size(boardW, boardH),
+                                          painter: ArrowBoardPainter(
+                                            gridCols: _currentConfig.gridCols,
+                                            gridRows: _currentConfig.gridRows,
+                                            isCustomShape:
+                                                _currentConfig.isCustomShape,
+                                            arrows: _activeArrows,
+                                            rulerEnabled: _rulerEnabled,
+                                            hintedArrowId: _hintedArrowId,
+                                            animatingArrowId: _animatingArrowId,
+                                            isBlockedAnimation:
+                                                _isBlockedAnimation,
+                                            blockedMaxSteps: _blockedMaxSteps,
+                                            animationValue: Curves
+                                                .easeInOutCubic
+                                                .transform(
+                                                    _moveController.value),
+                                          ),
+                                        );
+                                      },
                                     ),
-                                  );
-                                },
-                              ),
+                                  ),
+                                );
+                              },
                             ),
-                          );
-                        },
+                          ),
+                        ),
                       ),
                     ),
-                  ),
+
+                    // زر سريع لإعادة الضبط (Reset Zoom) يظهر في الزاوية العلوية اليسرى عند التكبير
+                    ValueListenableBuilder<Matrix4>(
+                      valueListenable: _zoomController,
+                      builder: (context, matrix, _) {
+                        final scale = matrix.getMaxScaleOnAxis();
+                        if (scale <= 1.05) return const SizedBox.shrink();
+                        return Positioned(
+                          top: 8,
+                          left: 16,
+                          child: Material(
+                            color: const Color(0xFFEEF2FF),
+                            borderRadius: BorderRadius.circular(20),
+                            elevation: 2,
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(20),
+                              onTap: () {
+                                _zoomController.value = Matrix4.identity();
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 6,
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Icon(
+                                      Icons.zoom_out_map_rounded,
+                                      size: 18,
+                                      color: Color(0xFF3B5BDB),
+                                    ),
+                                    const SizedBox(width: 6),
+                                    Text(
+                                      '${scale.toStringAsFixed(1)}x • تصغير',
+                                      style: const TextStyle(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w700,
+                                        color: Color(0xFF3B5BDB),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+
+                    // إشعار "Pinch to zoom / كبّر بإصبعين" المطابق للصورة الثالثة للمستويات الكبيرة
+                    if (_showZoomBanner)
+                      Positioned(
+                        bottom: 12,
+                        child: IgnorePointer(
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 24,
+                              vertical: 12,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFE8ECF4).withOpacity(0.94),
+                              borderRadius: BorderRadius.circular(18),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.06),
+                                  blurRadius: 12,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: const Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.pinch_rounded,
+                                  color: Color(0xFF4C6EF5),
+                                  size: 24,
+                                ),
+                                SizedBox(width: 10),
+                                Text(
+                                  'Pinch to zoom • كبّر بإصبعين',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w800,
+                                    color: Color(0xFF4C6EF5),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
               ),
 
@@ -1689,11 +1860,11 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
     );
   }
 
-  void _handleBoardTap(Offset localPos, double boardSize) {
+  void _handleBoardTap(Offset localPos, Size boardSize) {
     if (_animatingArrowId != null || _moveController.isAnimating) return;
 
-    final cellW = boardSize / _currentConfig.gridCols;
-    final cellH = boardSize / _currentConfig.gridRows;
+    final cellW = boardSize.width / _currentConfig.gridCols;
+    final cellH = boardSize.height / _currentConfig.gridRows;
 
     ArrowItem? bestArrow;
     double minDistance = cellW * 0.58;
@@ -2216,6 +2387,7 @@ class GlossyHeartPainter extends CustomPainter {
 class ArrowBoardPainter extends CustomPainter {
   final int gridCols;
   final int gridRows;
+  final bool isCustomShape;
   final List<ArrowItem> arrows;
   final bool rulerEnabled;
   final String? hintedArrowId;
@@ -2228,6 +2400,7 @@ class ArrowBoardPainter extends CustomPainter {
   ArrowBoardPainter({
     required this.gridCols,
     required this.gridRows,
+    this.isCustomShape = false,
     required this.arrows,
     required this.rulerEnabled,
     required this.hintedArrowId,
@@ -2242,18 +2415,18 @@ class ArrowBoardPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final cellW = size.width / gridCols;
     final cellH = size.height / gridRows;
-    final strokeW = math.min(cellW, cellH) * 0.175;
+    final strokeW = math.min(cellW, cellH) * 0.165;
 
     Offset centerOf(double col, double row) {
       return Offset((col + 0.5) * cellW, (row + 0.5) * cellH);
     }
 
-    // 1. رسم نقاط الشبكة الرمادية الهادئة في خلفية اللوحة
-    if (!ignoreClearedState) {
+    // 1. رسم نقاط خفيفة فقط للخلايا التي أُفرغت داخل الشكل ليبقى الشكل نقياً ومطابقاً للصورة الأصلية
+    if (!ignoreClearedState && !isCustomShape) {
       final dotPaint = Paint()
-        ..color = const Color(0xFFD8DFEB)
+        ..color = const Color(0xFFE2E8F0)
         ..style = PaintingStyle.fill;
-      final dotRadius = math.min(cellW, cellH) * 0.055;
+      final dotRadius = math.min(cellW, cellH) * 0.048;
       for (int r = 0; r < gridRows; r++) {
         for (int c = 0; c < gridCols; c++) {
           canvas.drawCircle(
@@ -2294,13 +2467,13 @@ class ArrowBoardPainter extends CustomPainter {
       final isHinted = arrow.id == hintedArrowId;
       final isAnimating = arrow.id == animatingArrowId;
 
-      Color arrowColor = const Color(0xFF071A3E); // الكحلي الأصلي
+      Color arrowColor = const Color(0xFF0B192C); // الكحلي الهندسي الداكن
       if (isAnimating && !isBlockedAnimation) {
-        arrowColor = const Color(0xFF2196F3); // أزرق سماوي عند الخروج الصح
+        arrowColor = const Color(0xFF4C6EF5); // أزرق نيلي متوهج عند الخروج الصح
       } else if ((isAnimating && isBlockedAnimation) || arrow.isQueuedRed) {
         arrowColor = const Color(0xFFE53935); // أحمر عند الاصطدام والانتظار
       } else if (isHinted) {
-        arrowColor = const Color(0xFFFF9800); // ذهبي للتلميح
+        arrowColor = const Color(0xFF4C6EF5); // أزرق نيلي واضح للتلميح كما في الصورة الأصلية!
       }
 
       double shiftCells = 0.0;
@@ -2327,7 +2500,7 @@ class ArrowBoardPainter extends CustomPainter {
 
       if (polylinePoints.length < 2) continue;
 
-      final arrowPath = _buildRoundedCornerPath(polylinePoints, cellW * 0.22);
+      final arrowPath = _buildRoundedCornerPath(polylinePoints, cellW * 0.08);
 
       // هالة ضوئية خفيفة فقط للتلميح
       if (isHinted) {
